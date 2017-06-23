@@ -7,6 +7,7 @@ typedef struct _Perlin
 {
     double freq;
     int depth;
+    double origin_offset;
 
     unsigned char hash[PERLIN_HASH_SIZE];
 } Perlin;

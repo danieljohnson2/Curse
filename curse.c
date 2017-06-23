@@ -1,9 +1,9 @@
+#include "map.h"
+
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include "map.h"
 
 static int
 get_terrain_char (Terrain terrain)
@@ -15,7 +15,7 @@ get_terrain_char (Terrain terrain)
     case water:
         return '~' | COLOR_PAIR (1) | A_BOLD;
     case beach:
-        return '.' | COLOR_PAIR (2);
+        return '.' | COLOR_PAIR (2) | A_BOLD;
     case grass:
         return ':' | COLOR_PAIR (3) | A_BOLD;
     case woods:
@@ -59,7 +59,7 @@ paint (WINDOW * w, Game * game)
     int maxrow, maxcol;
     getmaxyx (w, maxrow, maxcol);
 
-    update_view (game, 4, maxcol, maxrow);
+    update_view (game, 8, maxcol, maxrow);
 
     int finalcursorrow = 0, finalcursorcolumn = 0;
 
@@ -89,6 +89,21 @@ paint (WINDOW * w, Game * game)
         wmove (w, finalcursorrow, finalcursorcolumn);
 }
 
+static void
+move_player (Game * game, int dx, int dy)
+{
+    int nx = game->playerx + dx;
+    int ny = game->playery + dy;
+
+    Terrain t = read_map (&game->map, nx, ny);
+
+    if (is_passable (t))
+    {
+        game->playerx = nx;
+        game->playery = ny;
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -111,11 +126,9 @@ main (int argc, char **argv)
     WINDOW *w = newwin (rows - 2, columns - 2, 1, 1);
     keypad (w, TRUE);
 
-    int speed = 1;
-
     Game game = { 0 };
-    game.map = make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 1));
-
+    game.map = make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 4));
+    game.playery = -8;
     for (;;)
     {
         paint (w, &game);
@@ -125,16 +138,16 @@ main (int argc, char **argv)
             endwin ();
             return 0;
         case KEY_UP:
-            game.playery -= speed;
+            move_player (&game, 0, -1);
             break;
         case KEY_DOWN:
-            game.playery += speed;
+            move_player (&game, 0, +1);
             break;
         case KEY_LEFT:
-            game.playerx -= speed;
+            move_player (&game, -1, 0);
             break;
         case KEY_RIGHT:
-            game.playerx += speed;
+            move_player (&game, +1, 0);
             break;
         }
     }

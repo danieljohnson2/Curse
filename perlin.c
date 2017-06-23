@@ -1,13 +1,18 @@
+#include "perlin.h"
+
 #include <stdio.h>
 #include <memory.h>
 #include <stdlib.h>
 #include <float.h>
 #include <limits.h>
 
-#include "perlin.h"
+// Borowed (with some rework) from https://gist.github.com/nowl/828013
+// Thanks nowl!
 
-// brutally stolen from https://gist.github.com/nowl/828013
-
+/*
+This retrieves a hash value from the perlin struct given its index;
+but this verify the index (as I've had some problems with that).
+*/
 static int
 get_hash (Perlin * perlin, long long index)
 {
@@ -54,28 +59,38 @@ noise2d (Perlin * perlin, double x, double y)
     return smooth_inter (low, high, y_frac);
 }
 
+/*
+Creates a perlin structure. The hash data is randly generated based on
+the seed given (so the same seed will always produce the same data).
+*/
 Perlin
 make_perlin (double freq, int depth, int seed)
 {
     Perlin perlin = { 0 };
     perlin.freq = freq;
     perlin.depth = depth;
+    perlin.origin_offset = SHRT_MAX;
 
     srand (seed);
 
+    // rand() is crap, but who cares, this is just a wee game.
     for (int i = 0; i < PERLIN_HASH_SIZE; ++i)
-        perlin.hash[i] = (rand () >> 8) & 0xFF;
+        perlin.hash[i] = rand () & 0xFF;
 
     return perlin;
 }
 
+/*
+Reads a value from the perlin noise at the co-ordinates given.
+This tolerates negative co-ordinates, but just mirrors the nosie
+at the origin. To make this less obvious, you can have an origin-offset
+that effectively moves this origin out of the way. 
+*/
 float
 perlin2d (Perlin * perlin, double x, double y)
 {
-    static double offset = SHRT_MAX;
-
-    double xa = abs (x + offset) * perlin->freq;
-    double ya = abs (y + offset) * perlin->freq;
+    double xa = abs (x + perlin->origin_offset) * perlin->freq;
+    double ya = abs (y + perlin->origin_offset) * perlin->freq;
     double amp = 1.0;
     double fin = 0;
     double div = 0.0;

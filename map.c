@@ -1,18 +1,8 @@
+#include "map.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include "map.h"
-
-Map
-make_map (double soft_size, MapShape shape, Perlin perlin)
-{
-    Map map = { 0 };
-    map.soft_size = soft_size;
-    map.shape = shape;
-    map.perlin = perlin;
-    return map;
-}
 
 static double
 pin (double value, double min, double max)
@@ -25,10 +15,26 @@ pin (double value, double min, double max)
         return value;
 }
 
+/* Creates a new map of the size and shape indicated. */
+Map
+make_map (double soft_size, MapShape shape, Perlin perlin)
+{
+    Map map = { 0 };
+    map.soft_size = soft_size;
+    map.shape = shape;
+    map.perlin = perlin;
+    return map;
+}
+
 #define TERRAIN_COUNT 19
 
+/*
+Decides what terrain to use at an altitude and
+distance. Altitude is what we get from the perlin noise; distance
+is defined by the shape.
+*/
 static Terrain
-pick_terrain (Map * map, double depth, double dist)
+pick_terrain (Map * map, double altitude, double dist)
 {
     Terrain a[TERRAIN_COUNT] = {
         deep_sea,
@@ -52,7 +58,7 @@ pick_terrain (Map * map, double depth, double dist)
         mountains
     };
 
-    double adjusted = depth;
+    double adjusted = altitude;
 
     if (dist > map->soft_size)
         dist -= map->soft_size;
@@ -67,27 +73,49 @@ pick_terrain (Map * map, double depth, double dist)
 
     if (index < 0 || index >= TERRAIN_COUNT)
     {
-        printf ("Bad depth: %f", depth);
+        printf ("Bad terrain index: %d", index);
         abort ();
     }
 
     return a[index];
 }
 
+/* Reads the terrain in a cell of the map. */
 Terrain
 read_map (Map * map, int x, int y)
 {
-    double p = perlin2d (&map->perlin, x, y);
+    double alt = perlin2d (&map->perlin, x, y);
     double dist = (map->shape) (map, x, y);
-    return pick_terrain (map, p, dist);
+    return pick_terrain (map, alt, dist);
 }
 
+/* Decides whether a given terrain can be moved through. */
+bool
+is_passable (Terrain terrain)
+{
+    switch (terrain)
+    {
+    case deep_sea:
+    case water:
+    case mountains:
+        return false;
+
+    default:
+        return true;
+    }
+}
+
+/* Defines a map shape that is circular. */
 double
 round_shape (Map * map, int x, int y)
 {
     return map->soft_size * 1.5 - sqrt (x * x + y * y);
 }
 
+/*
+Defines a map shape that is a diagnal band with sea on the left,
+and mountains on the right.
+*/
 double
 band_shape (Map * map, int x, int y)
 {
