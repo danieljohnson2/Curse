@@ -1,6 +1,6 @@
 CFLAGS := -g
-LDLIBS := -lncurses
-SRCS := curse.c perlin.c
+LDLIBS := -lncurses -lm
+SRCS := curse.c perlin.c map.c
 OBJS := $(SRCS:.c=.o)
 
 all: bin/curse

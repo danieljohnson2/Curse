@@ -9,7 +9,7 @@
 // brutally stolen from https://gist.github.com/nowl/828013
 
 static int
-get_hash (PERLIN * perlin, long long index)
+get_hash (Perlin * perlin, long long index)
 {
     index %= PERLIN_HASH_SIZE;
 
@@ -20,7 +20,7 @@ get_hash (PERLIN * perlin, long long index)
 }
 
 static int
-noise2 (PERLIN * perlin, long long x, long long y)
+noise2 (Perlin * perlin, long long x, long long y)
 {
     int tmp = get_hash (perlin, y);
     return get_hash (perlin, tmp + x);
@@ -39,7 +39,7 @@ smooth_inter (double x, double y, double s)
 }
 
 static float
-noise2d (PERLIN * perlin, double x, double y)
+noise2d (Perlin * perlin, double x, double y)
 {
     long long x_int = x;
     long long y_int = y;
@@ -54,20 +54,23 @@ noise2d (PERLIN * perlin, double x, double y)
     return smooth_inter (low, high, y_frac);
 }
 
-void
-init_perlin (PERLIN * perlin, double freq, int depth, int seed)
+Perlin
+make_perlin (double freq, int depth, int seed)
 {
-    perlin->freq = freq;
-    perlin->depth = depth;
+    Perlin perlin = { 0 };
+    perlin.freq = freq;
+    perlin.depth = depth;
 
     srand (seed);
 
     for (int i = 0; i < PERLIN_HASH_SIZE; ++i)
-        perlin->hash[i] = (rand () >> 8) & 0xFF;
+        perlin.hash[i] = (rand () >> 8) & 0xFF;
+
+    return perlin;
 }
 
 float
-perlin2d (PERLIN * perlin, double x, double y)
+perlin2d (Perlin * perlin, double x, double y)
 {
     static double offset = SHRT_MAX;
 

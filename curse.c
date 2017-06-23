@@ -1,60 +1,34 @@
-#include <curses.h>
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#include "perlin.h"
-
-static double
-pin (double value, double min, double max)
-{
-    if (value < min)
-        return min;
-    else if (value > max)
-        return max;
-    else
-        return value;
-}
-
-#define TERRAIN_COUNT 7
-#define SOFT_MAP_SIZE 128.0
+#include "map.h"
 
 static int
-pickchar (double depth, double dist)
+get_terrain_char (Terrain terrain)
 {
-    static int a[TERRAIN_COUNT] = {
-        '/' | COLOR_PAIR (1) | A_BOLD,
-        '~' | COLOR_PAIR (1) | A_BOLD,
-        '.' | COLOR_PAIR (2),
-        ':' | COLOR_PAIR (3) | A_BOLD,
-        '%' | COLOR_PAIR (3),
-        '^' | COLOR_PAIR (4),
-        '^' | COLOR_PAIR (4) | A_BOLD
-    };
-
-    double adjusted = depth;
-
-    if (dist > SOFT_MAP_SIZE)
-        dist -= SOFT_MAP_SIZE;
-    else if (dist < -SOFT_MAP_SIZE)
-        dist += SOFT_MAP_SIZE;
-    else
-        dist = 0.0;
-
-    adjusted += pin (dist / SOFT_MAP_SIZE, -.65, .65);
-    double unpinned = (adjusted * TERRAIN_COUNT - 1) + 0.5;
-    int index = pin (unpinned, 0, TERRAIN_COUNT - 1);
-
-    if (index < 0 || index >= TERRAIN_COUNT)
+    switch (terrain)
     {
-        printf ("Bad depth: %f", depth);
-        abort ();
+    case deep_sea:
+        return '/' | COLOR_PAIR (1) | A_BOLD;
+    case water:
+        return '~' | COLOR_PAIR (1) | A_BOLD;
+    case beach:
+        return '.' | COLOR_PAIR (2);
+    case grass:
+        return ':' | COLOR_PAIR (3) | A_BOLD;
+    case woods:
+        return '%' | COLOR_PAIR (3);
+    case hills:
+        return '^' | COLOR_PAIR (4);
+    case mountains:
+        return '^' | COLOR_PAIR (4) | A_BOLD;
     }
-
-    return a[index];
 }
 
 static void
-paint (WINDOW * w, PERLIN * perlin, int y, int x, double scale)
+paint (WINDOW * w, Map * map, int y, int x, double scale)
 {
     int maxrow, maxcol;
     getmaxyx (w, maxrow, maxcol);
@@ -66,8 +40,9 @@ paint (WINDOW * w, PERLIN * perlin, int y, int x, double scale)
             int px = (col + x) * scale;
             int py = (row + y) * scale;
 
-            double p = perlin2d (perlin, px, py);
-            mvwaddch (w, row, col, pickchar (p, px + py));
+            Terrain t = read_map (map, px, py);
+            int ch = get_terrain_char (t);
+            mvwaddch (w, row, col, ch);
         }
     }
 }
@@ -85,15 +60,15 @@ main (int argc, char **argv)
     init_pair (3, COLOR_GREEN, COLOR_BLACK);
     init_pair (4, COLOR_WHITE, COLOR_BLACK);
 
-	int rows, columns;
-	getmaxyx(stdscr, rows, columns);
+    int rows, columns;
+    getmaxyx (stdscr, rows, columns);
 
     box (stdscr, 0, 0);
     refresh ();
 
-    WINDOW *w = newwin (rows-2, columns-2, 1, 1);
+    WINDOW *w = newwin (rows - 2, columns - 2, 1, 1);
     keypad (w, TRUE);
-	
+
     int seed = 1;
     int x = -40, y = -20;
     double scale = 1.0;
@@ -101,12 +76,11 @@ main (int argc, char **argv)
 
     for (;;)
     {
-        PERLIN perlin;
-        init_perlin (&perlin, 1.0 / 8.0, 2, seed);
+        Map map = make_map (16, round_shape,
+                            make_perlin (1.0 / 8.0, 2, seed));
 
-        paint (w, &perlin, y, x, scale);
-        wrefresh (w);
-
+        paint (w, &map, y, x, scale);
+        
         switch (wgetch (w))
         {
         case 'q':
@@ -116,8 +90,8 @@ main (int argc, char **argv)
             seed++;
             break;
         case KEY_HOME:
-        	scale = 1.0;
-        	break;        	
+            scale = 1.0;
+            break;
         case KEY_UP:
             y -= speed;
             break;

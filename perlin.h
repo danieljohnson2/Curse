@@ -3,15 +3,15 @@
 
 #define PERLIN_HASH_SIZE 4096
 
-typedef struct _PERLIN
+typedef struct _Perlin
 {
     double freq;
     int depth;
 
     unsigned char hash[PERLIN_HASH_SIZE];
-} PERLIN;
+} Perlin;
 
-void init_perlin (PERLIN * perlin, double freq, int depth, int seed);
-float perlin2d (PERLIN * perlin, double x, double y);
+Perlin make_perlin (double freq, int depth, int seed);
+float perlin2d (Perlin * perlin, double x, double y);
 
 #endif
