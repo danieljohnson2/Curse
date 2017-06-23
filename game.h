@@ -19,6 +19,4 @@ Game make_game (Map map, TurnAction player_turn_action);
 void clear_game_message (Game * game);
 void write_game_message (Game * game, char *message);
 
-void move_player (Game * game, int dx, int dy);
-
 #endif

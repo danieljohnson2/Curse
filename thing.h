@@ -26,9 +26,13 @@ Thing make_thing (char appearance, char *name, int x, int y,
                   BumpAction bump_action, TurnAction turn_action);
 
 void remove_thing (Thing * thing);
+
+void move_thing_towards (Game * game, Thing * mover, Thing * target);
+void move_thing_by (Game * game, Thing * mover, int dx, int dy);
 void move_thing_to (Game * game, Thing * mover, int x, int y);
 
 void null_turn_action (Game * game, Thing * actor);
+void chase_player_turn_action (Game * game, Thing * actor);
 
 bool null_bump_action (Game * game, Thing * actor, Thing * target);
 bool attack_bump_action (Game * game, Thing * actor, Thing * target);

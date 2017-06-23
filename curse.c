@@ -28,7 +28,7 @@ get_terrain_char (Terrain terrain)
         return '^' | COLOR_PAIR (4);
     case mountains:
         return '^' | COLOR_PAIR (4) | A_BOLD;
-        default:
+    default:
         return ' ';
     }
 }
@@ -97,9 +97,9 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
         }
     }
 
-	werase (message_w);
+    werase (message_w);
     mvwaddstr (message_w, 0, 0, game->message);
-        
+
     if (finalcursorrow >= 0)
         wmove (map_w, finalcursorrow, finalcursorcolumn);
 }
@@ -114,24 +114,29 @@ player_turn_action (Game * game, Thing * player)
     wrefresh (message_w);
 
     int ch = wgetch (map_w);
+
     clear_game_message (game);
+
+    if (player->appearance == '\0')
+        return;
 
     switch (ch)
     {
     case 'q':
-        remove_thing (&game->things[PLAYER_INDEX]);
+        remove_thing (player);
         break;
+
     case KEY_UP:
-        move_player (game, 0, -1);
+        move_thing_by (game, player, 0, -1);
         break;
     case KEY_DOWN:
-        move_player (game, 0, +1);
+        move_thing_by (game, player, 0, +1);
         break;
     case KEY_LEFT:
-        move_player (game, -1, 0);
+        move_thing_by (game, player, -1, 0);
         break;
     case KEY_RIGHT:
-        move_player (game, +1, 0);
+        move_thing_by (game, player, +1, 0);
         break;
     }
 }
@@ -167,15 +172,15 @@ main (int argc, char **argv)
         make_game (make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 4)),
                    player_turn_action);
 
-    // fake monsters!
+    // fake monsters! Not as fake as they used to be!
     game.things[1] =
         make_thing ('g', "Goblin", -10, -7, attack_bump_action,
-                    null_turn_action);
+                    chase_player_turn_action);
     game.things[2] =
         make_thing ('h', "Halfling", -20, 8, attack_bump_action,
-                    null_turn_action);
+                    chase_player_turn_action);
 
-    for (;;)
+    while (game.things[PLAYER_INDEX].appearance != '\0')
     {
         for (int i = 0; i < THING_COUNT; ++i)
         {
@@ -183,11 +188,13 @@ main (int argc, char **argv)
             if (th->appearance != '\0')
                 th->turn_action (&game, th);
         }
-
-        if (game.things[PLAYER_INDEX].appearance == '\0')
-        {
-            endwin ();
-            return 0;
-        }
     }
+
+    write_game_message (&game, "Game over!");
+    paint (map_w, message_w, &game);
+    wrefresh (message_w);
+    wgetch (map_w);
+
+    endwin ();
+    return 0;
 }

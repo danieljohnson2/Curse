@@ -33,10 +33,3 @@ write_game_message (Game * game, char *message)
         game->message[MESSAGE_MAX] = '\0';      // ensure null termination
     }
 }
-
-void
-move_player (Game * game, int dx, int dy)
-{
-    Thing *player = &game->things[PLAYER_INDEX];
-    move_thing_to (game, player, player->x + dx, player->y + dy);
-}
