@@ -66,6 +66,8 @@ start the search, and find the next thing after it.
 
 when we can find nothing more, we we 'found' to NULL again
 and return false.
+
+This function can only find things that are alive.
 */
 bool
 find_thing_at (Game * game, int x, int y, Thing ** found)

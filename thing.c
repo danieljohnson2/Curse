@@ -128,7 +128,7 @@ try_move_thing_to (Game * game, Thing * mover, int x, int y)
         return false;
 
     Thing *hit = NULL;
-    while (find_thing_at (game, x, y, &hit))
+    while (is_thing_alive (mover) && find_thing_at (game, x, y, &hit))
     {
         if (hit != mover && !hit->bump_action (game, mover, hit))
             return true;
