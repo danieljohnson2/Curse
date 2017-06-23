@@ -9,6 +9,7 @@
 
 typedef struct _Game Game;
 typedef struct _Thing Thing;
+typedef struct _Map Map;
 
 typedef bool (*BumpAction) (Game * game, Thing * actor, Thing * target);
 typedef void (*TurnAction) (Game * game, Thing * actor);

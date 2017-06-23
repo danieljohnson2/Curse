@@ -197,13 +197,10 @@ main (int argc, char **argv)
                    (16, round_shape, make_perlin (1.0 / 8.0, 2, seed)),
                    player_turn_action);
 
-    // fake monsters! Not as fake as they used to be!
-    game.things[1] =
-        make_thing ('g', "Goblin", -10, -7, attack_bump_action,
-                    chase_player_turn_action);
-    game.things[2] =
-        make_thing ('h', "Halfling", -20, 8, attack_bump_action,
-                    chase_player_turn_action);
+    Thing *player = &game.things[PLAYER_INDEX];
+
+    game.viewx = player->x - (columns / 2);
+    game.viewy = player->y - (rows / 2);
 
     int thing_index = 0;
     while (is_thing_alive (&game.things[PLAYER_INDEX]))
@@ -220,7 +217,9 @@ main (int argc, char **argv)
     write_game_message (&game, "Game over!");
     paint (map_w, message_w, &game);
     wrefresh (message_w);
-    wgetch (map_w);
+
+    while (wgetch (map_w) != ' ')
+        continue;
 
     endwin ();
     return 0;

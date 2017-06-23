@@ -19,6 +19,9 @@ Game make_game (Map map, TurnAction player_turn_action);
 void clear_game_message (Game * game);
 void write_game_message (Game * game, char *message);
 
+bool find_thing_at (Game * game, int x, int y, Thing ** found);
+void place_thing (Game * game, Thing * thing);
+
 bool is_thing_player (Game * game, Thing * thing);
 
 #endif

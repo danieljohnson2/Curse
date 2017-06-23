@@ -127,16 +127,11 @@ try_move_thing_to (Game * game, Thing * mover, int x, int y)
     if (!is_terrain_passable (t))
         return false;
 
-    for (int i = 0; i < THING_COUNT && is_thing_alive (mover); ++i)
+    Thing *hit = NULL;
+    while (find_thing_at (game, x, y, &hit))
     {
-        Thing *thing = &game->things[i];
-
-        if (thing != mover && is_thing_alive (thing) &&
-            thing->x == x && thing->y == y)
-        {
-            if (!thing->bump_action (game, mover, thing))
-                return true;
-        }
+        if (hit != mover && !hit->bump_action (game, mover, hit))
+            return true;
     }
 
     mover->x = x;
@@ -156,7 +151,7 @@ chase_player_turn_action (Game * game, Thing * actor)
 {
     Thing *player = &game->things[PLAYER_INDEX];
 
-    if (is_thing_alive(player))
+    if (is_thing_alive (player))
         move_thing_towards (game, actor, player);
 }
 
