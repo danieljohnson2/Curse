@@ -19,4 +19,6 @@ Game make_game (Map map, TurnAction player_turn_action);
 void clear_game_message (Game * game);
 void write_game_message (Game * game, char *message);
 
+bool is_thing_player (Game * game, Thing * thing);
+
 #endif

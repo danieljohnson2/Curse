@@ -79,7 +79,7 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
     {
         Thing *thing = &game->things[i];
 
-        if (thing->appearance != '\0')
+        if (is_thing_alive (thing))
         {
             int col = thing->x - game->viewx;
             int row = thing->y - game->viewy;
@@ -110,40 +110,64 @@ static WINDOW *message_w;
 static void
 player_turn_action (Game * game, Thing * player)
 {
+    bool moved = false;
+    do
+    {
+        paint (map_w, message_w, game);
+        wrefresh (message_w);
+
+        int ch = wgetch (map_w);
+
+        clear_game_message (game);
+
+        if (!is_thing_alive (player))
+            return;
+
+        switch (ch)
+        {
+        case 'q':
+            endwin ();
+            exit (0);
+            break;
+
+        case KEY_UP:
+            moved = true;
+            move_player_by (game, 0, -1);
+            break;
+        case KEY_DOWN:
+            moved = true;
+            move_player_by (game, 0, +1);
+            break;
+        case KEY_LEFT:
+            moved = true;
+            move_player_by (game, -1, 0);
+            break;
+        case KEY_RIGHT:
+            moved = true;
+            move_player_by (game, +1, 0);
+            break;
+        case ' ':
+            moved = true;
+            break;
+        default:
+            write_game_message (game, "Invalid key.");
+            break;
+        }
+    }
+    while (!moved);
+
     paint (map_w, message_w, game);
     wrefresh (message_w);
-
-    int ch = wgetch (map_w);
-
-    clear_game_message (game);
-
-    if (player->appearance == '\0')
-        return;
-
-    switch (ch)
-    {
-    case 'q':
-        remove_thing (player);
-        break;
-
-    case KEY_UP:
-        move_thing_by (game, player, 0, -1);
-        break;
-    case KEY_DOWN:
-        move_thing_by (game, player, 0, +1);
-        break;
-    case KEY_LEFT:
-        move_thing_by (game, player, -1, 0);
-        break;
-    case KEY_RIGHT:
-        move_thing_by (game, player, +1, 0);
-        break;
-    }
 }
 
 int
 main (int argc, char **argv)
 {
+    int seed = 4;
+
+    if (argc > 1)
+        seed = atoi (argv[1]);
+
     initscr ();
     cbreak ();
     noecho ();
@@ -169,7 +193,8 @@ main (int argc, char **argv)
     message_w = newwin (1, columns, 0, 0);
 
     Game game =
-        make_game (make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 4)),
+        make_game (make_map
+                   (16, round_shape, make_perlin (1.0 / 8.0, 2, seed)),
                    player_turn_action);
 
     // fake monsters! Not as fake as they used to be!
@@ -180,14 +205,16 @@ main (int argc, char **argv)
         make_thing ('h', "Halfling", -20, 8, attack_bump_action,
                     chase_player_turn_action);
 
-    while (game.things[PLAYER_INDEX].appearance != '\0')
+    int thing_index = 0;
+    while (is_thing_alive (&game.things[PLAYER_INDEX]))
     {
-        for (int i = 0; i < THING_COUNT; ++i)
-        {
-            Thing *th = &game.things[i];
-            if (th->appearance != '\0')
-                th->turn_action (&game, th);
-        }
+        Thing *th = &game.things[thing_index];
+        if (is_thing_alive (th))
+            th->turn_action (&game, th);
+
+        ++thing_index;
+        if (thing_index >= THING_COUNT)
+            thing_index = 0;
     }
 
     write_game_message (&game, "Game over!");

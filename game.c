@@ -33,3 +33,9 @@ write_game_message (Game * game, char *message)
         game->message[MESSAGE_MAX] = '\0';      // ensure null termination
     }
 }
+
+bool
+is_thing_player (Game * game, Thing * thing)
+{
+    return thing == &game->things[PLAYER_INDEX];
+}
