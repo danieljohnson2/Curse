@@ -2,9 +2,11 @@
 #include "game.h"
 
 #include <string.h>
+#include <stdio.h>
 
 Thing
-make_thing (char appearance, char *name, int x, int y, BumpAction bump_action)
+make_thing (char appearance, char *name, int x, int y, BumpAction bump_action,
+            TurnAction turn_action)
 {
     Thing th = { 0 };
     th.appearance = appearance;
@@ -12,6 +14,7 @@ make_thing (char appearance, char *name, int x, int y, BumpAction bump_action)
     th.x = x;
     th.y = y;
     th.bump_action = bump_action;
+    th.turn_action = turn_action;
     return th;
 }
 
@@ -48,6 +51,11 @@ move_thing_to (Game * game, Thing * mover, int x, int y)
 
     mover->x = x;
     mover->y = y;
+}
+
+void
+null_turn_action (Game * game, Thing * actor)
+{
 }
 
 bool

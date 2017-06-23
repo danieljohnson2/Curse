@@ -95,13 +95,43 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
         }
     }
 
-    if (game->message[0] != '\0')
-        mvwaddstr (message_w, 0, 0, game->message);
-    else
-        werase (message_w);
-
+	werase (message_w);
+    mvwaddstr (message_w, 0, 0, game->message);
+        
     if (finalcursorrow >= 0)
         wmove (map_w, finalcursorrow, finalcursorcolumn);
+}
+
+static WINDOW *map_w;
+static WINDOW *message_w;
+
+static void
+player_turn_action (Game * game, Thing * player)
+{
+    paint (map_w, message_w, game);
+    wrefresh (message_w);
+
+    int ch = wgetch (map_w);
+    clear_game_message (game);
+
+    switch (ch)
+    {
+    case 'q':
+        remove_thing (&game->things[PLAYER_INDEX]);
+        break;
+    case KEY_UP:
+        move_player (game, 0, -1);
+        break;
+    case KEY_DOWN:
+        move_player (game, 0, +1);
+        break;
+    case KEY_LEFT:
+        move_player (game, -1, 0);
+        break;
+    case KEY_RIGHT:
+        move_player (game, +1, 0);
+        break;
+    }
 }
 
 int
@@ -126,47 +156,36 @@ main (int argc, char **argv)
     box (border_w, 0, 0);
     wrefresh (border_w);
 
-    WINDOW *map_w = newwin (rows - 3, columns - 2, 2, 1);
+    map_w = newwin (rows - 3, columns - 2, 2, 1);
     keypad (map_w, TRUE);
 
-    WINDOW *message_w = newwin (1, columns, 0, 0);
+    message_w = newwin (1, columns, 0, 0);
 
     Game game =
-        make_game (make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 4)));
+        make_game (make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 4)),
+                   player_turn_action);
 
     // fake monsters!
-    game.things[1] = make_thing ('g', "Goblin", -10, -7, attack_bump_action);
-    game.things[2] = make_thing ('h', "Halfling", -20, 8, attack_bump_action);
+    game.things[1] =
+        make_thing ('g', "Goblin", -10, -7, attack_bump_action,
+                    null_turn_action);
+    game.things[2] =
+        make_thing ('h', "Halfling", -20, 8, attack_bump_action,
+                    null_turn_action);
 
     for (;;)
     {
-        paint (map_w, message_w, &game);
-        wrefresh (message_w);
-
-        clear_game_message (&game);
-
-        int ch = wgetch (map_w);
+        for (int i = 0; i < THING_COUNT; ++i)
+        {
+            Thing *th = &game.things[i];
+            if (th->appearance != '\0')
+                th->turn_action (&game, th);
+        }
 
         if (game.things[PLAYER_INDEX].appearance == '\0')
-            ch = 'q';
-
-        switch (ch)
         {
-        case 'q':
             endwin ();
             return 0;
-        case KEY_UP:
-            move_player (&game, 0, -1);
-            break;
-        case KEY_DOWN:
-            move_player (&game, 0, +1);
-            break;
-        case KEY_LEFT:
-            move_player (&game, -1, 0);
-            break;
-        case KEY_RIGHT:
-            move_player (&game, +1, 0);
-            break;
         }
     }
 }

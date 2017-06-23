@@ -3,12 +3,13 @@
 #include <string.h>
 
 Game
-make_game (Map map)
+make_game (Map map, TurnAction player_turn_action)
 {
     Game game = { 0 };
     game.map = map;
     game.things[PLAYER_INDEX] =
-        make_thing ('@', "Player", 0, -8, attack_bump_action);
+        make_thing ('@', "Player", 0, -8, attack_bump_action,
+                    player_turn_action);
     return game;
 }
 
