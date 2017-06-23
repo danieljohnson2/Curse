@@ -28,6 +28,8 @@ get_terrain_char (Terrain terrain)
         return '^' | COLOR_PAIR (4);
     case mountains:
         return '^' | COLOR_PAIR (4) | A_BOLD;
+        default:
+        return ' ';
     }
 }
 

@@ -1,4 +1,4 @@
-CFLAGS := -g
+CFLAGS := -g -Wall -fmax-errors=3
 LDLIBS := -lncurses -lm
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
