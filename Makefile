@@ -3,12 +3,12 @@ LDLIBS := -lncurses -lm
 SRCS := curse.c perlin.c map.c
 OBJS := $(SRCS:.c=.o)
 
-all: bin/curse
+all: curse
 .PHONY: all clean directories
 -include $(SRCS:.c=.d)
 
-bin/curse: $(addprefix bin/,$(OBJS))
-	$(CC) $(LFLAGS) $^ $(LDLIBS) -o $@
+curse: $(addprefix bin/,$(OBJS))
+	$(CC) $^ $(LDLIBS) -o $@
 
 bin/%.o: %.c | directories
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -20,6 +20,7 @@ bin/:
 	mkdir -p bin
 
 clean:
+	rm curse
 	rm -rf bin
 	
 indent:
