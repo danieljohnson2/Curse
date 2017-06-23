@@ -1,4 +1,6 @@
 #include "map.h"
+#include "thing.h"
+#include "game.h"
 
 #include <ncurses.h>
 #include <stdio.h>
@@ -28,35 +30,6 @@ get_terrain_char (Terrain terrain)
         return '^' | COLOR_PAIR (4) | A_BOLD;
     }
 }
-
-#define THING_COUNT 16
-#define MESSAGE_MAX 512
-#define PLAYER_INDEX 0
-
-typedef struct _Thing
-{
-    char appearance;
-    int x, y;
-} Thing;
-
-static Thing
-make_thing (char appearance, int x, int y)
-{
-    Thing th = { 0 };
-    th.appearance = appearance;
-    th.x = x;
-    th.y = y;
-    return th;
-}
-
-typedef struct _Game
-{
-    Map map;
-    int viewx, viewy;
-
-    Thing things[THING_COUNT];
-    char message[MESSAGE_MAX + 1];
-} Game;
 
 static void
 update_view (Game * game, Thing * thing, int margin, int width, int height)
@@ -131,44 +104,6 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
         wmove (map_w, finalcursorrow, finalcursorcolumn);
 }
 
-bool
-is_game_passable (Game * game, int x, int y)
-{
-    Terrain t = read_map (&game->map, x, y);
-
-    if (!is_terrain_passable (t))
-        return false;
-
-    for (int i = 0; i < THING_COUNT; ++i)
-    {
-        Thing *thing = &game->things[i];
-
-        if (thing->appearance != '\0' && thing->x == x && thing->y == y)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-static void
-move_player (Game * game, int dx, int dy)
-{
-    Thing *player = &game->things[PLAYER_INDEX];
-
-    int nx = player->x + dx;
-    int ny = player->y + dy;
-
-    if (is_game_passable (game, nx, ny))
-    {
-        player->x = nx;
-        player->y = ny;
-    }
-    else
-        strcpy (game->message, "Blocked!");
-}
-
 int
 main (int argc, char **argv)
 {
@@ -196,9 +131,8 @@ main (int argc, char **argv)
 
     WINDOW *message_w = newwin (1, columns, 0, 0);
 
-    Game game = { 0 };
-    game.map = make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 4));
-    game.things[PLAYER_INDEX] = make_thing ('@', 0, -8);
+    Game game =
+        make_game (make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 4)));
 
     // fake monsters!
     game.things[1] = make_thing ('g', -10, -7);
@@ -209,7 +143,7 @@ main (int argc, char **argv)
         paint (map_w, message_w, &game);
         wrefresh (message_w);
 
-        memset (game.message, 0, MESSAGE_MAX);
+        clear_game_message (&game);
 
         switch (wgetch (map_w))
         {

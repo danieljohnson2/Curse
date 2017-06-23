@@ -1,6 +1,6 @@
 CFLAGS := -g
 LDLIBS := -lncurses -lm
-SRCS := curse.c perlin.c map.c
+SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
 
 all: curse
