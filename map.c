@@ -91,7 +91,7 @@ read_map (Map * map, int x, int y)
 
 /* Decides whether a given terrain can be moved through. */
 bool
-is_passable (Terrain terrain)
+is_terrain_passable (Terrain terrain)
 {
     switch (terrain)
     {
