@@ -135,8 +135,8 @@ main (int argc, char **argv)
         make_game (make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, 4)));
 
     // fake monsters!
-    game.things[1] = make_thing ('g', -10, -7);
-    game.things[2] = make_thing ('h', -20, 8);
+    game.things[1] = make_thing ('g', "Goblin", -10, -7, attack_bump_action);
+    game.things[2] = make_thing ('h', "Halfling", -20, 8, attack_bump_action);
 
     for (;;)
     {
@@ -145,7 +145,12 @@ main (int argc, char **argv)
 
         clear_game_message (&game);
 
-        switch (wgetch (map_w))
+        int ch = wgetch (map_w);
+
+        if (game.things[PLAYER_INDEX].appearance == '\0')
+            ch = 'q';
+
+        switch (ch)
         {
         case 'q':
             endwin ();

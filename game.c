@@ -7,7 +7,8 @@ make_game (Map map)
 {
     Game game = { 0 };
     game.map = map;
-    game.things[PLAYER_INDEX] = make_thing ('@', 0, -8);
+    game.things[PLAYER_INDEX] =
+        make_thing ('@', "Player", 0, -8, attack_bump_action);
     return game;
 }
 

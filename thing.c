@@ -3,22 +3,22 @@
 
 #include <string.h>
 
-static bool
-block_action (Game * game, Thing * actor, Thing * target)
-{
-    write_game_message (game, "Blocked!");
-    return true;
-}
-
 Thing
-make_thing (char appearance, int x, int y)
+make_thing (char appearance, char *name, int x, int y, BumpAction bump_action)
 {
     Thing th = { 0 };
     th.appearance = appearance;
+    strcpy (th.name, name);
     th.x = x;
     th.y = y;
-    th.bump_action = block_action;
+    th.bump_action = bump_action;
     return th;
+}
+
+void
+remove_thing (Thing * thing)
+{
+    thing->appearance = '\0';
 }
 
 void
@@ -48,4 +48,21 @@ move_thing_to (Game * game, Thing * mover, int x, int y)
 
     mover->x = x;
     mover->y = y;
+}
+
+bool
+null_bump_action (Game * game, Thing * actor, Thing * target)
+{
+    return false;
+}
+
+bool
+attack_bump_action (Game * game, Thing * actor, Thing * target)
+{
+    remove_thing (target);
+
+    char msg[MESSAGE_MAX];
+    sprintf (msg, "%s killed %s", actor->name, target->name);
+    write_game_message (game, msg);
+    return true;
 }

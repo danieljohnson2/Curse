@@ -5,7 +5,7 @@ OBJS := $(SRCS:.c=.o)
 
 all: curse
 .PHONY: all clean directories
--include $(SRCS:.c=.d)
+-include $(addprefix bin/,$(SRCS:.c=.d))
 
 curse: $(addprefix bin/,$(OBJS))
 	$(CC) $^ $(LDLIBS) -o $@
