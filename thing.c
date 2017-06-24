@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 /* Returns the sign of the value givne */
 static int
@@ -125,7 +126,8 @@ try_move_thing_to (Game * game, Thing * mover, int x, int y)
 {
     Terrain t = read_map (&game->map, x, y);
 
-    if (!is_terrain_passable (t))
+    int speed_penalty = get_terrain_speed_penalty (t);
+    if (speed_penalty == INT_MAX)
         return false;
 
     Thing *hit = NULL;
@@ -137,6 +139,7 @@ try_move_thing_to (Game * game, Thing * mover, int x, int y)
 
     mover->x = x;
     mover->y = y;
+    mover->remaining_wait += speed_penalty;
     return true;
 }
 

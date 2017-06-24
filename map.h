@@ -30,7 +30,8 @@ struct _Map
 
 Map make_map (double soft_size, MapShape shape, Perlin perlin);
 Terrain read_map (Map * map, int x, int y);
-bool is_terrain_passable (Terrain terrain);
+
+int get_terrain_speed_penalty (Terrain terrain);
 
 double round_shape (Map * map, int x, int y);
 double band_shape (Map * map, int x, int y);

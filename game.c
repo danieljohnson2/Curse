@@ -106,7 +106,7 @@ place_thing (Game * game, Thing * thing)
         int y = (rand () % (size * 2)) - size;
         Terrain t = read_map (map, x, y);
 
-        if (is_terrain_passable (t))
+        if (get_terrain_speed_penalty (t) < INT_MAX)
         {
             Thing *start = NULL;
             if (!find_thing_at (game, x, y, &start))
@@ -179,7 +179,7 @@ adjust_remaining_wait (Game * game)
 This is the ain loop; this iterates over the things and
 invokes their turn action. User input is handled in the
 player's turn action; if the playe ris dead then this
-funtion immediately exits.
+function immediately exits.
 */
 void
 perform_turns (Game * game)

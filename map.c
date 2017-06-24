@@ -1,8 +1,10 @@
 #include "map.h"
+#include "thing.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 
 static double
 pin (double value, double min, double max)
@@ -89,19 +91,27 @@ read_map (Map * map, int x, int y)
     return pick_terrain (map, alt, dist);
 }
 
-/* Decides whether a given terrain can be moved through. */
-bool
-is_terrain_passable (Terrain terrain)
+/*
+Decides how slow movement through a terrain is; returns INT_MAX for
+impassible terrain.
+*/
+int
+get_terrain_speed_penalty (Terrain terrain)
 {
     switch (terrain)
     {
+    case woods:
+        return SPEED_MAX / 2;
+    case hills:
+        return SPEED_MAX;
+
     case deep_sea:
     case water:
     case mountains:
-        return false;
+        return INT_MAX;
 
     default:
-        return true;
+        return 0;
     }
 }
 
@@ -113,7 +123,7 @@ round_shape (Map * map, int x, int y)
 }
 
 /*
-Defines a map shape that is a diagnal band with sea on the left,
+Defines a map shape that is a diagonal band with sea on the left,
 and mountains on the right.
 */
 double
