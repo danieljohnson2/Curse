@@ -21,16 +21,17 @@ isign (int value)
 Create a thing in a single call.
 */
 Thing
-make_thing (char appearance, char *name, int x, int y, BumpAction bump_action,
+make_thing (char appearance, char *name, int speed, BumpAction bump_action,
             TurnAction turn_action)
 {
     Thing th = { 0 };
     th.appearance = appearance;
     strcpy (th.name, name);
-    th.x = x;
-    th.y = y;
+    th.speed = speed;
+    th.remaining_wait = 0;
     th.bump_action = bump_action;
     th.turn_action = turn_action;
+    th.skipped_turn_action = null_turn_action;
     return th;
 }
 

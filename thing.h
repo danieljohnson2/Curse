@@ -5,7 +5,9 @@
 
 #define THING_COUNT 16
 #define PLAYER_INDEX 0
+
 #define NAME_MAX 64
+#define SPEED_MAX 255
 
 typedef struct _Game Game;
 typedef struct _Thing Thing;
@@ -19,11 +21,14 @@ struct _Thing
     char appearance;
     char name[NAME_MAX + 1];
     int x, y;
+    int speed, remaining_wait;
+
     BumpAction bump_action;
     TurnAction turn_action;
+    TurnAction skipped_turn_action;
 };
 
-Thing make_thing (char appearance, char *name, int x, int y,
+Thing make_thing (char appearance, char *name, int speed,
                   BumpAction bump_action, TurnAction turn_action);
 
 void remove_thing (Thing * thing);

@@ -9,6 +9,7 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 static int
 get_terrain_char (Terrain terrain)
@@ -103,6 +104,9 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
 
     if (finalcursorrow >= 0)
         wmove (map_w, finalcursorrow, finalcursorcolumn);
+
+    wrefresh (message_w);
+    wrefresh (map_w);
 }
 
 static WINDOW *map_w;
@@ -115,7 +119,6 @@ player_turn_action (Game * game, Thing * player)
     do
     {
         paint (map_w, message_w, game);
-        wrefresh (message_w);
 
         int ch = wgetch (map_w);
 
@@ -156,9 +159,14 @@ player_turn_action (Game * game, Thing * player)
         }
     }
     while (!moved);
+}
 
+static void
+player_skiped_turn_action (Game * game, Thing * player)
+{
+    write_game_message (game, "Skipped turn!");
     paint (map_w, message_w, game);
-    wrefresh (message_w);
+    usleep (100000);
 }
 
 int
@@ -168,12 +176,12 @@ main (int argc, char **argv)
 
     if (argc > 1)
         seed = atoi (argv[1]);
-	else
-	{
-		srand(time(NULL));
-		seed = rand();
-	}
-		
+    else
+    {
+        srand (time (NULL));
+        seed = rand ();
+    }
+
     initscr ();
     cbreak ();
     noecho ();
@@ -204,21 +212,12 @@ main (int argc, char **argv)
                    player_turn_action);
 
     Thing *player = &game.things[PLAYER_INDEX];
+    player->skipped_turn_action = player_skiped_turn_action;
 
     game.viewx = player->x - (columns / 2);
     game.viewy = player->y - (rows / 2);
 
-    int thing_index = 0;
-    while (is_thing_alive (&game.things[PLAYER_INDEX]))
-    {
-        Thing *th = &game.things[thing_index];
-        if (is_thing_alive (th))
-            th->turn_action (&game, th);
-
-        ++thing_index;
-        if (thing_index >= THING_COUNT)
-            thing_index = 0;
-    }
+    perform_turns (&game);
 
     write_game_message (&game, "Game over!");
     paint (map_w, message_w, &game);

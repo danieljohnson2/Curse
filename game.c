@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 /*
 Builds the entire game structure.
@@ -13,15 +14,15 @@ make_game (Map map, TurnAction player_turn_action)
     Game game = { 0 };
     game.map = map;
     game.things[PLAYER_INDEX] =
-        make_thing ('@', "Player", 0, 0, attack_bump_action,
+        make_thing ('@', "Player", 64, attack_bump_action,
                     player_turn_action);
 
     // fake monsters! Not as fake as they used to be!
     game.things[1] =
-        make_thing ('g', "Goblin", 0, 0, attack_bump_action,
+        make_thing ('g', "Goblin", 32, attack_bump_action,
                     chase_player_turn_action);
     game.things[2] =
-        make_thing ('h', "Halfling", 0, 8, attack_bump_action,
+        make_thing ('h', "Halfling", 128, attack_bump_action,
                     chase_player_turn_action);
 
     for (int i = 0; i < THING_COUNT; ++i)
@@ -122,4 +123,86 @@ bool
 is_thing_player (Game * game, Thing * thing)
 {
     return thing == &game->things[PLAYER_INDEX];
+}
+
+/*
+This function checks to see if any actor is ready
+for its turn. If so, it returns and some actor
+that is alive has a remaining_wait of or less.
+
+If not, this function deducts the speed for every live
+actor from its wait and tries again. This will eventually
+produce a suitable actor, unless nothing is alive.
+
+If nothing is alive, this function exits and does nothing
+else.
+
+When an actor takes its turn, we add WAIT_MAX to the wait
+of that actor, so this function may be called again.
+*/
+static void
+adjust_remaining_wait (Game * game)
+{
+	for(;;)
+	{
+		bool any_alive = false;
+		
+		for (int i = 0; i < THING_COUNT; ++i)
+		{
+		    Thing *actor = &game->things[i];
+		    if (is_thing_alive (actor))
+		    {
+		    	any_alive = true;
+		    	if (actor->remaining_wait <= 0)
+			    	return;
+			}
+		}
+    
+    	if (!any_alive)
+    		break;
+    		
+        for (int i = 0; i < THING_COUNT; ++i)
+        {
+            Thing *actor = &game->things[i];
+
+            if (is_thing_alive (actor))
+                actor->remaining_wait -= actor->speed;
+        }
+	}
+}
+
+/*
+This is the ain loop; this iterates over the things and
+invokes their turn action. User input is handled in the
+player's turn action; if the playe ris dead then this
+funtion immediately exits.
+*/
+void
+perform_turns (Game * game)
+{
+    Thing *player = &game->things[PLAYER_INDEX];
+
+    for (;;)
+    {
+        adjust_remaining_wait (game);
+
+        for (int thing_index = 0; thing_index < THING_COUNT; ++thing_index)
+        {
+            if (!is_thing_alive (player))
+                return;
+
+            Thing *actor = &game->things[thing_index];
+
+            if (is_thing_alive (actor))
+            {
+                if (actor->remaining_wait <= 0)
+               	{
+                    actor->turn_action (game, actor);
+	        	    actor->remaining_wait += SPEED_MAX;
+	        	}
+                else
+                    actor->skipped_turn_action (game, actor);
+			}
+        }
+    }
 }

@@ -24,4 +24,6 @@ void place_thing (Game * game, Thing * thing);
 
 bool is_thing_player (Game * game, Thing * thing);
 
+void perform_turns (Game * game);
+
 #endif
