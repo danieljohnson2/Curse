@@ -164,9 +164,10 @@ player_turn_action (Game * game, Thing * player)
 static void
 player_skiped_turn_action (Game * game, Thing * player)
 {
-    write_game_message (game, "Skipped turn!");
+	// Show the user what happened due to other creatures turns
+	// and pause very briefly so he can see it.
     paint (map_w, message_w, game);
-    usleep (100000);
+    usleep (200000); /* .2 seconds */
 }
 
 int

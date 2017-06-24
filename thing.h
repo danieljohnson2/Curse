@@ -7,7 +7,12 @@
 #define PLAYER_INDEX 0
 
 #define NAME_MAX 64
+
 #define SPEED_MAX 255
+#define SPEED_MIN 1
+
+/* 16 means the MAX is 16x the default, which is 16x the minumum (1) */
+#define SPEED_DEFAULT 16
 
 typedef struct _Game Game;
 typedef struct _Thing Thing;

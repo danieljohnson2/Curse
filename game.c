@@ -14,15 +14,15 @@ make_game (Map map, TurnAction player_turn_action)
     Game game = { 0 };
     game.map = map;
     game.things[PLAYER_INDEX] =
-        make_thing ('@', "Player", 64, attack_bump_action,
+        make_thing ('@', "Player", SPEED_DEFAULT, attack_bump_action,
                     player_turn_action);
 
     // fake monsters! Not as fake as they used to be!
     game.things[1] =
-        make_thing ('g', "Goblin", 32, attack_bump_action,
+        make_thing ('g', "Goblin", SPEED_DEFAULT / 2, attack_bump_action,
                     chase_player_turn_action);
     game.things[2] =
-        make_thing ('h', "Halfling", 128, attack_bump_action,
+        make_thing ('h', "Halfling", SPEED_DEFAULT * 2, attack_bump_action,
                     chase_player_turn_action);
 
     for (int i = 0; i < THING_COUNT; ++i)
@@ -143,24 +143,28 @@ of that actor, so this function may be called again.
 static void
 adjust_remaining_wait (Game * game)
 {
-	for(;;)
-	{
-		bool any_alive = false;
-		
-		for (int i = 0; i < THING_COUNT; ++i)
-		{
-		    Thing *actor = &game->things[i];
-		    if (is_thing_alive (actor))
-		    {
-		    	any_alive = true;
-		    	if (actor->remaining_wait <= 0)
-			    	return;
-			}
-		}
-    
-    	if (!any_alive)
-    		break;
-    		
+    for (;;)
+    {
+        bool any_active = false;
+
+        for (int i = 0; i < THING_COUNT; ++i)
+        {
+            Thing *actor = &game->things[i];
+            if (is_thing_alive (actor))
+            {
+                if (actor->speed > 0)
+                    any_active = true;
+
+                if (actor->remaining_wait <= 0)
+                    return;
+            }
+        }
+
+        // If nothing lives or has a positive speed,
+        // there is nthing we can do that will help.
+        if (!any_active)
+            break;
+
         for (int i = 0; i < THING_COUNT; ++i)
         {
             Thing *actor = &game->things[i];
@@ -168,7 +172,7 @@ adjust_remaining_wait (Game * game)
             if (is_thing_alive (actor))
                 actor->remaining_wait -= actor->speed;
         }
-	}
+    }
 }
 
 /*
@@ -196,13 +200,13 @@ perform_turns (Game * game)
             if (is_thing_alive (actor))
             {
                 if (actor->remaining_wait <= 0)
-               	{
+                {
                     actor->turn_action (game, actor);
-	        	    actor->remaining_wait += SPEED_MAX;
-	        	}
+                    actor->remaining_wait += SPEED_MAX;
+                }
                 else
                     actor->skipped_turn_action (game, actor);
-			}
+            }
         }
     }
 }
