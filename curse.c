@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 static int
 get_terrain_char (Terrain terrain)
@@ -163,11 +164,16 @@ player_turn_action (Game * game, Thing * player)
 int
 main (int argc, char **argv)
 {
-    int seed = 4;
+    int seed;
 
     if (argc > 1)
         seed = atoi (argv[1]);
-
+	else
+	{
+		srand(time(NULL));
+		seed = rand();
+	}
+		
     initscr ();
     cbreak ();
     noecho ();
