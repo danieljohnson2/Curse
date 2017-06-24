@@ -20,7 +20,10 @@ void clear_game_message (Game * game);
 void write_game_message (Game * game, char *message);
 
 bool find_thing_at (Game * game, int x, int y, Thing ** found);
-void place_thing (Game * game, Thing * thing);
+
+int new_thing (Game * game, Thing thing);
+int place_thing (Game * game, int originx, int originy, Thing thing);
+void find_empty_place (Game * game, int originx, int originy, int *x, int *y);
 
 bool is_thing_player (Game * game, Thing * thing);
 

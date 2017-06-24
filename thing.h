@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define THING_COUNT 16
+#define THING_COUNT 128
 #define PLAYER_INDEX 0
 
 #define NAME_MAX 64
@@ -45,9 +45,7 @@ void move_player_by (Game * game, int dx, int dy);
 bool try_move_thing_to (Game * game, Thing * mover, int x, int y);
 
 void null_turn_action (Game * game, Thing * actor);
-void chase_player_turn_action (Game * game, Thing * actor);
 
 bool null_bump_action (Game * game, Thing * actor, Thing * target);
-bool attack_bump_action (Game * game, Thing * actor, Thing * target);
 
 #endif

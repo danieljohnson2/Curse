@@ -1,22 +1,11 @@
 #include "thing.h"
 #include "game.h"
+#include "util.h"
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-
-/* Returns the sign of the value givne */
-static int
-isign (int value)
-{
-    if (value > 0)
-        return 1;
-    else if (value < 0)
-        return -1;
-    else
-        return 0;
-}
 
 /*
 Create a thing in a single call.
@@ -149,31 +138,9 @@ null_turn_action (Game * game, Thing * actor)
 {
 }
 
-/* A turn action function for monsters; they chse the player. */
-void
-chase_player_turn_action (Game * game, Thing * actor)
-{
-    Thing *player = &game->things[PLAYER_INDEX];
-
-    if (is_thing_alive (player))
-        move_thing_towards (game, actor, player);
-}
-
 /* A bump-action that does nothing and allows movement */
 bool
 null_bump_action (Game * game, Thing * actor, Thing * target)
 {
     return true;
-}
-
-/* A bump-action that triggers combat */
-bool
-attack_bump_action (Game * game, Thing * actor, Thing * target)
-{
-    remove_thing (target);
-
-    char msg[MESSAGE_MAX];
-    sprintf (msg, "%s killed %s!", actor->name, target->name);
-    write_game_message (game, msg);
-    return false;
 }

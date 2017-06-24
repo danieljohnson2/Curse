@@ -1,6 +1,7 @@
 #include "map.h"
 #include "thing.h"
 #include "game.h"
+#include "monster.h"
 
 #include <ncurses.h>
 #include <stdio.h>
@@ -159,15 +160,17 @@ player_turn_action (Game * game, Thing * player)
         }
     }
     while (!moved);
+
+    try_spawn_monster (game);
 }
 
 static void
-player_skiped_turn_action (Game * game, Thing * player)
+player_skipped_turn_action (Game * game, Thing * player)
 {
     // Show the user what happened due to other creatures turns
     // and pause very briefly so he can see it.
     paint (map_w, message_w, game);
-    usleep (200000);            /* .2 seconds */
+    usleep (50000);             /* .05 seconds */
 }
 
 int
@@ -213,7 +216,7 @@ main (int argc, char **argv)
                    player_turn_action);
 
     Thing *player = &game.things[PLAYER_INDEX];
-    player->skipped_turn_action = player_skiped_turn_action;
+    player->skipped_turn_action = player_skipped_turn_action;
 
     game.viewx = player->x - (columns / 2);
     game.viewy = player->y - (rows / 2);

@@ -1,4 +1,6 @@
 #include "game.h"
+#include "monster.h"
+#include "util.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -13,25 +15,12 @@ make_game (Map map, TurnAction player_turn_action)
 {
     Game game = { 0 };
     game.map = map;
-    game.things[PLAYER_INDEX] =
+
+    Thing player =
         make_thing ('@', "Player", SPEED_DEFAULT, attack_bump_action,
                     player_turn_action);
-
-    // fake monsters! Not as fake as they used to be!
-    game.things[1] =
-        make_thing ('g', "Goblin", SPEED_DEFAULT / 2, attack_bump_action,
-                    chase_player_turn_action);
-    game.things[2] =
-        make_thing ('h', "Halfling", SPEED_DEFAULT * 2, attack_bump_action,
-                    chase_player_turn_action);
-
-    for (int i = 0; i < THING_COUNT; ++i)
-    {
-        Thing *thing = &game.things[i];
-        if (is_thing_alive (thing))
-            place_thing (&game, thing);
-    }
-
+    find_empty_place (&game, 0, 0, &player.x, &player.y);
+    game.things[PLAYER_INDEX] = player;
     return game;
 }
 
@@ -89,36 +78,60 @@ find_thing_at (Game * game, int x, int y, Thing ** found)
     return false;
 }
 
-/*
-Sets the position of the thing to an unused, passable space
-inside the game world. This does not count as movement; bump
-actions will not be triggered.
-*/
+int
+new_thing (Game * game, Thing thing)
+{
+    for (int i = PLAYER_INDEX + 1; i < THING_COUNT; ++i)
+    {
+        Thing *candidate = &game->things[i];
+        if (!is_thing_alive (candidate))
+        {
+            *candidate = thing;
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int
+place_thing (Game * game, int originx, int originy, Thing thing)
+{
+    find_empty_place (game, originx, originy, &thing.x, &thing.y);
+    return new_thing (game, thing);
+}
+
 void
-place_thing (Game * game, Thing * thing)
+find_empty_place (Game * game, int originx, int originy, int *x, int *y)
 {
     Map *map = &game->map;
     int size = map->soft_size;
 
     for (;;)
     {
-        int x = (rand () % (size * 2)) - size;
-        int y = (rand () % (size * 2)) - size;
-        Terrain t = read_map (map, x, y);
+        int cx = (rand () % size) - size / 2;
+        int cy = (rand () % size) - size / 2;
+        cx += isign (cx) * size / 2;
+        cy += isign (cy) * size / 2;
+        cx += originx;
+        cy += originy;
+
+        Terrain t = read_map (map, cx, cy);
 
         if (get_terrain_speed_penalty (t) < INT_MAX)
         {
             Thing *start = NULL;
-            if (!find_thing_at (game, x, y, &start))
+            if (!find_thing_at (game, cx, cy, &start))
             {
-                thing->x = x;
-                thing->y = y;
-                return;
+                *x = cx;
+                *y = cy;
+                break;
             }
         }
     }
 }
 
+/* Decides if the thing given is the player. */
 bool
 is_thing_player (Game * game, Thing * thing)
 {
@@ -186,14 +199,14 @@ perform_turns (Game * game)
 {
     Thing *player = &game->things[PLAYER_INDEX];
 
-    for (;;)
+    while (is_thing_alive (player))
     {
         adjust_remaining_wait (game);
 
         for (int thing_index = 0; thing_index < THING_COUNT; ++thing_index)
         {
             if (!is_thing_alive (player))
-                return;
+                break;
 
             Thing *actor = &game->things[thing_index];
 
