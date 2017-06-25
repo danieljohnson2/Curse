@@ -41,23 +41,32 @@ get_terrain_char (Terrain terrain)
     }
 }
 
-static void
-update_view (Game * game, Thing * thing, int margin, int width, int height)
+static Loc
+update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
+             int height)
 {
-    int left = game->viewx + margin;
-    int right = game->viewx + width - margin;
-    int top = game->viewy + margin;
-    int bottom = game->viewy + height - margin;
+    Loc offset = make_loc (width / 2, height / 2);
+    Loc origin = subtract_locs (game->view_center, offset);
 
-    if (thing->x < left)
-        game->viewx = thing->x - margin;
-    else if (thing->x > right)
-        game->viewx = thing->x - width + margin;
+    int left = origin.x + marginx;
+    int right = origin.x + width - marginx;
+    int top = origin.y + marginy;
+    int bottom = origin.y + height - marginy;
 
-    if (thing->y < top)
-        game->viewy = thing->y - margin;
-    else if (thing->y > bottom)
-        game->viewy = thing->y - height + margin;
+    Loc l = thing->loc;
+
+    if (l.x < left)
+        origin.x = l.x - marginx;
+    else if (l.x > right)
+        origin.x = l.x - width + marginx;
+
+    if (l.y < top)
+        origin.y = l.y - marginy;
+    else if (l.y > bottom)
+        origin.y = l.y - height + marginy;
+
+    game->view_center = add_locs (origin, offset);
+    return origin;
 }
 
 static void
@@ -66,7 +75,9 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
     int maxrow, maxcol;
     getmaxyx (map_w, maxrow, maxcol);
 
-    update_view (game, &game->things[PLAYER_INDEX], 8, maxcol, maxrow);
+    Loc origin =
+        update_view (game, &game->things[PLAYER_INDEX], 16, 4, maxcol,
+                     maxrow);
 
     int finalcursorrow = 0, finalcursorcolumn = 0;
 
@@ -74,10 +85,8 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
     {
         for (int col = 0; col < maxcol; ++col)
         {
-            int px = col + game->viewx;
-            int py = row + game->viewy;
-
-            Terrain t = read_map (&game->map, px, py);
+            Loc map_loc = offset_loc (origin, col, row);
+            Terrain t = read_map (&game->map, map_loc);
             int ch = get_terrain_char (t);
             mvwaddch (map_w, row, col, ch);
         }
@@ -89,8 +98,8 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
 
         if (is_thing_alive (thing))
         {
-            int col = thing->x - game->viewx;
-            int row = thing->y - game->viewy;
+            int col = thing->loc.x - origin.x;
+            int row = thing->loc.y - origin.y;
 
             if (col >= 0 && row >= 0 && col < maxcol && row < maxrow)
             {
@@ -210,12 +219,6 @@ init_game (int seed)
     Thing player =
         make_player (&map, player_turn_action, player_skipped_turn_action);
     game = make_game (map, player);
-
-    int rows, columns;
-    getmaxyx (map_w, rows, columns);
-
-    game.viewx = player.x - (columns / 2);
-    game.viewy = player.y - (rows / 2);
 }
 
 static void

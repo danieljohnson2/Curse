@@ -85,10 +85,10 @@ pick_terrain (Map * map, double altitude, double dist)
 
 /* Reads the terrain in a cell of the map. */
 Terrain
-read_map (Map * map, int x, int y)
+read_map (Map * map, Loc where)
 {
-    double alt = perlin2d (&map->perlin, x, y);
-    double dist = (map->shape) (map, x, y);
+    double alt = perlin2d (&map->perlin, where.x, where.y);
+    double dist = (map->shape) (map, where);
     return pick_terrain (map, alt, dist);
 }
 
@@ -119,36 +119,34 @@ get_terrain_speed_penalty (Terrain terrain)
 /*
 Finds a place that has passable terrain in the map.
 */
-void
-find_passable_place (Map * map, int originx, int originy, int *x, int *y)
+Loc
+find_passable_place (Map * map, Loc origin)
 {
     int size = map->soft_size;
 
     for (;;)
     {
-        int cx = (rand () % size) - size / 2;
-        int cy = (rand () % size) - size / 2;
-        cx += isign (cx) * size / 2;
-        cy += isign (cy) * size / 2;
-        cx += originx;
-        cy += originy;
+        Loc c;
+        c.x = (rand () % size) - size / 2;
+        c.y = (rand () % size) - size / 2;
+        c.x += isign (c.x) * size / 2;
+        c.y += isign (c.y) * size / 2;
+        c.x += origin.x;
+        c.y += origin.y;
 
-        Terrain t = read_map (map, cx, cy);
+        Terrain t = read_map (map, c);
 
         if (get_terrain_speed_penalty (t) < INT_MAX)
-        {
-            *x = cx;
-            *y = cy;
-            break;
-        }
+            return c;
     }
 }
 
 /* Defines a map shape that is circular. */
 double
-round_shape (Map * map, int x, int y)
+round_shape (Map * map, Loc where)
 {
-    return map->soft_size * 1.5 - sqrt (x * x + y * y);
+    return map->soft_size * 1.5 - sqrt (where.x * where.x +
+                                        where.y * where.y);
 }
 
 /*
@@ -156,7 +154,7 @@ Defines a map shape that is a diagonal band with sea on the left,
 and mountains on the right.
 */
 double
-band_shape (Map * map, int x, int y)
+band_shape (Map * map, Loc where)
 {
-    return (x + y) / 2.0;
+    return (where.x + where.y) / 2.0;
 }

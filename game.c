@@ -16,6 +16,7 @@ make_game (Map map, Thing player)
 {
     Game game = { 0 };
     game.map = map;
+    game.view_center = player.loc;
 
     game.things[PLAYER_INDEX] = player;
     return game;
@@ -57,14 +58,14 @@ and return false.
 This function can only find things that are alive.
 */
 bool
-find_thing_at (Game * game, int x, int y, Thing ** found)
+find_thing_at (Game * game, Loc where, Thing ** found)
 {
     Thing *end = &game->things[THING_COUNT];
     Thing *cur = *found == NULL ? game->things : (*found) + 1;
 
     for (; cur != end; ++cur)
     {
-        if (is_thing_alive (cur) && cur->x == x && cur->y == y)
+        if (is_thing_alive (cur) && equal_locs (cur->loc, where))
         {
             *found = cur;
             return true;
@@ -92,27 +93,22 @@ new_thing (Game * game, Thing thing)
 }
 
 int
-place_thing (Game * game, int originx, int originy, Thing thing)
+place_thing (Game * game, Loc origin, Thing thing)
 {
-    find_empty_place (game, originx, originy, &thing.x, &thing.y);
+    thing.loc = find_empty_place (game, origin);
     return new_thing (game, thing);
 }
 
-void
-find_empty_place (Game * game, int originx, int originy, int *x, int *y)
+Loc
+find_empty_place (Game * game, Loc origin)
 {
     for (;;)
     {
-        int cx, cy;
-        find_passable_place (&game->map, originx, originy, &cx, &cy);
+        Loc c = find_passable_place (&game->map, origin);
 
         Thing *start = NULL;
-        if (!find_thing_at (game, cx, cy, &start))
-        {
-            *x = cx;
-            *y = cy;
-            break;
-        }
+        if (!find_thing_at (game, c, &start))
+            return c;
     }
 }
 

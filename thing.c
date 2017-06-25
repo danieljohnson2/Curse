@@ -53,8 +53,8 @@ it.
 void
 move_thing_towards (Game * game, Thing * mover, Thing * target)
 {
-    int dx = target->x - mover->x;
-    int dy = target->y - mover->y;
+    int dx = target->loc.x - mover->loc.x;
+    int dy = target->loc.y - mover->loc.y;
 
     if (abs (dx) > abs (dy))
     {
@@ -81,9 +81,8 @@ If this returns false, we can try to move in another direction.
 bool
 try_move_thing_by (Game * game, Thing * mover, int dx, int dy)
 {
-    int nx = mover->x + dx;
-    int ny = mover->y + dy;
-    return try_move_thing_to (game, mover, nx, ny);
+    Loc dest = offset_loc (mover->loc, dx, dy);
+    return try_move_thing_to (game, mover, dest);
 }
 
 /*
@@ -111,23 +110,22 @@ True means 'something happend' here. We can't just try a
 different location in such a case, lest two things happen.
 */
 bool
-try_move_thing_to (Game * game, Thing * mover, int x, int y)
+try_move_thing_to (Game * game, Thing * mover, Loc dest)
 {
-    Terrain t = read_map (&game->map, x, y);
+    Terrain t = read_map (&game->map, dest);
 
     int speed_penalty = get_terrain_speed_penalty (t);
     if (speed_penalty == INT_MAX)
         return false;
 
     Thing *hit = NULL;
-    while (is_thing_alive (mover) && find_thing_at (game, x, y, &hit))
+    while (is_thing_alive (mover) && find_thing_at (game, dest, &hit))
     {
         if (hit != mover && !hit->bump_action (game, mover, hit))
             return true;
     }
 
-    mover->x = x;
-    mover->y = y;
+    mover->loc = dest;
     mover->remaining_wait += speed_penalty;
     return true;
 }

@@ -70,8 +70,7 @@ try_spawn_monster (Game * game)
             if (count < (rand () % MONSTER_MAX) &&
                 (rand () % TURNS_PER_SPAWN) == 0)
             {
-                return place_thing (game, player->x, player->y,
-                                    make_monster ());
+                return place_thing (game, player->loc, make_monster ());
             }
         }
     }
