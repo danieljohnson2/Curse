@@ -99,11 +99,26 @@ chase_player_turn_action (Game * game, Thing * actor)
         move_thing_towards (game, actor, player);
 }
 
+static int
+roll_attack_damage (Thing * actor)
+{
+    // actual damage is the average of 3 rolls from 0 to target->dmg.
+
+    int dmg = 0;
+
+    for (int i = 0; i < 3; ++i)
+        dmg += (rand () % actor->dmg) + 1;
+
+    return dmg / 3;
+}
+
 /* A bump-action that triggers combat */
 bool
 attack_bump_action (Game * game, Thing * actor, Thing * target)
 {
-    target->hp -= actor->dmg;
+    int dmg = roll_attack_damage (actor);
+
+    target->hp -= dmg;
 
     if (target->hp <= 0)
     {
@@ -126,7 +141,7 @@ attack_bump_action (Game * game, Thing * actor, Thing * target)
     else
     {
         char msg[MESSAGE_MAX];
-        sprintf (msg, "%s hits %s!", actor->name, target->name);
+        sprintf (msg, "%s hits %s for %d!", actor->name, target->name, dmg);
         write_game_message (game, msg);
         return false;
     }
