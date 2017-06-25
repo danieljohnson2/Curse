@@ -3,6 +3,7 @@
 #include "map.h"
 #include "display.h"
 #include "game.h"
+#include "loc.h"
 
 #include <stdlib.h>
 

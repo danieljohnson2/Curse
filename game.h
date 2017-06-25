@@ -1,19 +1,7 @@
 #ifndef GAME_H_INCLUDED
 #define GAME_H_INCLUDED
 
-#include "thing.h"
-#include "map.h"
-
-#define MESSAGE_SIZE 512
-
-typedef struct _Game
-{
-    Map map;
-    Loc view_center;
-
-    char message[MESSAGE_SIZE];
-    Thing things[THING_COUNT];
-} Game;
+#include "defs.h"
 
 Game make_game (Map map, Thing player);
 void clear_game_message (Game * game);

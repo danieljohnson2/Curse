@@ -1,9 +1,9 @@
 #include "thing.h"
+#include "map.h"
 #include "game.h"
 #include "util.h"
+#include "loc.h"
 
-#include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 

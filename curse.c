@@ -1,18 +1,11 @@
+#include "perlin.h"
 #include "map.h"
-#include "thing.h"
 #include "game.h"
 #include "monster.h"
-#include "player.h"
 #include "display.h"
-#include "player.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
-#include <string.h>
 #include <time.h>
-#include <unistd.h>
 
 static Game game;
 

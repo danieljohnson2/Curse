@@ -1,14 +1,7 @@
 #ifndef PLAYER_H_INCLUDED
 #define PLAYER_H_INCLUDED
 
-#include "thing.h"
-
-#include <stdbool.h>
-
-typedef struct _PlayerAction
-{
-    int dx, dy;
-} PlayerAction;
+#include "defs.h"
 
 Thing make_player (Map * map, TurnAction turn_action);
 

@@ -1,12 +1,11 @@
 #include "game.h"
+#include "map.h"
 #include "monster.h"
 #include "treasure.h"
-#include "player.h"
 #include "util.h"
+#include "loc.h"
 
-#include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 #include <stdio.h>
 
 /*

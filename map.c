@@ -1,8 +1,7 @@
 #include "map.h"
-#include "thing.h"
+#include "perlin.h"
 #include "util.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <limits.h>
@@ -75,10 +74,7 @@ pick_terrain (Map * map, double altitude, double dist)
     int index = pin (unpinned, 0, TERRAIN_COUNT - 1);
 
     if (index < 0 || index >= TERRAIN_COUNT)
-    {
-        printf ("Bad terrain index: %d", index);
         abort ();
-    }
 
     return a[index];
 }
