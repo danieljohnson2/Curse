@@ -1,5 +1,6 @@
 #include "game.h"
 #include "monster.h"
+#include "treasure.h"
 #include "player.h"
 #include "util.h"
 
@@ -19,6 +20,10 @@ make_game (Map map, Thing player)
     game.view_center = player.loc;
 
     game.things[PLAYER_INDEX] = player;
+
+    for (int i = 0; i < TREASURE_COUNT; ++i)
+        place_thing (&game, make_loc (0, 0), make_treasure (100));
+
     return game;
 }
 

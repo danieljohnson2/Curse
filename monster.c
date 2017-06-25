@@ -1,4 +1,5 @@
 #include "monster.h"
+#include "treasure.h"
 #include "game.h"
 
 #include <stdio.h>
@@ -92,6 +93,13 @@ chase_player_turn_action (Game * game, Thing * actor)
 bool
 attack_bump_action (Game * game, Thing * actor, Thing * target)
 {
+    if (target->gold > 0)
+    {
+        Thing drop = make_treasure (target->gold);
+        drop.loc = target->loc;
+        new_thing (game, drop);
+    }
+
     remove_thing (target);
 
     char msg[MESSAGE_MAX];

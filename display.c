@@ -10,6 +10,7 @@
 
 static WINDOW *map_w;
 static WINDOW *message_w;
+static WINDOW *status_w;
 
 /* Initialize the display and creates the windows. */
 void
@@ -28,17 +29,18 @@ init_windows ()
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
 
+  	// first, draw the decorative border.
     refresh ();
-
-    WINDOW *border_w = newwin (rows - 1, columns, 1, 0);
+    WINDOW *border_w = newwin (rows - 2, columns, 1, 0);
     box (border_w, 0, 0);
     wrefresh (border_w);
     delwin (border_w);
-
-    map_w = newwin (rows - 3, columns - 2, 2, 1);
-    keypad (map_w, TRUE);
-
+    
+    map_w = newwin (rows - 4, columns - 2, 2, 1);
     message_w = newwin (1, columns, 0, 0);
+    status_w = newwin (1, columns, rows - 1, 0);
+    
+    keypad (map_w, TRUE); 
 }
 
 /* Shuts down ncurses, and may restore the terminal to its initial state */
@@ -112,6 +114,8 @@ update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
 void
 paint (Game * game)
 {
+	Thing *player = &game->things[PLAYER_INDEX];
+	
     int maxrow, maxcol;
     getmaxyx (map_w, maxrow, maxcol);
 
@@ -157,10 +161,14 @@ paint (Game * game)
     werase (message_w);
     mvwaddstr (message_w, 0, 0, game->message);
 
+	werase (status_w);
+	mvwprintw(status_w, 0, 0, "Gold: %d", player->gold);
+
     if (finalcursorrow >= 0)
         wmove (map_w, finalcursorrow, finalcursorcolumn);
 
     wrefresh (message_w);
+    wrefresh (status_w);
     wrefresh (map_w);
 }
 

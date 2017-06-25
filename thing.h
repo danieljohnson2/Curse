@@ -5,7 +5,7 @@
 
 #include <stdbool.h>
 
-#define THING_COUNT 128
+#define THING_COUNT 32
 #define PLAYER_INDEX 0
 
 #define NAME_MAX 64
@@ -29,6 +29,7 @@ struct _Thing
     char name[NAME_MAX + 1];
     Loc loc;
     int speed, remaining_wait;
+    int gold;
 
     BumpAction bump_action;
     TurnAction turn_action;
