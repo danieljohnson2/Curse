@@ -38,20 +38,10 @@ player_turn_action (Game * game, Thing * player)
 }
 
 static void
-player_skipped_turn_action (Game * game, Thing * player)
-{
-    // Show the user what happened due to other creatures turns
-    // and pause very briefly so he can see it.
-    paint (game, false);
-    usleep (50000);             /* .05 seconds */
-}
-
-static void
 init_game (int seed)
 {
     Map map = make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, seed));
-    Thing player =
-        make_player (&map, player_turn_action, player_skipped_turn_action);
+    Thing player = make_player (&map, player_turn_action);
     game = make_game (map, player);
 }
 
@@ -74,7 +64,7 @@ main (int argc, char **argv)
     perform_turns (&game);
 
     paint (&game, true);
-    game_over();
+    game_over ();
     end_windows ();
     return 0;
 }

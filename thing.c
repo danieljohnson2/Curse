@@ -21,7 +21,6 @@ make_thing (Appearance appearance, char *name, int speed,
     th.remaining_wait = 0;
     th.bump_action = bump_action;
     th.turn_action = turn_action;
-    th.skipped_turn_action = null_turn_action;
     return th;
 }
 

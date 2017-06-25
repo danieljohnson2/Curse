@@ -14,9 +14,7 @@ typedef enum _PlayerAction
     Quit
 } PlayerAction;
 
-Thing make_player (Map * map, TurnAction turn_action,
-                   TurnAction skipped_turn_action);
-
+Thing make_player (Map * map, TurnAction turn_action);
 
 void perform_player_action (Game * game, PlayerAction action);
 

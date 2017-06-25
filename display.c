@@ -56,14 +56,14 @@ end_windows (void)
 void
 game_over (void)
 {
-	int rows, columns;
+    int rows, columns;
     getmaxyx (stdscr, rows, columns);
-		
-	WINDOW * w = newwin(6, 40, rows - 12, (columns - 40)/2);
-	box(w, 0, 0);
-	mvwaddstr(w, 2, 20 - 4, "Game Over");
-	mvwaddstr(w, 3, 20 - 8, "(press q to exit)");
-	
+
+    WINDOW *w = newwin (6, 40, rows - 12, (columns - 40) / 2);
+    box (w, 0, 0);
+    mvwaddstr (w, 2, 20 - 4, "Game Over");
+    mvwaddstr (w, 3, 20 - 8, "(press q to exit)");
+
     while (wgetch (w) != 'q')
         continue;
 }
@@ -194,7 +194,11 @@ update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
     return origin;
 }
 
-/* Updates the screen with the state of the game. */
+/*
+Updates the screen with the state of the game.
+This can also display the game's pending messages,
+if you pass true in 'messages'.
+*/
 void
 paint (Game * game, bool messages)
 {

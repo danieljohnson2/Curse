@@ -197,59 +197,9 @@ is_thing_player (Game * game, Thing * thing)
 }
 
 /*
-This function checks to see if any actor is ready
-for its turn. If so, it returns and some actor
-that is alive has a remaining_wait of or less.
-
-If not, this function deducts the speed for every live
-actor from its wait and tries again. This will eventually
-produce a suitable actor, unless nothing is alive.
-
-If nothing is alive, this function exits and does nothing
-else.
-
-When an actor takes its turn, we add WAIT_MAX to the wait
-of that actor, so this function may be called again.
-*/
-static void
-adjust_remaining_wait (Game * game)
-{
-    for (;;)
-    {
-        bool any_active = false;
-
-        for (int i = 0; i < THING_COUNT; ++i)
-        {
-            Thing *actor = &game->things[i];
-            if (is_thing_alive (actor))
-            {
-                if (actor->speed > 0)
-                    any_active = true;
-
-                if (actor->remaining_wait <= 0)
-                    return;
-            }
-        }
-
-        // If nothing lives or has a positive speed,
-        // there is nthing we can do that will help.
-        if (!any_active)
-            break;
-
-        for (int i = 0; i < THING_COUNT; ++i)
-        {
-            Thing *actor = &game->things[i];
-
-            if (is_thing_alive (actor))
-                actor->remaining_wait -= actor->speed;
-        }
-    }
-}
-
-/*
 This is the ain loop; this iterates over the things and
 invokes their turn action. User input is handled in the
-player's turn action; if the playe ris dead then this
+player's turn action; if the player is dead then this
 function immediately exits.
 */
 void
@@ -257,27 +207,24 @@ perform_turns (Game * game)
 {
     Thing *player = &game->things[PLAYER_INDEX];
 
+    int thing_index = 0;
     while (is_thing_alive (player))
     {
-        adjust_remaining_wait (game);
+        Thing *actor = &game->things[thing_index];
 
-        for (int thing_index = 0; thing_index < THING_COUNT; ++thing_index)
+        if (is_thing_alive (actor))
         {
-            if (!is_thing_alive (player))
-                break;
-
-            Thing *actor = &game->things[thing_index];
-
-            if (is_thing_alive (actor))
+            if (actor->remaining_wait <= 0)
             {
-                if (actor->remaining_wait <= 0)
-                {
-                    actor->turn_action (game, actor);
-                    actor->remaining_wait += SPEED_MAX;
-                }
-                else
-                    actor->skipped_turn_action (game, actor);
+                actor->turn_action (game, actor);
+                actor->remaining_wait += SPEED_MAX;
             }
+
+            actor->remaining_wait -= actor->speed;
         }
+
+        ++thing_index;
+        if (thing_index >= THING_COUNT)
+            thing_index = 0;
     }
 }

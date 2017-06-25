@@ -49,7 +49,6 @@ struct _Thing
 
     BumpAction bump_action;
     TurnAction turn_action;
-    TurnAction skipped_turn_action;
 };
 
 Thing make_thing (Appearance appearance, char *name, int speed,
