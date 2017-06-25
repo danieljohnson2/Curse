@@ -3,7 +3,21 @@
 
 #include "thing.h"
 
+typedef enum _PlayerAction
+{
+    None,
+    Pass,
+    Left,
+    Up,
+    Right,
+    Down,
+    Quit
+} PlayerAction;
+
 Thing make_player (Map * map, TurnAction turn_action,
                    TurnAction skipped_turn_action);
+
+
+void perform_player_action (Game * game, PlayerAction action);
 
 #endif
