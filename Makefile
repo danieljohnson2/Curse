@@ -1,4 +1,5 @@
 CFLAGS := -g -Wall -fmax-errors=3
+LDFLAGS :=
 LDLIBS := -lncurses -lm
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
@@ -8,7 +9,7 @@ all: curse
 -include $(addprefix bin/,$(SRCS:.c=.d))
 
 curse: $(addprefix bin/,$(OBJS))
-	$(CC) $^ $(LDLIBS) -o $@
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 bin/%.o: %.c | directories
 	$(CC) $(CFLAGS) -c $< -o $@

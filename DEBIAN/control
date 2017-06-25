@@ -1,0 +1,9 @@
+Package: curse
+Maintainer: Dan Johnson <danieljohnson2@verizon.net>
+Architecture: amd64
+Section: games
+Priority: optional
+Depends: libc6, ncurses-runtime
+Version: 0.1
+Description: Rogue-like game set in the great outdoors
+ A simple, text-based game on a randomly generated map.
