@@ -32,7 +32,7 @@ make_game (Map map, Thing player)
 void
 clear_game_message (Game * game)
 {
-    memset (game->message, '\0', MESSAGE_MAX + 1);
+    memset (game->message, '\0', MESSAGE_SIZE);
 }
 
 /* Appends a message to the current message. */
@@ -40,12 +40,11 @@ void
 write_game_message (Game * game, char *message)
 {
     if (game->message[0] == '\0')
-        strncpy (game->message, message, MESSAGE_MAX);
+        strtcpy (game->message, message, MESSAGE_SIZE);
     else
     {
-        strncat (game->message, " ", MESSAGE_MAX);
-        strncat (game->message, message, MESSAGE_MAX);
-        game->message[MESSAGE_MAX] = '\0';      // ensure null termination
+        strtcat (game->message, " ", MESSAGE_SIZE);
+        strtcat (game->message, message, MESSAGE_SIZE);
     }
 }
 
@@ -55,21 +54,23 @@ This appends 'prior' to buffer, and if *repeats is >1, appends
 a repeat indicator and resets *repeats to 1.
 
 This then copies current into prior and clears current.
+
+'buffer', 'prior' and 'current' should be MESSAGE_SIZE in size.
 */
 static void
 flush_current_buffer (char *buffer, char *prior, char *current, int *repeats)
 {
-    strcat (buffer, prior);
+    strtcat (buffer, prior, MESSAGE_SIZE);
 
     if (*repeats > 1)
     {
-        char rpt[MESSAGE_MAX + 1];
+        char rpt[MESSAGE_SIZE];
         sprintf (rpt, " (x%d)", *repeats);
-        strcat (buffer, rpt);
+        strtcat (buffer, rpt, MESSAGE_SIZE);
         *repeats = 1;
     }
 
-    strcpy (prior, current);
+    strtcpy (prior, current, MESSAGE_SIZE);
     current[0] = '\0';
 }
 
@@ -84,13 +85,13 @@ consolidate_game_messages (Game * game)
     // reliable. This way every message is preceeded by
     // a space.
 
-    char input[MESSAGE_MAX + 2];
+    char input[MESSAGE_SIZE + 1];
     input[0] = ' ';
-    strcpy (input + 1, game->message);
+    strtcpy (input + 1, game->message, MESSAGE_SIZE);
 
-    char buffer[MESSAGE_MAX + 1] = "";
-    char prior[MESSAGE_MAX + 1] = "";
-    char current[MESSAGE_MAX + 1] = "";
+    char buffer[MESSAGE_SIZE] = "";
+    char prior[MESSAGE_SIZE] = "";
+    char current[MESSAGE_SIZE] = "";
     char *curr_out = current;
     int repeats = 1;
 
@@ -107,7 +108,7 @@ consolidate_game_messages (Game * game)
 
             // must clear entire buffer to ensure
             // curent stays null terminated.
-            memset (current, 0, MESSAGE_MAX + 1);
+            memset (current, 0, MESSAGE_SIZE);
             curr_out = current;
         }
     }
@@ -116,7 +117,7 @@ consolidate_game_messages (Game * game)
     flush_current_buffer (buffer, prior, current, &repeats);
 
     // skip that extra space at the start of buffer
-    strcpy (game->message, buffer + 1);
+    strtcpy (game->message, buffer + 1, MESSAGE_SIZE);
 }
 
 /*

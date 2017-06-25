@@ -133,14 +133,14 @@ attack_bump_action (Game * game, Thing * actor, Thing * target)
 
         remove_thing (target);
 
-        char msg[MESSAGE_MAX];
+        char msg[MESSAGE_SIZE];
         sprintf (msg, "%s killed %s!", actor->name, target->name);
         write_game_message (game, msg);
         return false;
     }
     else
     {
-        char msg[MESSAGE_MAX];
+        char msg[MESSAGE_SIZE];
         sprintf (msg, "%s hits %s for %d!", actor->name, target->name, dmg);
         write_game_message (game, msg);
         return false;

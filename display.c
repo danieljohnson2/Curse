@@ -4,6 +4,7 @@
 #include "player.h"
 #include "map.h"
 #include "game.h"
+#include "util.h"
 
 #include <ncurses.h>
 #include <stdlib.h>
@@ -114,8 +115,8 @@ show_message (Game * game)
     getmaxyx (message_w, rows, columns);
     (void) rows;                // suppress warning
 
-    char buffer[MESSAGE_MAX];
-    strcpy (buffer, game->message);
+    char buffer[MESSAGE_SIZE];
+    strtcpy (buffer, game->message, MESSAGE_SIZE);
 
     char *start = buffer;
 

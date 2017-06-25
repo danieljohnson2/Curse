@@ -4,14 +4,14 @@
 #include "thing.h"
 #include "map.h"
 
-#define MESSAGE_MAX 512
+#define MESSAGE_SIZE 512
 
 typedef struct _Game
 {
     Map map;
     Loc view_center;
 
-    char message[MESSAGE_MAX + 1];
+    char message[MESSAGE_SIZE];
     Thing things[THING_COUNT];
 } Game;
 

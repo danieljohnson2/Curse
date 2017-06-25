@@ -8,7 +8,7 @@
 #define THING_COUNT 32
 #define PLAYER_INDEX 0
 
-#define NAME_MAX 64
+#define NAME_SIZE 64
 
 #define SPEED_MAX 255
 #define SPEED_MIN 1
@@ -37,7 +37,7 @@ typedef enum _Appearance
 struct _Thing
 {
     Appearance appearance;
-    char name[NAME_MAX + 1];
+    char name[NAME_SIZE];
 
     Loc loc;
     int gold;

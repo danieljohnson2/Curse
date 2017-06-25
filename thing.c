@@ -16,7 +16,7 @@ make_thing (Appearance appearance, char *name, int speed,
 {
     Thing th = { 0 };
     th.appearance = appearance;
-    strcpy (th.name, name);
+    strtcpy (th.name, name, NAME_SIZE);
     th.speed = speed;
     th.remaining_wait = 0;
     th.bump_action = bump_action;
