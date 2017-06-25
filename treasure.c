@@ -21,7 +21,7 @@ treasure_bump_action (Game * game, Thing * actor, Thing * target)
 Thing
 make_random_treasure (void)
 {
-    int gold = (rand () % 401) + 30;
+    int gold = (rand () % 41) + 3;
     return make_treasure (gold);
 }
 
@@ -31,9 +31,9 @@ make_treasure (int gold)
 {
     Appearance ap = MEDIUM_TREASURE;
 
-    if (gold <= 50)
+    if (gold <= 5)
         ap = SMALL_TREASURE;
-    else if (gold >= 300)
+    else if (gold >= 30)
         ap = LARGE_TREASURE;
 
     Thing treasure =
