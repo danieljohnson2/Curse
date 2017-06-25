@@ -18,6 +18,7 @@ typedef struct _Game
 Game make_game (Map map, Thing player);
 void clear_game_message (Game * game);
 void write_game_message (Game * game, char *message);
+void consolidate_game_messages (Game * game);
 
 bool find_thing_at (Game * game, Loc where, Thing ** found);
 

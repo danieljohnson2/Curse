@@ -108,6 +108,8 @@ get_appearance_char (Appearance appearance)
 static void
 show_message (Game * game)
 {
+    consolidate_game_messages (game);
+
     int rows, columns;
     getmaxyx (message_w, rows, columns);
     (void) rows;                // suppress warning
@@ -121,19 +123,19 @@ show_message (Game * game)
 
     char more_text[] = " <more>";
     int more_length = 7;
-	int line_limit = columns - more_length;
+    int line_limit = columns - more_length;
 
     while (start[0] != '\0')
     {
-    	if (start > buffer)
+        if (start > buffer)
         {
             mvwaddstr (message_w, 0, line_limit, more_text);
             wgetch (message_w);
         }
 
         int len = strlen (start);
-		char *next = start + len;
-        
+        char *next = start + len;
+
         if (len > line_limit)
         {
             char *end = start + line_limit;
@@ -142,7 +144,7 @@ show_message (Game * game)
 
             if (end > start)
             {
-				next = end + 1;
+                next = end + 1;
                 *end = '\0';
             }
         }
@@ -185,7 +187,7 @@ update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
 
 /* Updates the screen with the state of the game. */
 void
-paint (Game * game)
+paint (Game * game, bool messages)
 {
     Thing *player = &game->things[PLAYER_INDEX];
 

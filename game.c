@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 /*
 Builds the entire game structure.
@@ -46,6 +47,76 @@ write_game_message (Game * game, char *message)
         strncat (game->message, message, MESSAGE_MAX);
         game->message[MESSAGE_MAX] = '\0';      // ensure null termination
     }
+}
+
+/*
+Utiltity for consolidate_game_messages().
+This appends 'prior' to buffer, and if *repeats is >1, appends
+a repeat indicator and resets *repeats to 1.
+
+This then copies current into prior and clears current.
+*/
+static void
+flush_current_buffer (char *buffer, char *prior, char *current, int *repeats)
+{
+    strcat (buffer, prior);
+
+    if (*repeats > 1)
+    {
+        char rpt[MESSAGE_MAX + 1];
+        sprintf (rpt, " (x%d)", *repeats);
+        strcat (buffer, rpt);
+        *repeats = 1;
+    }
+
+    strcpy (prior, current);
+    current[0] = '\0';
+}
+
+/*
+This updates the game's 'message' buffer to remove duplicate message
+and insert repetition indicators.
+*/
+void
+consolidate_game_messages (Game * game)
+{
+    // An extra initial space makes matching more
+    // reliable. This way every message is preceeded by
+    // a space.
+
+    char input[MESSAGE_MAX + 2];
+    input[0] = ' ';
+    strcpy (input + 1, game->message);
+
+    char buffer[MESSAGE_MAX + 1] = "";
+    char prior[MESSAGE_MAX + 1] = "";
+    char current[MESSAGE_MAX + 1] = "";
+    char *curr_out = current;
+    int repeats = 1;
+
+    for (char *c = input; *c != '\0'; ++c)
+    {
+        *(curr_out++) = *c;
+
+        if (*c == '!')
+        {
+            if (strcmp (prior, current) == 0)
+                repeats++;
+            else
+                flush_current_buffer (buffer, prior, current, &repeats);
+
+            // must clear entire buffer to ensure
+            // curent stays null terminated.
+            memset (current, 0, MESSAGE_MAX + 1);
+            curr_out = current;
+        }
+    }
+
+    flush_current_buffer (buffer, prior, current, &repeats);
+    flush_current_buffer (buffer, prior, current, &repeats);
+
+    // skip that extra space at the start of buffer
+    strcpy (game->message, buffer + 1);
 }
 
 /*

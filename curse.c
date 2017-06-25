@@ -23,7 +23,7 @@ player_turn_action (Game * game, Thing * player)
 
     do
     {
-        paint (game);
+        paint (game, true);
         action = read_player_action ();
         clear_game_message (game);
 
@@ -42,7 +42,7 @@ player_skipped_turn_action (Game * game, Thing * player)
 {
     // Show the user what happened due to other creatures turns
     // and pause very briefly so he can see it.
-    paint (game);
+    paint (game, false);
     usleep (50000);             /* .05 seconds */
 }
 
@@ -74,7 +74,7 @@ main (int argc, char **argv)
     perform_turns (&game);
 
     write_game_message (&game, "Game over! <press q to exit>");
-    paint (&game);
+    paint (&game, true);
     wait_keystroke ();
     end_windows ();
     return 0;
