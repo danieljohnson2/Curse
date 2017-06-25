@@ -99,7 +99,7 @@ consolidate_game_messages (Game * game)
     {
         *(curr_out++) = *c;
 
-        if (*c == '!')
+        if (*c == '!' || *c == '.')
         {
             if (strcmp (prior, current) == 0)
                 repeats++;

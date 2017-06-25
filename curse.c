@@ -73,9 +73,8 @@ main (int argc, char **argv)
 
     perform_turns (&game);
 
-    write_game_message (&game, "Game over! <press q to exit>");
     paint (&game, true);
-    wait_keystroke ();
+    game_over();
     end_windows ();
     return 0;
 }

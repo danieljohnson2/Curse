@@ -52,11 +52,19 @@ end_windows (void)
     endwin ();
 }
 
-/* Reads a keystroke, as long as it is 'q' */
+/* Displays the game over message and waits for a keystroke */
 void
-wait_keystroke (void)
+game_over (void)
 {
-    while (wgetch (map_w) != 'q')
+	int rows, columns;
+    getmaxyx (stdscr, rows, columns);
+		
+	WINDOW * w = newwin(6, 40, rows - 12, (columns - 40)/2);
+	box(w, 0, 0);
+	mvwaddstr(w, 2, 20 - 4, "Game Over");
+	mvwaddstr(w, 3, 20 - 8, "(press q to exit)");
+	
+    while (wgetch (w) != 'q')
         continue;
 }
 
