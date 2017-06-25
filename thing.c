@@ -11,8 +11,8 @@
 Create a thing in a single call.
 */
 Thing
-make_thing (char appearance, char *name, int speed, BumpAction bump_action,
-            TurnAction turn_action)
+make_thing (Appearance appearance, char *name, int speed,
+            BumpAction bump_action, TurnAction turn_action)
 {
     Thing th = { 0 };
     th.appearance = appearance;

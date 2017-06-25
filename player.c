@@ -12,7 +12,7 @@ make_player (Map * map, TurnAction turn_action,
              TurnAction skipped_turn_action)
 {
     Thing player =
-        make_thing ('@', "Player", SPEED_DEFAULT, attack_bump_action,
+        make_thing (PLAYER, "Player", SPEED_DEFAULT, attack_bump_action,
                     null_turn_action);
 
     player.loc = find_passable_place (map, make_loc (0, 0));

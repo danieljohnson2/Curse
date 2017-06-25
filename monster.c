@@ -18,11 +18,11 @@ make_monster ()
     {
         initialized = true;
 
-        candidates[0] = make_thing ('g', "Goblin", SPEED_DEFAULT / 2,
+        candidates[0] = make_thing (GOBLIN, "Goblin", SPEED_DEFAULT / 2,
                                     attack_bump_action,
                                     chase_player_turn_action);
         candidates[1] =
-            make_thing ('h', "Halfling", SPEED_DEFAULT * 2,
+            make_thing (HALFLING, "Halfling", SPEED_DEFAULT * 2,
                         attack_bump_action, chase_player_turn_action);
     }
 

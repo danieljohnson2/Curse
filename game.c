@@ -22,7 +22,7 @@ make_game (Map map, Thing player)
     game.things[PLAYER_INDEX] = player;
 
     for (int i = 0; i < TREASURE_COUNT; ++i)
-        place_thing (&game, make_loc (0, 0), make_treasure (100));
+        place_thing (&game, make_loc (0, 0), make_random_treasure ());
 
     return game;
 }

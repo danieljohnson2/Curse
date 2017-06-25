@@ -13,13 +13,13 @@ typedef double (*MapShape) (Map * map, Loc where);
 
 typedef enum _Terrain
 {
-    deep_sea,
-    water,
-    beach,
-    grass,
-    woods,
-    hills,
-    mountains
+    DEEP_SEA,
+    WATER,
+    BEACH,
+    GRASS,
+    WOODS,
+    HILLS,
+    MOUNTAINS
 } Terrain;
 
 struct _Map

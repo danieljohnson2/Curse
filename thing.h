@@ -23,9 +23,20 @@ typedef struct _Map Map;
 typedef bool (*BumpAction) (Game * game, Thing * actor, Thing * target);
 typedef void (*TurnAction) (Game * game, Thing * actor);
 
+typedef enum _Appearance
+{
+    DEAD,
+    PLAYER,
+    GOBLIN,
+    HALFLING,
+    SMALL_TREASURE,
+    MEDIUM_TREASURE,
+    LARGE_TREASURE
+} Appearance;
+
 struct _Thing
 {
-    char appearance;
+    Appearance appearance;
     char name[NAME_MAX + 1];
     Loc loc;
     int speed, remaining_wait;
@@ -36,7 +47,7 @@ struct _Thing
     TurnAction skipped_turn_action;
 };
 
-Thing make_thing (char appearance, char *name, int speed,
+Thing make_thing (Appearance appearance, char *name, int speed,
                   BumpAction bump_action, TurnAction turn_action);
 
 void remove_thing (Thing * thing);

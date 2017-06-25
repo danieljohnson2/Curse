@@ -40,25 +40,25 @@ static Terrain
 pick_terrain (Map * map, double altitude, double dist)
 {
     Terrain a[TERRAIN_COUNT] = {
-        deep_sea,
-        water,
-        water,
-        water,
-        beach,
-        grass,
-        grass,
-        grass,
-        grass,
-        woods,
-        woods,
-        woods,
-        woods,
-        grass,
-        hills,
-        hills,
-        hills,
-        mountains,
-        mountains
+        DEEP_SEA,
+        WATER,
+        WATER,
+        WATER,
+        BEACH,
+        GRASS,
+        GRASS,
+        GRASS,
+        GRASS,
+        WOODS,
+        WOODS,
+        WOODS,
+        WOODS,
+        GRASS,
+        HILLS,
+        HILLS,
+        HILLS,
+        MOUNTAINS,
+        MOUNTAINS
     };
 
     double adjusted = altitude;
@@ -101,14 +101,14 @@ get_terrain_speed_penalty (Terrain terrain)
 {
     switch (terrain)
     {
-    case woods:
+    case WOODS:
         return SPEED_MAX / 2;
-    case hills:
+    case HILLS:
         return SPEED_MAX;
 
-    case deep_sea:
-    case water:
-    case mountains:
+    case DEEP_SEA:
+    case WATER:
+    case MOUNTAINS:
         return INT_MAX;
 
     default:

@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static bool
 treasure_bump_action (Game * game, Thing * actor, Thing * target)
@@ -16,12 +17,27 @@ treasure_bump_action (Game * game, Thing * actor, Thing * target)
     return true;
 }
 
-/* Creates a tresure that contains the amount of gold indicated. */
+/* Creates a treasure of a random size */
+Thing
+make_random_treasure ()
+{
+    int gold = (rand () % 401) + 30;
+    return make_treasure (gold);
+}
+
+/* Creates a treasure that contains the amount of gold indicated. */
 Thing
 make_treasure (int gold)
 {
+    Appearance ap = MEDIUM_TREASURE;
+
+    if (gold <= 50)
+        ap = SMALL_TREASURE;
+    else if (gold >= 300)
+        ap = LARGE_TREASURE;
+
     Thing treasure =
-        make_thing ('*', "Gold", 0, treasure_bump_action, null_turn_action);
+        make_thing (ap, "Gold", 0, treasure_bump_action, null_turn_action);
     treasure.gold = gold;
     return treasure;
 }

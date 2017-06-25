@@ -29,18 +29,18 @@ init_windows ()
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
 
-  	// first, draw the decorative border.
+    // first, draw the decorative border.
     refresh ();
     WINDOW *border_w = newwin (rows - 2, columns, 1, 0);
     box (border_w, 0, 0);
     wrefresh (border_w);
     delwin (border_w);
-    
+
     map_w = newwin (rows - 4, columns - 2, 2, 1);
     message_w = newwin (1, columns, 0, 0);
     status_w = newwin (1, columns, rows - 1, 0);
-    
-    keypad (map_w, TRUE); 
+
+    keypad (map_w, TRUE);
 }
 
 /* Shuts down ncurses, and may restore the terminal to its initial state */
@@ -63,22 +63,44 @@ get_terrain_char (Terrain terrain)
 {
     switch (terrain)
     {
-    case deep_sea:
+    case DEEP_SEA:
         return '/' | COLOR_PAIR (1) | A_BOLD;
-    case water:
+    case WATER:
         return '~' | COLOR_PAIR (1) | A_BOLD;
-    case beach:
+    case BEACH:
         return '.' | COLOR_PAIR (2) | A_BOLD;
-    case grass:
+    case GRASS:
         return ':' | COLOR_PAIR (3) | A_BOLD;
-    case woods:
+    case WOODS:
         return '%' | COLOR_PAIR (3);
-    case hills:
+    case HILLS:
         return '^' | COLOR_PAIR (4);
-    case mountains:
+    case MOUNTAINS:
         return '^' | COLOR_PAIR (4) | A_BOLD;
     default:
         return ' ';
+    }
+}
+
+static int
+get_appearance_char (Appearance appearance)
+{
+    switch (appearance)
+    {
+    case PLAYER:
+        return '@' | A_BOLD;
+    case GOBLIN:
+        return 'g' | A_BOLD;
+    case HALFLING:
+        return 'h' | A_BOLD;
+    case SMALL_TREASURE:
+        return '*' | COLOR_PAIR (2);
+    case MEDIUM_TREASURE:
+        return '*' | A_BOLD | COLOR_PAIR (2);
+    case LARGE_TREASURE:
+        return '*' | A_BOLD;
+    default:
+        return '?';
     }
 }
 
@@ -114,8 +136,8 @@ update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
 void
 paint (Game * game)
 {
-	Thing *player = &game->things[PLAYER_INDEX];
-	
+    Thing *player = &game->things[PLAYER_INDEX];
+
     int maxrow, maxcol;
     getmaxyx (map_w, maxrow, maxcol);
 
@@ -147,7 +169,8 @@ paint (Game * game)
 
             if (col >= 0 && row >= 0 && col < maxcol && row < maxrow)
             {
-                mvwaddch (map_w, row, col, thing->appearance | A_BOLD);
+                int ch = get_appearance_char (thing->appearance);
+                mvwaddch (map_w, row, col, ch);
 
                 if (i == PLAYER_INDEX)
                 {
@@ -161,8 +184,8 @@ paint (Game * game)
     werase (message_w);
     mvwaddstr (message_w, 0, 0, game->message);
 
-	werase (status_w);
-	mvwprintw(status_w, 0, 0, "Gold: %d", player->gold);
+    werase (status_w);
+    mvwprintw (status_w, 0, 0, "Gold: %d", player->gold);
 
     if (finalcursorrow >= 0)
         wmove (map_w, finalcursorrow, finalcursorcolumn);
