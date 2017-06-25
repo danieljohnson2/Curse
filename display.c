@@ -185,7 +185,7 @@ paint (Game * game)
     mvwaddstr (message_w, 0, 0, game->message);
 
     werase (status_w);
-    mvwprintw (status_w, 0, 0, "Gold: %d", player->gold);
+    mvwprintw (status_w, 0, 0, "HP: %d Gold: %d", player->hp, player->gold);
 
     if (finalcursorrow >= 0)
         wmove (map_w, finalcursorrow, finalcursorcolumn);

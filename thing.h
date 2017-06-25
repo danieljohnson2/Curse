@@ -38,9 +38,14 @@ struct _Thing
 {
     Appearance appearance;
     char name[NAME_MAX + 1];
+
     Loc loc;
-    int speed, remaining_wait;
     int gold;
+    int hp;
+    int dmg;
+    int speed;
+
+    int remaining_wait;
 
     BumpAction bump_action;
     TurnAction turn_action;

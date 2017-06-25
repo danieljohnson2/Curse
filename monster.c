@@ -7,9 +7,20 @@
 
 #define CANDIDATE_MONSTER_COUNT 2
 
+static Thing
+make_monster (Appearance appearance, char *name, int hp, int dmg, int speed)
+{
+    Thing monster = make_thing (appearance, name, speed,
+                                attack_bump_action,
+                                chase_player_turn_action);
+    monster.hp = hp;
+    monster.dmg = dmg;
+    return monster;
+}
+
 /* This creates a random monster, located at 0, 0. */
 Thing
-make_monster ()
+make_random_monster ()
 {
     static bool initialized;
     static Thing candidates[CANDIDATE_MONSTER_COUNT];
@@ -18,12 +29,10 @@ make_monster ()
     {
         initialized = true;
 
-        candidates[0] = make_thing (GOBLIN, "Goblin", SPEED_DEFAULT / 2,
-                                    attack_bump_action,
-                                    chase_player_turn_action);
+        candidates[0] =
+            make_monster (GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2);
         candidates[1] =
-            make_thing (HALFLING, "Halfling", SPEED_DEFAULT * 2,
-                        attack_bump_action, chase_player_turn_action);
+            make_monster (HALFLING, "Halfling", 3, 2, SPEED_DEFAULT * 2);
     }
 
     int index = rand () % CANDIDATE_MONSTER_COUNT;
@@ -71,7 +80,8 @@ try_spawn_monster (Game * game)
             if (count < (rand () % MONSTER_MAX) &&
                 (rand () % TURNS_PER_SPAWN) == 0)
             {
-                return place_thing (game, player->loc, make_monster ());
+                return place_thing (game, player->loc,
+                                    make_random_monster ());
             }
         }
     }
@@ -93,17 +103,31 @@ chase_player_turn_action (Game * game, Thing * actor)
 bool
 attack_bump_action (Game * game, Thing * actor, Thing * target)
 {
-    if (target->gold > 0)
+    target->hp -= actor->dmg;
+
+    if (target->hp <= 0)
     {
-        Thing drop = make_treasure (target->gold);
-        drop.loc = target->loc;
-        new_thing (game, drop);
+        target->hp = 0;
+
+        if (target->gold > 0)
+        {
+            Thing drop = make_treasure (target->gold);
+            drop.loc = target->loc;
+            new_thing (game, drop);
+        }
+
+        remove_thing (target);
+
+        char msg[MESSAGE_MAX];
+        sprintf (msg, "%s killed %s!", actor->name, target->name);
+        write_game_message (game, msg);
+        return false;
     }
-
-    remove_thing (target);
-
-    char msg[MESSAGE_MAX];
-    sprintf (msg, "%s killed %s!", actor->name, target->name);
-    write_game_message (game, msg);
-    return false;
+    else
+    {
+        char msg[MESSAGE_MAX];
+        sprintf (msg, "%s hits %s!", actor->name, target->name);
+        write_game_message (game, msg);
+        return false;
+    }
 }

@@ -16,6 +16,8 @@ make_player (Map * map, TurnAction turn_action,
                     null_turn_action);
 
     player.loc = find_passable_place (map, make_loc (0, 0));
+    player.hp = 20;
+    player.dmg = 5;
     player.turn_action = turn_action;
     player.skipped_turn_action = skipped_turn_action;
     return player;
