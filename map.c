@@ -1,5 +1,6 @@
 #include "map.h"
 #include "thing.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,6 +113,34 @@ get_terrain_speed_penalty (Terrain terrain)
 
     default:
         return 0;
+    }
+}
+
+/*
+Finds a place that has passable terrain in the map.
+*/
+void
+find_passable_place (Map * map, int originx, int originy, int *x, int *y)
+{
+    int size = map->soft_size;
+
+    for (;;)
+    {
+        int cx = (rand () % size) - size / 2;
+        int cy = (rand () % size) - size / 2;
+        cx += isign (cx) * size / 2;
+        cy += isign (cy) * size / 2;
+        cx += originx;
+        cy += originy;
+
+        Terrain t = read_map (map, cx, cy);
+
+        if (get_terrain_speed_penalty (t) < INT_MAX)
+        {
+            *x = cx;
+            *y = cy;
+            break;
+        }
     }
 }
 

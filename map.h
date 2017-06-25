@@ -32,6 +32,8 @@ Map make_map (double soft_size, MapShape shape, Perlin perlin);
 Terrain read_map (Map * map, int x, int y);
 
 int get_terrain_speed_penalty (Terrain terrain);
+void find_passable_place (Map * map, int originx, int originy, int *x,
+                          int *y);
 
 double round_shape (Map * map, int x, int y);
 double band_shape (Map * map, int x, int y);

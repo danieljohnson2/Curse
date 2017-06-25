@@ -1,5 +1,6 @@
 #include "game.h"
 #include "monster.h"
+#include "player.h"
 #include "util.h"
 
 #include <stdlib.h>
@@ -11,15 +12,11 @@ Builds the entire game structure.
 This function copies a lot of bytes, but it only happens once.
 */
 Game
-make_game (Map map, TurnAction player_turn_action)
+make_game (Map map, Thing player)
 {
     Game game = { 0 };
     game.map = map;
 
-    Thing player =
-        make_thing ('@', "Player", SPEED_DEFAULT, attack_bump_action,
-                    player_turn_action);
-    find_empty_place (&game, 0, 0, &player.x, &player.y);
     game.things[PLAYER_INDEX] = player;
     return game;
 }
@@ -104,29 +101,17 @@ place_thing (Game * game, int originx, int originy, Thing thing)
 void
 find_empty_place (Game * game, int originx, int originy, int *x, int *y)
 {
-    Map *map = &game->map;
-    int size = map->soft_size;
-
     for (;;)
     {
-        int cx = (rand () % size) - size / 2;
-        int cy = (rand () % size) - size / 2;
-        cx += isign (cx) * size / 2;
-        cy += isign (cy) * size / 2;
-        cx += originx;
-        cy += originy;
+        int cx, cy;
+        find_passable_place (&game->map, originx, originy, &cx, &cy);
 
-        Terrain t = read_map (map, cx, cy);
-
-        if (get_terrain_speed_penalty (t) < INT_MAX)
+        Thing *start = NULL;
+        if (!find_thing_at (game, cx, cy, &start))
         {
-            Thing *start = NULL;
-            if (!find_thing_at (game, cx, cy, &start))
-            {
-                *x = cx;
-                *y = cy;
-                break;
-            }
+            *x = cx;
+            *y = cy;
+            break;
         }
     }
 }

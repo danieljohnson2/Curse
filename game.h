@@ -15,7 +15,7 @@ typedef struct _Game
     Thing things[THING_COUNT];
 } Game;
 
-Game make_game (Map map, TurnAction player_turn_action);
+Game make_game (Map map, Thing player);
 void clear_game_message (Game * game);
 void write_game_message (Game * game, char *message);
 

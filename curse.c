@@ -2,6 +2,7 @@
 #include "thing.h"
 #include "game.h"
 #include "monster.h"
+#include "player.h"
 
 #include <ncurses.h>
 #include <stdio.h>
@@ -11,6 +12,10 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
+static Game game;
+static WINDOW *map_w;
+static WINDOW *message_w;
 
 static int
 get_terrain_char (Terrain terrain)
@@ -110,9 +115,6 @@ paint (WINDOW * map_w, WINDOW * message_w, Game * game)
     wrefresh (map_w);
 }
 
-static WINDOW *map_w;
-static WINDOW *message_w;
-
 static void
 player_turn_action (Game * game, Thing * player)
 {
@@ -173,19 +175,9 @@ player_skipped_turn_action (Game * game, Thing * player)
     usleep (50000);             /* .05 seconds */
 }
 
-int
-main (int argc, char **argv)
+static void
+init_windows ()
 {
-    int seed;
-
-    if (argc > 1)
-        seed = atoi (argv[1]);
-    else
-    {
-        srand (time (NULL));
-        seed = rand ();
-    }
-
     initscr ();
     cbreak ();
     noecho ();
@@ -209,27 +201,53 @@ main (int argc, char **argv)
     keypad (map_w, TRUE);
 
     message_w = newwin (1, columns, 0, 0);
+}
 
-    Game game =
-        make_game (make_map
-                   (16, round_shape, make_perlin (1.0 / 8.0, 2, seed)),
-                   player_turn_action);
+static void
+init_game (int seed)
+{
+    Map map = make_map (16, round_shape, make_perlin (1.0 / 8.0, 2, seed));
+    Thing player =
+        make_player (&map, player_turn_action, player_skipped_turn_action);
+    game = make_game (map, player);
 
-    Thing *player = &game.things[PLAYER_INDEX];
-    player->skipped_turn_action = player_skipped_turn_action;
+    int rows, columns;
+    getmaxyx (map_w, rows, columns);
 
-    game.viewx = player->x - (columns / 2);
-    game.viewy = player->y - (rows / 2);
+    game.viewx = player.x - (columns / 2);
+    game.viewy = player.y - (rows / 2);
+}
 
-    perform_turns (&game);
-
-    write_game_message (&game, "Game over!");
+static void
+game_over ()
+{
+    write_game_message (&game, "Game over! <press q to exit>");
     paint (map_w, message_w, &game);
     wrefresh (message_w);
 
-    while (wgetch (map_w) != ' ')
+    while (wgetch (map_w) != 'q')
         continue;
+}
 
+int
+main (int argc, char **argv)
+{
+    int seed;
+
+    if (argc > 1)
+        seed = atoi (argv[1]);
+    else
+    {
+        srand (time (NULL));
+        seed = rand ();
+    }
+
+    init_windows ();
+    init_game (seed);
+
+    perform_turns (&game);
+
+    game_over ();
     endwin ();
     return 0;
 }
