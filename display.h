@@ -5,13 +5,13 @@ typedef struct _Game Game;
 typedef struct _Thing Thing;
 typedef enum _PlayerAction PlayerAction;
 
-void init_windows ();
-void end_windows ();
-void wait_keystroke ();
+void init_windows (void);
+void end_windows (void);
+void wait_keystroke (void);
 
 void paint (Game * game);
 
-PlayerAction read_player_action ();
+PlayerAction read_player_action (void);
 void game_over (Game * game);
 
 #endif

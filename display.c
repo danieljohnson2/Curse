@@ -14,7 +14,7 @@ static WINDOW *status_w;
 
 /* Initialize the display and creates the windows. */
 void
-init_windows ()
+init_windows (void)
 {
     initscr ();
     cbreak ();
@@ -45,14 +45,14 @@ init_windows ()
 
 /* Shuts down ncurses, and may restore the terminal to its initial state */
 void
-end_windows ()
+end_windows (void)
 {
     endwin ();
 }
 
 /* Reads a keystroke, as long as it is 'q' */
 void
-wait_keystroke ()
+wait_keystroke (void)
 {
     while (wgetch (map_w) != 'q')
         continue;
@@ -200,7 +200,7 @@ Reads a keystroke and maps it to a PlayerAction. Unknown keys
 are mapped to None.
 */
 PlayerAction
-read_player_action ()
+read_player_action (void)
 {
     int ch = wgetch (map_w);
 

@@ -20,7 +20,7 @@ make_monster (Appearance appearance, char *name, int hp, int dmg, int speed)
 
 /* This creates a random monster, located at 0, 0. */
 Thing
-make_random_monster ()
+make_random_monster (void)
 {
     static bool initialized;
     static Thing candidates[CANDIDATE_MONSTER_COUNT];

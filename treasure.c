@@ -19,7 +19,7 @@ treasure_bump_action (Game * game, Thing * actor, Thing * target)
 
 /* Creates a treasure of a random size */
 Thing
-make_random_treasure ()
+make_random_treasure (void)
 {
     int gold = (rand () % 401) + 30;
     return make_treasure (gold);

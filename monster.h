@@ -8,7 +8,7 @@ typedef struct _Game Game;
 #define MONSTER_MAX 32
 #define TURNS_PER_SPAWN 8
 
-Thing make_random_monster ();
+Thing make_random_monster (void);
 int count_monsters (Game * game);
 int try_spawn_monster (Game * game);
 
