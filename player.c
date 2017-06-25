@@ -27,28 +27,6 @@ For 'None' this generates an error message only.
 void
 perform_player_action (Game * game, PlayerAction action)
 {
-    switch (action)
-    {
-    case Quit:
-        end_windows ();
-        exit (0);
-        break;
-    case Up:
-        move_player_by (game, 0, -1);
-        break;
-    case Down:
-        move_player_by (game, 0, +1);
-        break;
-    case Left:
-        move_player_by (game, -1, 0);
-        break;
-    case Right:
-        move_player_by (game, +1, 0);
-        break;
-    case Pass:
-        break;
-    default:
-        write_game_message (game, "Invalid key.");
-        break;
-    }
+    if (action.dx != 0 || action.dy != 0)
+        move_player_by (game, action.dx, action.dy);
 }

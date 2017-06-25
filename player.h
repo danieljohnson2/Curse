@@ -3,15 +3,11 @@
 
 #include "thing.h"
 
-typedef enum _PlayerAction
+#include <stdbool.h>
+
+typedef struct _PlayerAction
 {
-    None,
-    Pass,
-    Left,
-    Up,
-    Right,
-    Down,
-    Quit
+    int dx, dy;
 } PlayerAction;
 
 Thing make_player (Map * map, TurnAction turn_action);

@@ -19,22 +19,17 @@ static Game game;
 static void
 player_turn_action (Game * game, Thing * player)
 {
-    PlayerAction action = None;
+    PlayerAction action = { 0 };
 
-    do
+    paint (game, true);
+    action = read_player_action ();
+    clear_game_message (game);
+
+    if (is_thing_alive (player))
     {
-        paint (game, true);
-        action = read_player_action ();
-        clear_game_message (game);
-
-        if (!is_thing_alive (player))
-            return;
-
         perform_player_action (game, action);
+        try_spawn_monster (game);
     }
-    while (action == None);
-
-    try_spawn_monster (game);
 }
 
 static void

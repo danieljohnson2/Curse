@@ -14,6 +14,14 @@ static WINDOW *map_w;
 static WINDOW *message_w;
 static WINDOW *status_w;
 
+static void
+show_error (char *error)
+{
+    werase (message_w);
+    mvwaddstr (message_w, 0, 0, error);
+    wrefresh (message_w);
+}
+
 /* Initialize the display and creates the windows. */
 void
 init_windows (void)
@@ -269,23 +277,41 @@ are mapped to None.
 PlayerAction
 read_player_action (void)
 {
-    int ch = wgetch (map_w);
-
-    switch (ch)
+    for (;;)
     {
-    case 'q':
-        return Quit;
-    case KEY_UP:
-        return Up;
-    case KEY_DOWN:
-        return Down;
-    case KEY_LEFT:
-        return Left;
-    case KEY_RIGHT:
-        return Right;
-    case ' ':
-        return Pass;
-    default:
-        return None;
+        int ch = wgetch (map_w);
+
+        PlayerAction action = { 0 };
+
+        switch (ch)
+        {
+        case 'q':
+            endwin ();
+            exit (0);
+            break;
+
+        case KEY_UP:
+            action.dy = -1;
+            return action;
+        case KEY_DOWN:
+            action.dy = 1;
+            return action;
+        case KEY_LEFT:
+            action.dx = -1;
+            return action;
+        case KEY_RIGHT:
+            action.dx = 1;
+            return action;
+        case ' ':
+            break;
+
+        default:
+            {
+                char msg[MESSAGE_SIZE];
+                sprintf (msg, "Invalid key! (%d)", ch);
+                show_error (msg);
+            }
+            break;
+        }
     }
 }
