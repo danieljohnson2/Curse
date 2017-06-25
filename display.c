@@ -7,6 +7,7 @@
 
 #include <ncurses.h>
 #include <stdlib.h>
+#include <string.h>
 
 static WINDOW *map_w;
 static WINDOW *message_w;
@@ -104,6 +105,56 @@ get_appearance_char (Appearance appearance)
     }
 }
 
+static void
+show_message (Game * game)
+{
+    int rows, columns;
+    getmaxyx (message_w, rows, columns);
+    (void) rows;                // suppress warning
+
+    char buffer[MESSAGE_MAX];
+    strcpy (buffer, game->message);
+
+    char *start = buffer;
+
+    werase (message_w);
+
+    char more_text[] = " <more>";
+    int more_length = 7;
+	int line_limit = columns - more_length;
+
+    while (start[0] != '\0')
+    {
+    	if (start > buffer)
+        {
+            mvwaddstr (message_w, 0, line_limit, more_text);
+            wgetch (message_w);
+        }
+
+        int len = strlen (start);
+		char *next = start + len;
+        
+        if (len > line_limit)
+        {
+            char *end = start + line_limit;
+            while (end > start && *end != ' ')
+                --end;
+
+            if (end > start)
+            {
+				next = end + 1;
+                *end = '\0';
+            }
+        }
+
+        werase (message_w);
+        mvwaddstr (message_w, 0, 0, start);
+        start = next;
+    }
+
+    wrefresh (message_w);
+}
+
 static Loc
 update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
              int height)
@@ -181,18 +232,19 @@ paint (Game * game)
         }
     }
 
-    werase (message_w);
-    mvwaddstr (message_w, 0, 0, game->message);
-
     werase (status_w);
     mvwprintw (status_w, 0, 0, "HP: %d Gold: %d", player->hp, player->gold);
 
-    if (finalcursorrow >= 0)
-        wmove (map_w, finalcursorrow, finalcursorcolumn);
-
-    wrefresh (message_w);
-    wrefresh (status_w);
     wrefresh (map_w);
+    wrefresh (status_w);
+
+    show_message (game);
+
+    if (finalcursorrow >= 0)
+    {
+        wmove (map_w, finalcursorrow, finalcursorcolumn);
+        wrefresh (map_w);
+    }
 }
 
 /*
