@@ -1,7 +1,9 @@
 #include "perlin.h"
 #include "map.h"
 #include "game.h"
-#include "monster.h"
+#include "player.h"
+#include "thing.h"
+#include "message.h"
 #include "display.h"
 
 #include <stdlib.h>
@@ -12,17 +14,12 @@ static Game game;
 static void
 player_turn_action (Game * game, Thing * player)
 {
-    PlayerAction action = { 0 };
-
     paint (game, true);
-    action = read_player_action ();
+    PlayerAction action = read_player_action ();
     clear_game_message (game);
 
     if (is_thing_alive (player))
-    {
         perform_player_action (game, action);
-        try_spawn_monster (game);
-    }
 }
 
 static void

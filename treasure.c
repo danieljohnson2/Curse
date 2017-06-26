@@ -1,6 +1,6 @@
 #include "treasure.h"
-#include "game.h"
 #include "thing.h"
+#include "message.h"
 
 #include <stdbool.h>
 #include <stdio.h>

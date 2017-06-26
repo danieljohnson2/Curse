@@ -1,8 +1,7 @@
 #ifndef DISPLAY_H_INCLUDED
 #define DISPLAY_H_INCLUDED
 
-#include "player.h"
-#include <stdbool.h>
+#include "defs.h"
 
 void init_windows (void);
 void end_windows (void);

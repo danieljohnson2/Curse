@@ -1,12 +1,7 @@
 #ifndef MONSTER_H_INCLUDED
 #define MONSTER_H_INCLUDED
 
-#include "thing.h"
-
-typedef struct _Game Game;
-
-#define MONSTER_MAX 32
-#define TURNS_PER_SPAWN 8
+#include "defs.h"
 
 Thing make_random_monster (void);
 int count_monsters (Game * game);

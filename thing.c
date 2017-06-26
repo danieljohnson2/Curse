@@ -85,19 +85,6 @@ try_move_thing_by (Game * game, Thing * mover, int dx, int dy)
 }
 
 /*
-Moves the player by an offset; this may trigger bump actions,
-and writes a message (rather than retrying) if the player moves
-into impassible terrain.
-*/
-void
-move_player_by (Game * game, int dx, int dy)
-{
-    Thing *player = &game->things[PLAYER_INDEX];
-    if (!try_move_thing_by (game, player, dx, dy))
-        write_game_message (game, "Impassible!");
-}
-
-/*
 Moves the 'mover' to the location indicated if possible.
 If this location is impassible, this function returns false
 and does nothing.

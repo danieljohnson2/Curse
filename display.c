@@ -3,6 +3,7 @@
 #include "thing.h"
 #include "player.h"
 #include "map.h"
+#include "message.h"
 #include "game.h"
 #include "util.h"
 
@@ -210,14 +211,12 @@ if you pass true in 'messages'.
 void
 paint (Game * game, bool messages)
 {
-    Thing *player = &game->things[PLAYER_INDEX];
+    Thing *player = get_player (game);
 
     int maxrow, maxcol;
     getmaxyx (map_w, maxrow, maxcol);
 
-    Loc origin =
-        update_view (game, &game->things[PLAYER_INDEX], 16, 4, maxcol,
-                     maxrow);
+    Loc origin = update_view (game, player, 16, 4, maxcol, maxrow);
 
     int finalcursorrow = 0, finalcursorcolumn = 0;
 
@@ -246,7 +245,7 @@ paint (Game * game, bool messages)
                 int ch = get_appearance_char (thing->appearance);
                 mvwaddch (map_w, row, col, ch);
 
-                if (i == PLAYER_INDEX)
+                if (thing == player)
                 {
                     finalcursorrow = row;
                     finalcursorcolumn = col;
@@ -303,7 +302,7 @@ read_player_action (void)
             action.dx = 1;
             return action;
         case ' ':
-            break;
+            return action;
 
         default:
             {

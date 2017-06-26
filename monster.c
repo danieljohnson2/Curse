@@ -1,9 +1,14 @@
 #include "monster.h"
 #include "treasure.h"
+#include "thing.h"
 #include "game.h"
+#include "message.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#define MONSTER_MAX 32
+#define TURNS_PER_SPAWN 8
 
 #define CANDIDATE_MONSTER_COUNT 2
 
@@ -69,7 +74,7 @@ spawn one.
 int
 try_spawn_monster (Game * game)
 {
-    Thing *player = &game->things[PLAYER_INDEX];
+    Thing *player = get_player (game);
 
     if (is_thing_alive (player))
     {
@@ -93,7 +98,7 @@ try_spawn_monster (Game * game)
 void
 chase_player_turn_action (Game * game, Thing * actor)
 {
-    Thing *player = &game->things[PLAYER_INDEX];
+    Thing *player = get_player (game);
 
     if (is_thing_alive (player))
         move_thing_towards (game, actor, player);

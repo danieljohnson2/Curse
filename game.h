@@ -4,17 +4,13 @@
 #include "defs.h"
 
 Game make_game (Map map, Thing player);
-void clear_game_message (Game * game);
-void write_game_message (Game * game, char *message);
-void consolidate_game_messages (Game * game);
 
+Thing *get_player (Game * game);
 bool find_thing_at (Game * game, Loc where, Thing ** found);
 
 int new_thing (Game * game, Thing thing);
 int place_thing (Game * game, Loc origin, Thing thing);
 Loc find_empty_place (Game * game, Loc origin);
-
-bool is_thing_player (Game * game, Thing * thing);
 
 void perform_turns (Game * game);
 

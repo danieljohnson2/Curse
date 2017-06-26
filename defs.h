@@ -4,18 +4,18 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+/*
+This file contains type definitions shared by all modules;
+this lets us return structs by value since everyone has the
+definitions. Changing this file will cause everything
+to rebuild, but changing other header's won't.
+*/
+
 #define PERLIN_HASH_SIZE 4096
 #define THING_COUNT 32
-#define PLAYER_INDEX 0
 
 #define MESSAGE_SIZE 512
 #define NAME_SIZE 64
-
-#define SPEED_MAX 255
-#define SPEED_MIN 1
-
-/* 16 means the MAX is 16x the default, which is 16x the minumum (1) */
-#define SPEED_DEFAULT 16
 
 typedef struct _Loc
 {
@@ -90,6 +90,7 @@ typedef struct _Game
 {
     Map map;
     Loc view_center;
+	int player_index;
 
     char message[MESSAGE_SIZE];
     Thing things[THING_COUNT];
