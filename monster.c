@@ -107,12 +107,16 @@ chase_player_turn_action (Game * game, Thing * actor)
 static int
 roll_attack_damage (Thing * actor)
 {
-    // actual damage is the average of 3 rolls from 0 to target->dmg.
+    /* 
+       Actual damage is the average of 3 rolls from 0 to target->dmg * 2.
+       Should average to actor->dmg.
+     */
 
+    int max = actor->dmg * 2;
     int dmg = 0;
 
     for (int i = 0; i < 3; ++i)
-        dmg += (rand () % actor->dmg) + 1;
+        dmg += rand () % (max + 1);
 
     return dmg / 3;
 }
@@ -125,7 +129,17 @@ attack_bump_action (Game * game, Thing * actor, Thing * target)
 
     target->hp -= dmg;
 
-    if (target->hp <= 0)
+    char msg[MESSAGE_SIZE];
+
+    if (dmg == 0)
+    {
+        sprintf (msg, "%s misses %s.", actor->name, target->name);
+    }
+    else if (target->hp > 0)
+    {
+        sprintf (msg, "%s hits %s for %d!", actor->name, target->name, dmg);
+    }
+    else
     {
         target->hp = 0;
 
@@ -138,16 +152,9 @@ attack_bump_action (Game * game, Thing * actor, Thing * target)
 
         remove_thing (target);
 
-        char msg[MESSAGE_SIZE];
         sprintf (msg, "%s killed %s!", actor->name, target->name);
-        write_game_message (game, msg);
-        return false;
     }
-    else
-    {
-        char msg[MESSAGE_SIZE];
-        sprintf (msg, "%s hits %s for %d!", actor->name, target->name, dmg);
-        write_game_message (game, msg);
-        return false;
-    }
+
+    write_game_message (game, msg);
+    return false;
 }

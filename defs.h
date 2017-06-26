@@ -90,7 +90,7 @@ typedef struct _Game
 {
     Map map;
     Loc view_center;
-	int player_index;
+    int player_index;
 
     char message[MESSAGE_SIZE];
     Thing things[THING_COUNT];
