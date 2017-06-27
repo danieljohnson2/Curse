@@ -49,7 +49,7 @@ int
 count_monsters (Game * game)
 {
     int count = 0;
-    for (Thing * th = NULL; next_live_thing (game, &th);)
+    for (Thing * th = NULL; next_thing (game, &th);)
     {
         if (th->turn_action == chase_player_turn_action)
             ++count;

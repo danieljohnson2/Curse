@@ -231,7 +231,7 @@ paint (Game * game, bool messages)
         }
     }
 
-    for (Thing * thing = NULL; next_live_thing (game, &thing);)
+    for (Thing * thing = NULL; next_thing (game, &thing);)
     {
         int col = thing->loc.x - origin.x;
         int row = thing->loc.y - origin.y;

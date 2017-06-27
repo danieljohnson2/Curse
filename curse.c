@@ -25,14 +25,6 @@ player_turn_action (Game * game, Thing * player)
         perform_player_action (game, action);
 }
 
-static void
-init_game (int seed, MapShape shape)
-{
-    Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
-    Thing player = make_player (&map, player_turn_action);
-    game = make_game (map, player);
-}
-
 /*
 Exits the program with an error status and a usage message.
 Used when command line arguments are not satisfactory.
@@ -90,7 +82,9 @@ main (int argc, char **argv)
     read_args (argc, argv, &seed, &shape);
 
     init_windows ();
-    init_game (seed, shape);
+
+    Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
+    init_game (&game, map, make_player (&map, player_turn_action));
 
     perform_turns (&game);
 

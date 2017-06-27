@@ -7,28 +7,35 @@
 #include "util.h"
 #include "loc.h"
 
+#include <string.h>
+
 #define PLAYER_INDEX 0
 
 /*
-Builds the entire game structure.
-This function copies a lot of bytes, but it only happens once.
+Initializes the game. This clears 'game' to zero and
+fills in the map and player data, then adds some
+treasures to it.
 */
-Game
-make_game (Map map, Thing player)
+void
+init_game (Game * game, Map map, Thing player)
 {
-    Game game = { 0 };
-    game.map = map;
-    game.view_center = player.loc;
-    game.things[PLAYER_INDEX] = player;
+    memset (game, 0, sizeof (Game));
+    game->map = map;
+    game->view_center = player.loc;
+    game->things[PLAYER_INDEX] = player;
 
     for (int i = 0; i < TREASURE_COUNT; ++i)
-        place_thing (&game, make_loc (0, 0), make_random_treasure ());
-
-    return game;
+        place_thing (game, make_loc (0, 0), make_random_treasure ());
 }
 
-bool
-next_thing (Game * game, Thing ** thing)
+/*
+Returns the next slot in the things array. Start by passing
+a NULL-initialized 'thing' buffer, and this will give you a pointer
+to the first slot. Each call after that moves to the next slot.
+Then, this method returns false and clears the buffer.
+*/
+static bool
+next_possible_thing (Game * game, Thing ** thing)
 {
     if (*thing == NULL)
     {
@@ -47,10 +54,16 @@ next_thing (Game * game, Thing ** thing)
         return true;
 }
 
+/*
+Returns the next thing in the things array, skipping any dead things.
+Start by passing a NULL-initialized 'thing' buffer, and this will give
+you a pointer to the first live thing. Each call after that moves to the
+next slot. Then, this method returns false and clears the buffer.
+*/
 bool
-next_live_thing (Game * game, Thing ** thing)
+next_thing (Game * game, Thing ** thing)
 {
-    while (next_thing (game, thing))
+    while (next_possible_thing (game, thing))
     {
         if (is_thing_alive (*thing))
             return true;
@@ -76,7 +89,7 @@ This function can only find things that are alive.
 bool
 next_thing_at (Game * game, Loc where, Thing ** found)
 {
-    while (next_live_thing (game, found))
+    while (next_thing (game, found))
     {
         if (equal_locs ((*found)->loc, where))
             return true;
@@ -98,7 +111,7 @@ Thing *
 new_thing (Game * game, Thing thing)
 {
     Thing *player = get_player (game);
-    for (Thing * candidate = NULL; next_thing (game, &candidate);)
+    for (Thing * candidate = NULL; next_possible_thing (game, &candidate);)
     {
         if (!is_thing_alive (candidate) && candidate != player)
         {
@@ -138,7 +151,7 @@ int
 get_total_gold (Game * game)
 {
     int total = 0;
-    for (Thing * th = NULL; next_live_thing (game, &th);)
+    for (Thing * th = NULL; next_thing (game, &th);)
         total += th->gold;
     return total;
 }
@@ -157,7 +170,7 @@ perform_turns (Game * game)
     Thing *actor = NULL;
     while (is_thing_alive (player))
     {
-        if (next_live_thing (game, &actor))
+        if (next_thing (game, &actor))
         {
             if (actor->remaining_wait <= 0)
             {

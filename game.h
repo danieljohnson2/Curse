@@ -3,12 +3,11 @@
 
 #include "defs.h"
 
-Game make_game (Map map, Thing player);
+void init_game (Game * game, Map map, Thing player);
 
 Thing *get_player (Game * game);
 
 bool next_thing (Game * game, Thing ** thing);
-bool next_live_thing (Game * game, Thing ** thing);
 bool next_thing_at (Game * game, Loc where, Thing ** found);
 
 Thing *get_player (Game * game);
