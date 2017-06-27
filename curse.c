@@ -75,6 +75,7 @@ read_args (int argc, char **argv, int *seed, MapShape * shape)
     }
 
     if (*seed == INT_MIN)
+
     {
         srand (time (NULL));
         *seed = rand ();
