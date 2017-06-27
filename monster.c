@@ -49,12 +49,9 @@ int
 count_monsters (Game * game)
 {
     int count = 0;
-
-    for (int i = 0; i < THING_COUNT; ++i)
+    for (Thing * th = NULL; next_live_thing (game, &th);)
     {
-        Thing *th = &game->things[i];
-        if (is_thing_alive (th)
-            && th->turn_action == chase_player_turn_action)
+        if (th->turn_action == chase_player_turn_action)
             ++count;
     }
 
@@ -68,10 +65,10 @@ maximum number of monsters. Even then it will spawn only occasionally,
 at random. The more monsters exist, the more rarely we spawn
 new ones.
 
-This returns the index of the new moster, or -1 if it failed to
+This returns a pointer tot he monster, or NULL if it failed to
 spawn one.
 */
-int
+Thing *
 try_spawn_monster (Game * game)
 {
     Thing *player = get_player (game);
@@ -91,7 +88,7 @@ try_spawn_monster (Game * game)
         }
     }
 
-    return -1;
+    return NULL;
 }
 
 /* A turn action function for monsters; they chse the player. */

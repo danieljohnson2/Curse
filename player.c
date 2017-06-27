@@ -1,6 +1,7 @@
+#include "player.h"
 #include "thing.h"
 #include "monster.h"
-#include "player.h"
+#include "game.h"
 #include "map.h"
 #include "message.h"
 #include "loc.h"
@@ -19,13 +20,6 @@ make_player (Map * map, TurnAction turn_action)
     player.hp = 20;
     player.dmg = 5;
     return player;
-}
-
-/* Returns the player (who might be dead!) */
-Thing *
-get_player (Game * game)
-{
-    return &game->things[game->player_index];
 }
 
 /*

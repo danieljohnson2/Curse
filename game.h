@@ -6,11 +6,17 @@
 Game make_game (Map map, Thing player);
 
 Thing *get_player (Game * game);
-bool find_thing_at (Game * game, Loc where, Thing ** found);
 
-int new_thing (Game * game, Thing thing);
-int place_thing (Game * game, Loc origin, Thing thing);
+bool next_thing (Game * game, Thing ** thing);
+bool next_live_thing (Game * game, Thing ** thing);
+bool next_thing_at (Game * game, Loc where, Thing ** found);
+
+Thing *get_player (Game * game);
+Thing *new_thing (Game * game, Thing thing);
+Thing *place_thing (Game * game, Loc origin, Thing thing);
 Loc find_empty_place (Game * game, Loc origin);
+
+int get_total_gold (Game * game);
 
 void perform_turns (Game * game);
 

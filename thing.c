@@ -104,8 +104,8 @@ try_move_thing_to (Game * game, Thing * mover, Loc dest)
     if (speed_penalty == INT_MAX)
         return false;
 
-    Thing *hit = NULL;
-    while (is_thing_alive (mover) && find_thing_at (game, dest, &hit))
+    for (Thing * hit = NULL;
+         is_thing_alive (mover) && next_thing_at (game, dest, &hit);)
     {
         if (hit != mover && !hit->bump_action (game, mover, hit))
             return true;

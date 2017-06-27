@@ -50,7 +50,7 @@ static void
 read_args (int argc, char **argv, int *seed, MapShape * shape)
 {
     *seed = INT_MIN;
-    *shape = band_shape;
+    *shape = round_shape;
 
     int opt;
     while ((opt = getopt (argc, argv, "s:m:h")) != -1)

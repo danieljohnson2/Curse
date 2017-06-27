@@ -231,31 +231,27 @@ paint (Game * game, bool messages)
         }
     }
 
-    for (int i = 0; i < THING_COUNT; ++i)
+    for (Thing * thing = NULL; next_live_thing (game, &thing);)
     {
-        Thing *thing = &game->things[i];
+        int col = thing->loc.x - origin.x;
+        int row = thing->loc.y - origin.y;
 
-        if (is_thing_alive (thing))
+        if (col >= 0 && row >= 0 && col < maxcol && row < maxrow)
         {
-            int col = thing->loc.x - origin.x;
-            int row = thing->loc.y - origin.y;
+            int ch = get_appearance_char (thing->appearance);
+            mvwaddch (map_w, row, col, ch);
 
-            if (col >= 0 && row >= 0 && col < maxcol && row < maxrow)
+            if (thing == player)
             {
-                int ch = get_appearance_char (thing->appearance);
-                mvwaddch (map_w, row, col, ch);
-
-                if (thing == player)
-                {
-                    finalcursorrow = row;
-                    finalcursorcolumn = col;
-                }
+                finalcursorrow = row;
+                finalcursorcolumn = col;
             }
         }
     }
 
     werase (status_w);
-    mvwprintw (status_w, 0, 0, "HP: %d Gold: %d", player->hp, player->gold);
+    mvwprintw (status_w, 0, 0, "HP: %d Gold: %d/%d", player->hp, player->gold,
+               get_total_gold (game));
 
     wrefresh (map_w);
     wrefresh (status_w);
