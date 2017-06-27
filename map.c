@@ -3,6 +3,7 @@
 #include "thing.h"
 #include "util.h"
 
+#include <string.h>
 #include <stdlib.h>
 #include <math.h>
 #include <limits.h>
@@ -136,6 +137,22 @@ find_passable_place (Map * map, Loc origin)
         if (get_terrain_speed_penalty (t) < INT_MAX)
             return c;
     }
+}
+
+/*
+Resolves a shape name (used inth ecommand line arguments) to
+the shape function. Returns null if the name is not valid.
+*/
+MapShape
+get_shape_name (char *shape_name)
+{
+    if (strcmp (shape_name, "round") == 0)
+        return round_shape;
+
+    if (strcmp (shape_name, "band") == 0)
+        return band_shape;
+
+    return NULL;
 }
 
 /* Defines a map shape that is circular. */
