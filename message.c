@@ -33,11 +33,14 @@ flush_current_buffer (char *buffer, char *prior, char *current, int *repeats)
 }
 
 /*
-This updates the game's 'message' buffer to remove duplicate message
-and insert repetition indicators.
+This copies the message to the result buffer given; if there are
+duplicate messages this will consolidate them.
+
+The buffer should be MESSAGE_SIZE chars long, including the null
+terminator.
 */
-static void
-consolidate_message ()
+void
+read_message (char *result)
 {
     // An extra initial space makes matching more
     // reliable. This way every message is preceeded by
@@ -75,15 +78,14 @@ consolidate_message ()
     flush_current_buffer (buffer, prior, current, &repeats);
 
     // skip that extra space at the start of buffer
-    strtcpy (pending_message, buffer + 1, MESSAGE_SIZE);
+    strtcpy (result, buffer + 1, MESSAGE_SIZE);
 }
 
+/* Removes the pending message */
 void
-read_message (char *message)
+clear_message (char *message)
 {
-    consolidate_message ();
-    strtcpy (message, pending_message, MESSAGE_SIZE);
-    memset (pending_message, '\0', MESSAGE_SIZE);
+    pending_message[0] = '\0';
 }
 
 /* Appends a message to the current message. */

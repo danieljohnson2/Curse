@@ -252,6 +252,7 @@ paint (bool messages)
     wrefresh (status_w);
 
     show_message ();
+    clear_message ();
 
     if (finalcursorrow >= 0)
     {
