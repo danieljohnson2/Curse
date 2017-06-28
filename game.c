@@ -11,19 +11,21 @@
 
 #define PLAYER_INDEX 0
 
-Game game;
+static Map game_map;
+static Thing game_things[THING_COUNT];
 
 /*
-Initializes the game. This clears 'game' to zero and
-fills in the map and player data, then adds some
+Initializes the game. This clears all the thing data,
+copies in the map data and the player, then adds some
 treasures to it.
 */
 void
 init_game (Map map, Thing player)
 {
-    memset (&game, 0, sizeof (Game));
-    game.map = map;
-    game.things[PLAYER_INDEX] = player;
+    game_map = map;
+
+    memset (&game_things, 0, sizeof (game_things));
+    game_things[PLAYER_INDEX] = player;
 
     for (int i = 0; i < TREASURE_COUNT; ++i)
         place_thing (make_loc (0, 0), make_random_treasure ());
@@ -40,13 +42,13 @@ next_possible_thing (Thing ** thing)
 {
     if (*thing == NULL)
     {
-        *thing = game.things;
+        *thing = game_things;
         return true;
     }
 
     (*thing)++;
 
-    if (*thing == &game.things[THING_COUNT])
+    if (*thing == &game_things[THING_COUNT])
     {
         *thing = NULL;
         return false;
@@ -99,11 +101,18 @@ next_thing_at (Loc where, Thing ** found)
     return false;
 }
 
+/* Returns the map the game is played in. */
+Map *
+get_map (void)
+{
+    return &game_map;
+}
+
 /* Returns the player (who might be dead!) */
 Thing *
 get_player (void)
 {
-    return &game.things[PLAYER_INDEX];
+    return &game_things[PLAYER_INDEX];
 }
 
 /* Adds a new thing to the game, and returns a pointer to the thing in
@@ -139,7 +148,7 @@ find_empty_place (Loc origin)
 {
     for (;;)
     {
-        Loc c = find_passable_place (&game.map, origin);
+        Loc c = find_passable_place (get_map (), origin);
 
         Thing *start = NULL;
         if (!next_thing_at (c, &start))

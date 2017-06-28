@@ -223,7 +223,7 @@ paint (bool messages)
         for (int col = 0; col < maxcol; ++col)
         {
             Loc map_loc = offset_loc (origin, col, row);
-            Terrain t = read_map (&game.map, map_loc);
+            Terrain t = read_map (get_map (), map_loc);
             int ch = get_terrain_char (t);
             mvwaddch (map_w, row, col, ch);
         }

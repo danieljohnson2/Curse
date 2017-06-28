@@ -8,6 +8,7 @@ void init_game (Map map, Thing player);
 bool next_thing (Thing ** thing);
 bool next_thing_at (Loc where, Thing ** found);
 
+Map *get_map (void);
 Thing *get_player (void);
 Thing *new_thing (Thing thing);
 Thing *place_thing (Loc origin, Thing thing);
