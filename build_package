@@ -1,5 +1,5 @@
 make clean
-make CFLAGS="-Wall" LDFLAGS="-s"
+make CFLAGS="-Wall -Werror" LDFLAGS="-s"
 sudo rm -rf build
 sudo mkdir -p build/curse_0.1/usr/games/
 sudo mkdir -p build/curse_0.1/usr/share/applications/
@@ -7,13 +7,13 @@ sudo mkdir -p build/curse_0.1/usr/share/icons/hicolor/256x256/apps/
 sudo mkdir -p build/curse_0.1/usr/share/doc/curse/
 sudo mkdir -p build/curse_0.1/usr/share/man/man6/
 sudo cp curse build/curse_0.1/usr/games/
-sudo cp *.desktop build/curse_0.1/usr/share/applications
-sudo cp *.png build/curse_0.1/usr/share/icons/hicolor/256x256/apps
+sudo cp desktop/*.desktop build/curse_0.1/usr/share/applications
+sudo cp desktop/*.png build/curse_0.1/usr/share/icons/hicolor/256x256/apps
 sudo cp License.txt build/curse_0.1/usr/share/doc/curse/copyright
 sudo cp README.txt build/curse_0.1/usr/share/doc/curse/changelog
 sudo gzip -9 -n build/curse_0.1/usr/share/doc/curse/changelog
 sudo cp -r DEBIAN build/curse_0.1/
-sudo cp man/curse.6 build/curse_0.1/usr/share/man/man6/
+sudo cp desktop/curse.6 build/curse_0.1/usr/share/man/man6/
 sudo gzip -9 -n build/curse_0.1/usr/share/man/man6/curse.6
 sudo chown root:root -R build/curse_0.1/
 sudo dpkg --build build/curse_0.1/

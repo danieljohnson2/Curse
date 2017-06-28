@@ -35,9 +35,21 @@ init_windows (void)
     init_pair (2, COLOR_YELLOW, COLOR_BLACK);
     init_pair (3, COLOR_GREEN, COLOR_BLACK);
     init_pair (4, COLOR_WHITE, COLOR_BLACK);
+}
 
+/* Create and place windows according to the screen's size */
+void
+arrange_windows (void)
+{
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
+
+    if (message_w != NULL)
+        delwin (message_w);
+    if (map_w != NULL)
+        delwin (map_w);
+    if (status_w != NULL)
+        delwin (status_w);
 
     // first, draw the decorative border.
     refresh ();
@@ -301,6 +313,11 @@ read_player_action (void)
             return action;
         case ' ':
             return action;
+        
+        case KEY_RESIZE:
+        	arrange_windows();
+        	paint(false);
+        	break;
 
         default:
             {

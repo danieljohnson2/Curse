@@ -80,7 +80,10 @@ main (int argc, char **argv)
 
     Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
     init_game (map, make_player (&map, player_turn_action));
+
     center_view (get_player ()->loc);
+
+	arrange_windows();
     perform_turns ();
 
     paint (true);
