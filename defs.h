@@ -66,8 +66,8 @@ typedef enum _Appearance
 typedef struct _Thing Thing;
 typedef struct _Game Game;
 
-typedef bool (*BumpAction) (Game * game, Thing * actor, Thing * target);
-typedef void (*TurnAction) (Game * game, Thing * actor);
+typedef bool (*BumpAction) (Thing * actor, Thing * target);
+typedef void (*TurnAction) (Thing * actor);
 
 struct _Thing
 {
@@ -91,6 +91,8 @@ typedef struct _Game
     Map map;
     Thing things[THING_COUNT];
 } Game;
+
+extern Game game;
 
 typedef struct _PlayerAction
 {

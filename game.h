@@ -3,20 +3,18 @@
 
 #include "defs.h"
 
-void init_game (Game * game, Map map, Thing player);
+void init_game (Map map, Thing player);
 
-Thing *get_player (Game * game);
+bool next_thing (Thing ** thing);
+bool next_thing_at (Loc where, Thing ** found);
 
-bool next_thing (Game * game, Thing ** thing);
-bool next_thing_at (Game * game, Loc where, Thing ** found);
+Thing *get_player (void);
+Thing *new_thing (Thing thing);
+Thing *place_thing (Loc origin, Thing thing);
+Loc find_empty_place (Loc origin);
 
-Thing *get_player (Game * game);
-Thing *new_thing (Game * game, Thing thing);
-Thing *place_thing (Game * game, Loc origin, Thing thing);
-Loc find_empty_place (Game * game, Loc origin);
+int get_total_gold (void);
 
-int get_total_gold (Game * game);
-
-void perform_turns (Game * game);
+void perform_turns (void);
 
 #endif

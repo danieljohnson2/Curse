@@ -12,16 +12,14 @@
 #include <stdio.h>
 #include <limits.h>
 
-static Game game;
-
 static void
-player_turn_action (Game * game, Thing * player)
+player_turn_action (Thing * player)
 {
-    paint (game, true);
+    paint (true);
     PlayerAction action = read_player_action ();
 
     if (is_thing_alive (player))
-        perform_player_action (game, action);
+        perform_player_action (action);
 }
 
 /*
@@ -29,7 +27,7 @@ Exits the program with an error status and a usage message.
 Used when command line arguments are not satisfactory.
 */
 static void
-exit_with_usage ()
+exit_with_usage (void)
 {
     char usage[] = "curse [-s <seed>] [-m round|band]";
     fprintf (stderr, "%s\n", usage);
@@ -83,11 +81,11 @@ main (int argc, char **argv)
     init_windows ();
 
     Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
-    init_game (&game, map, make_player (&map, player_turn_action));
-    center_view (get_player (&game)->loc);
-    perform_turns (&game);
+    init_game (map, make_player (&map, player_turn_action));
+    center_view (get_player ()->loc);
+    perform_turns ();
 
-    paint (&game, true);
+    paint (true);
     game_over ();
     end_windows ();
     return 0;

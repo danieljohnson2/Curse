@@ -46,10 +46,10 @@ make_random_monster (void)
 
 /* Returns the number of live monsters in the game */
 int
-count_monsters (Game * game)
+count_monsters (void)
 {
     int count = 0;
-    for (Thing * th = NULL; next_thing (game, &th);)
+    for (Thing * th = NULL; next_thing (&th);)
     {
         if (th->turn_action == chase_player_turn_action)
             ++count;
@@ -69,21 +69,20 @@ This returns a pointer tot he monster, or NULL if it failed to
 spawn one.
 */
 Thing *
-try_spawn_monster (Game * game)
+try_spawn_monster (void)
 {
-    Thing *player = get_player (game);
+    Thing *player = get_player ();
 
     if (is_thing_alive (player))
     {
-        int count = count_monsters (game);
+        int count = count_monsters ();
 
         if (count < MONSTER_MAX)
         {
             if (count < (rand () % MONSTER_MAX) &&
                 (rand () % TURNS_PER_SPAWN) == 0)
             {
-                return place_thing (game, player->loc,
-                                    make_random_monster ());
+                return place_thing (player->loc, make_random_monster ());
             }
         }
     }
@@ -93,12 +92,12 @@ try_spawn_monster (Game * game)
 
 /* A turn action function for monsters; they chse the player. */
 void
-chase_player_turn_action (Game * game, Thing * actor)
+chase_player_turn_action (Thing * actor)
 {
-    Thing *player = get_player (game);
+    Thing *player = get_player ();
 
     if (is_thing_alive (player))
-        move_thing_towards (game, actor, player);
+        move_thing_towards (actor, player);
 }
 
 static int
@@ -120,7 +119,7 @@ roll_attack_damage (Thing * actor)
 
 /* A bump-action that triggers combat */
 bool
-attack_bump_action (Game * game, Thing * actor, Thing * target)
+attack_bump_action (Thing * actor, Thing * target)
 {
     int dmg = roll_attack_damage (actor);
 
@@ -144,7 +143,7 @@ attack_bump_action (Game * game, Thing * actor, Thing * target)
         {
             Thing drop = make_treasure (target->gold);
             drop.loc = target->loc;
-            new_thing (game, drop);
+            new_thing (drop);
         }
 
         remove_thing (target);

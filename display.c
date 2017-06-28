@@ -175,8 +175,7 @@ show_message ()
 }
 
 static Loc
-update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
-             int height)
+update_view (Thing * thing, int marginx, int marginy, int width, int height)
 {
     Loc offset = make_loc (width / 2, height / 2);
     Loc origin = subtract_locs (view_center, offset);
@@ -208,14 +207,14 @@ This can also display the game's pending messages,
 if you pass true in 'messages'.
 */
 void
-paint (Game * game, bool messages)
+paint (bool messages)
 {
-    Thing *player = get_player (game);
+    Thing *player = get_player ();
 
     int maxrow, maxcol;
     getmaxyx (map_w, maxrow, maxcol);
 
-    Loc origin = update_view (game, player, 16, 4, maxcol, maxrow);
+    Loc origin = update_view (player, 16, 4, maxcol, maxrow);
 
     int finalcursorrow = 0, finalcursorcolumn = 0;
 
@@ -224,13 +223,13 @@ paint (Game * game, bool messages)
         for (int col = 0; col < maxcol; ++col)
         {
             Loc map_loc = offset_loc (origin, col, row);
-            Terrain t = read_map (&game->map, map_loc);
+            Terrain t = read_map (&game.map, map_loc);
             int ch = get_terrain_char (t);
             mvwaddch (map_w, row, col, ch);
         }
     }
 
-    for (Thing * thing = NULL; next_thing (game, &thing);)
+    for (Thing * thing = NULL; next_thing (&thing);)
     {
         int col = thing->loc.x - origin.x;
         int row = thing->loc.y - origin.y;
@@ -250,7 +249,7 @@ paint (Game * game, bool messages)
 
     werase (status_w);
     mvwprintw (status_w, 0, 0, "HP: %d Gold: %d/%d", player->hp, player->gold,
-               get_total_gold (game));
+               get_total_gold ());
 
     wrefresh (map_w);
     wrefresh (status_w);

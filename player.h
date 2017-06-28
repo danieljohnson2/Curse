@@ -5,7 +5,7 @@
 
 Thing make_player (Map * map, TurnAction turn_action);
 
-void perform_player_action (Game * game, PlayerAction action);
-void move_player_by (Game * game, int dx, int dy);
+void perform_player_action (PlayerAction action);
+void move_player_by (int dx, int dy);
 
 #endif

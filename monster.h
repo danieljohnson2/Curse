@@ -4,10 +4,10 @@
 #include "defs.h"
 
 Thing make_random_monster (void);
-int count_monsters (Game * game);
-Thing *try_spawn_monster (Game * game);
+int count_monsters (void);
+Thing *try_spawn_monster (void);
 
-void chase_player_turn_action (Game * game, Thing * actor);
-bool attack_bump_action (Game * game, Thing * actor, Thing * target);
+void chase_player_turn_action (Thing * actor);
+bool attack_bump_action (Thing * actor, Thing * target);
 
 #endif

@@ -27,12 +27,12 @@ Executes an action the user has indicated.
 For 'None' this generates an error message only.
 */
 void
-perform_player_action (Game * game, PlayerAction action)
+perform_player_action (PlayerAction action)
 {
     if (action.dx != 0 || action.dy != 0)
-        move_player_by (game, action.dx, action.dy);
+        move_player_by (action.dx, action.dy);
 
-    try_spawn_monster (game);
+    try_spawn_monster ();
 }
 
 /*
@@ -41,10 +41,10 @@ and writes a message (rather than retrying) if the player moves
 into impassible terrain.
 */
 void
-move_player_by (Game * game, int dx, int dy)
+move_player_by (int dx, int dy)
 {
-    Thing *player = get_player (game);
+    Thing *player = get_player ();
 
-    if (!try_move_thing_by (game, player, dx, dy))
+    if (!try_move_thing_by (player, dx, dy))
         write_message ("Impassible!");
 }

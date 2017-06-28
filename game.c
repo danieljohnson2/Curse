@@ -11,20 +11,22 @@
 
 #define PLAYER_INDEX 0
 
+Game game;
+
 /*
 Initializes the game. This clears 'game' to zero and
 fills in the map and player data, then adds some
 treasures to it.
 */
 void
-init_game (Game * game, Map map, Thing player)
+init_game (Map map, Thing player)
 {
-    memset (game, 0, sizeof (Game));
-    game->map = map;
-    game->things[PLAYER_INDEX] = player;
+    memset (&game, 0, sizeof (Game));
+    game.map = map;
+    game.things[PLAYER_INDEX] = player;
 
     for (int i = 0; i < TREASURE_COUNT; ++i)
-        place_thing (game, make_loc (0, 0), make_random_treasure ());
+        place_thing (make_loc (0, 0), make_random_treasure ());
 }
 
 /*
@@ -34,17 +36,17 @@ to the first slot. Each call after that moves to the next slot.
 Then, this method returns false and clears the buffer.
 */
 static bool
-next_possible_thing (Game * game, Thing ** thing)
+next_possible_thing (Thing ** thing)
 {
     if (*thing == NULL)
     {
-        *thing = game->things;
+        *thing = game.things;
         return true;
     }
 
     (*thing)++;
 
-    if (*thing == &game->things[THING_COUNT])
+    if (*thing == &game.things[THING_COUNT])
     {
         *thing = NULL;
         return false;
@@ -60,9 +62,9 @@ you a pointer to the first live thing. Each call after that moves to the
 next slot. Then, this method returns false and clears the buffer.
 */
 bool
-next_thing (Game * game, Thing ** thing)
+next_thing (Thing ** thing)
 {
-    while (next_possible_thing (game, thing))
+    while (next_possible_thing (thing))
     {
         if (is_thing_alive (*thing))
             return true;
@@ -86,9 +88,9 @@ and return false.
 This function can only find things that are alive.
 */
 bool
-next_thing_at (Game * game, Loc where, Thing ** found)
+next_thing_at (Loc where, Thing ** found)
 {
-    while (next_thing (game, found))
+    while (next_thing (found))
     {
         if (equal_locs ((*found)->loc, where))
             return true;
@@ -99,18 +101,18 @@ next_thing_at (Game * game, Loc where, Thing ** found)
 
 /* Returns the player (who might be dead!) */
 Thing *
-get_player (Game * game)
+get_player (void)
 {
-    return &game->things[PLAYER_INDEX];
+    return &game.things[PLAYER_INDEX];
 }
 
 /* Adds a new thing to the game, and returns a pointer to the thing in
 the game itself, or NULL if there is no room for it. */
 Thing *
-new_thing (Game * game, Thing thing)
+new_thing (Thing thing)
 {
-    Thing *player = get_player (game);
-    for (Thing * candidate = NULL; next_possible_thing (game, &candidate);)
+    Thing *player = get_player ();
+    for (Thing * candidate = NULL; next_possible_thing (&candidate);)
     {
         if (!is_thing_alive (candidate) && candidate != player)
         {
@@ -125,32 +127,32 @@ new_thing (Game * game, Thing thing)
 /* Adds a new thing to the game, and places it randomly
 using find_empty_place(). */
 Thing *
-place_thing (Game * game, Loc origin, Thing thing)
+place_thing (Loc origin, Thing thing)
 {
-    thing.loc = find_empty_place (game, origin);
-    return new_thing (game, thing);
+    thing.loc = find_empty_place (origin);
+    return new_thing (thing);
 }
 
 /* Returns a random location that is passable and contains no things. */
 Loc
-find_empty_place (Game * game, Loc origin)
+find_empty_place (Loc origin)
 {
     for (;;)
     {
-        Loc c = find_passable_place (&game->map, origin);
+        Loc c = find_passable_place (&game.map, origin);
 
         Thing *start = NULL;
-        if (!next_thing_at (game, c, &start))
+        if (!next_thing_at (c, &start))
             return c;
     }
 }
 
 /* Returns the total gold in all live things */
 int
-get_total_gold (Game * game)
+get_total_gold (void)
 {
     int total = 0;
-    for (Thing * th = NULL; next_thing (game, &th);)
+    for (Thing * th = NULL; next_thing (&th);)
         total += th->gold;
     return total;
 }
@@ -162,18 +164,18 @@ player's turn action; if the player is dead then this
 function immediately exits.
 */
 void
-perform_turns (Game * game)
+perform_turns (void)
 {
-    Thing *player = get_player (game);
+    Thing *player = get_player ();
 
     Thing *actor = NULL;
     while (is_thing_alive (player))
     {
-        if (next_thing (game, &actor))
+        if (next_thing (&actor))
         {
             if (actor->remaining_wait <= 0)
             {
-                actor->turn_action (game, actor);
+                actor->turn_action (actor);
                 actor->remaining_wait += SPEED_MAX;
             }
 

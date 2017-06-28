@@ -15,12 +15,11 @@ Thing make_thing (Appearance appearance, char *name, int speed,
 void remove_thing (Thing * thing);
 bool is_thing_alive (Thing * thing);
 
-void move_thing_towards (Game * game, Thing * mover, Thing * target);
-bool try_move_thing_by (Game * game, Thing * mover, int dx, int dy);
-bool try_move_thing_to (Game * game, Thing * mover, Loc dest);
+void move_thing_towards (Thing * mover, Thing * target);
+bool try_move_thing_by (Thing * mover, int dx, int dy);
+bool try_move_thing_to (Thing * mover, Loc dest);
 
-void null_turn_action (Game * game, Thing * actor);
-
-bool null_bump_action (Game * game, Thing * actor, Thing * target);
+void null_turn_action (Thing * actor);
+bool null_bump_action (Thing * actor, Thing * target);
 
 #endif
