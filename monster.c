@@ -152,6 +152,6 @@ attack_bump_action (Game * game, Thing * actor, Thing * target)
         sprintf (msg, "%s killed %s!", actor->name, target->name);
     }
 
-    write_game_message (game, msg);
+    write_message (msg);
     return false;
 }

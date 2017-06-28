@@ -21,7 +21,6 @@ init_game (Game * game, Map map, Thing player)
 {
     memset (game, 0, sizeof (Game));
     game->map = map;
-    game->view_center = player.loc;
     game->things[PLAYER_INDEX] = player;
 
     for (int i = 0; i < TREASURE_COUNT; ++i)

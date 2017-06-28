@@ -15,6 +15,8 @@ static WINDOW *map_w;
 static WINDOW *message_w;
 static WINDOW *status_w;
 
+static Loc view_center;
+
 static void
 show_error (char *error)
 {
@@ -124,18 +126,15 @@ get_appearance_char (Appearance appearance)
 }
 
 static void
-show_message (Game * game)
+show_message ()
 {
-    consolidate_game_messages (game);
-
     int rows, columns;
     getmaxyx (message_w, rows, columns);
     (void) rows;                // suppress warning
 
-    char buffer[MESSAGE_SIZE];
-    strtcpy (buffer, game->message, MESSAGE_SIZE);
-
-    char *start = buffer;
+    char message[MESSAGE_SIZE];
+    read_message (message);
+    char *start = message;
 
     werase (message_w);
 
@@ -145,7 +144,7 @@ show_message (Game * game)
 
     while (start[0] != '\0')
     {
-        if (start > buffer)
+        if (start > message)
         {
             mvwaddstr (message_w, 0, line_limit, more_text);
             wgetch (message_w);
@@ -180,7 +179,7 @@ update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
              int height)
 {
     Loc offset = make_loc (width / 2, height / 2);
-    Loc origin = subtract_locs (game->view_center, offset);
+    Loc origin = subtract_locs (view_center, offset);
 
     int left = origin.x + marginx;
     int right = origin.x + width - marginx;
@@ -199,7 +198,7 @@ update_view (Game * game, Thing * thing, int marginx, int marginy, int width,
     else if (l.y > bottom)
         origin.y = l.y - height + marginy;
 
-    game->view_center = add_locs (origin, offset);
+    view_center = add_locs (origin, offset);
     return origin;
 }
 
@@ -256,13 +255,19 @@ paint (Game * game, bool messages)
     wrefresh (map_w);
     wrefresh (status_w);
 
-    show_message (game);
+    show_message ();
 
     if (finalcursorrow >= 0)
     {
         wmove (map_w, finalcursorrow, finalcursorcolumn);
         wrefresh (map_w);
     }
+}
+
+void
+center_view (Loc target)
+{
+    view_center = target;
 }
 
 /*

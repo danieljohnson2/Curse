@@ -19,7 +19,6 @@ player_turn_action (Game * game, Thing * player)
 {
     paint (game, true);
     PlayerAction action = read_player_action ();
-    clear_game_message (game);
 
     if (is_thing_alive (player))
         perform_player_action (game, action);
@@ -85,7 +84,7 @@ main (int argc, char **argv)
 
     Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
     init_game (&game, map, make_player (&map, player_turn_action));
-
+    center_view (get_player (&game)->loc);
     perform_turns (&game);
 
     paint (&game, true);

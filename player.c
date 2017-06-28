@@ -46,5 +46,5 @@ move_player_by (Game * game, int dx, int dy)
     Thing *player = get_player (game);
 
     if (!try_move_thing_by (game, player, dx, dy))
-        write_game_message (game, "Impassible!");
+        write_message ("Impassible!");
 }

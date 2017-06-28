@@ -5,28 +5,10 @@
 #include <string.h>
 #include <stdio.h>
 
-/* Clears the current message */
-void
-clear_game_message (Game * game)
-{
-    memset (game->message, '\0', MESSAGE_SIZE);
-}
-
-/* Appends a message to the current message. */
-void
-write_game_message (Game * game, char *message)
-{
-    if (game->message[0] == '\0')
-        strtcpy (game->message, message, MESSAGE_SIZE);
-    else
-    {
-        strtcat (game->message, " ", MESSAGE_SIZE);
-        strtcat (game->message, message, MESSAGE_SIZE);
-    }
-}
+static char pending_message[MESSAGE_SIZE];
 
 /*
-Utility for consolidate_game_messages().
+Utility for consolidate_message().
 This appends 'prior' to buffer, and if *repeats is >1, appends
 a repeat indicator and resets *repeats to 1.
 
@@ -55,8 +37,8 @@ flush_current_buffer (char *buffer, char *prior, char *current, int *repeats)
 This updates the game's 'message' buffer to remove duplicate message
 and insert repetition indicators.
 */
-void
-consolidate_game_messages (Game * game)
+static void
+consolidate_message ()
 {
     // An extra initial space makes matching more
     // reliable. This way every message is preceeded by
@@ -64,7 +46,7 @@ consolidate_game_messages (Game * game)
 
     char input[MESSAGE_SIZE + 1];
     input[0] = ' ';
-    strtcpy (input + 1, game->message, MESSAGE_SIZE);
+    strtcpy (input + 1, pending_message, MESSAGE_SIZE);
 
     char buffer[MESSAGE_SIZE] = "";
     char prior[MESSAGE_SIZE] = "";
@@ -94,5 +76,26 @@ consolidate_game_messages (Game * game)
     flush_current_buffer (buffer, prior, current, &repeats);
 
     // skip that extra space at the start of buffer
-    strtcpy (game->message, buffer + 1, MESSAGE_SIZE);
+    strtcpy (pending_message, buffer + 1, MESSAGE_SIZE);
+}
+
+void
+read_message (char *message)
+{
+    consolidate_message ();
+    strtcpy (message, pending_message, MESSAGE_SIZE);
+    memset (pending_message, '\0', MESSAGE_SIZE);
+}
+
+/* Appends a message to the current message. */
+void
+write_message (char *message)
+{
+    if (pending_message[0] == '\0')
+        strtcpy (pending_message, message, MESSAGE_SIZE);
+    else
+    {
+        strtcat (pending_message, " ", MESSAGE_SIZE);
+        strtcat (pending_message, message, MESSAGE_SIZE);
+    }
 }

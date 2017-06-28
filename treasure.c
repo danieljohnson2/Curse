@@ -11,7 +11,7 @@ treasure_bump_action (Game * game, Thing * actor, Thing * target)
 {
     char msg[MESSAGE_SIZE];
     sprintf (msg, "%s picks up %d gold!", actor->name, target->gold);
-    write_game_message (game, msg);
+    write_message (msg);
 
     actor->gold += target->gold;
     remove_thing (target);

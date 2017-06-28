@@ -3,8 +3,7 @@
 
 #include "defs.h"
 
-void clear_game_message (Game * game);
-void write_game_message (Game * game, char *message);
-void consolidate_game_messages (Game * game);
+void read_message (char *message);
+void write_message (char *message);
 
 #endif

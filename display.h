@@ -9,6 +9,7 @@ void game_over (void);
 
 void paint (Game * game, bool messages);
 
+void center_view (Loc target);
 PlayerAction read_player_action (void);
 
 #endif

@@ -89,9 +89,6 @@ struct _Thing
 typedef struct _Game
 {
     Map map;
-    Loc view_center;
-
-    char message[MESSAGE_SIZE];
     Thing things[THING_COUNT];
 } Game;
 
