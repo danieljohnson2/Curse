@@ -1,6 +1,5 @@
 #include "map.h"
-#include "perlin.h"
-#include "thing.h"
+#include "action.h"
 #include "util.h"
 
 #include <string.h>

@@ -1,14 +1,16 @@
 #include "game.h"
 #include "map.h"
 #include "monster.h"
-#include "thing.h"
+#include "action.h"
 #include "player.h"
 #include "treasure.h"
+
 #include "util.h"
 #include "loc.h"
 
 #include <string.h>
 
+#define THING_COUNT 32
 #define PLAYER_INDEX 0
 
 static Map game_map;
@@ -154,6 +156,26 @@ find_empty_place (Loc origin)
         if (!next_thing_at (c, &start))
             return c;
     }
+}
+
+/*
+Removes a thing by clearing its appearance; we do not draw
+a thing so treated, nor does it get a turn, nor can it be bumped
+into.
+*/
+void
+remove_thing (Thing * thing)
+{
+    thing->appearance = '\0';
+}
+
+/*
+Tests to see if the thing given is still alive.
+*/
+bool
+is_thing_alive (Thing * thing)
+{
+    return thing->appearance != '\0';
 }
 
 /* Returns the total gold in all live things */

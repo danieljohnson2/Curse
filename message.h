@@ -1,7 +1,7 @@
 #ifndef MESSAGE_H_INCLUDED
 #define MESSAGE_H_INCLUDED
 
-#include "defs.h"
+#define MESSAGE_SIZE 512
 
 void read_message (char *message);
 void write_message (char *message);

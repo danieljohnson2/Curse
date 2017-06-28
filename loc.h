@@ -1,7 +1,12 @@
 #ifndef LOC_H_INCLUDED
 #define LOC_H_INCLUDED
 
-#include "defs.h"
+#include <stdbool.h>
+
+typedef struct _Loc
+{
+    int x, y;
+} Loc;
 
 Loc make_loc (int x, int y);
 Loc subtract_locs (Loc left, Loc right);

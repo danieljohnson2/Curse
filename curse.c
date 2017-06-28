@@ -2,7 +2,6 @@
 #include "map.h"
 #include "game.h"
 #include "player.h"
-#include "thing.h"
 #include "message.h"
 #include "display.h"
 

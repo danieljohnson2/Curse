@@ -1,7 +1,7 @@
 #ifndef MONSTER_H_INCLUDED
 #define MONSTER_H_INCLUDED
 
-#include "defs.h"
+#include "thing.h"
 
 Thing make_random_monster (void);
 int count_monsters (void);

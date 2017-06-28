@@ -1,7 +1,10 @@
 #ifndef DISPLAY_H_INCLUDED
 #define DISPLAY_H_INCLUDED
 
-#include "defs.h"
+#include "loc.h"
+#include "playeraction.h"
+
+#include <stdbool.h>
 
 void init_windows (void);
 void end_windows (void);

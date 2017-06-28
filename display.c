@@ -1,10 +1,10 @@
 #include "display.h"
-#include "loc.h"
-#include "thing.h"
-#include "player.h"
 #include "map.h"
 #include "message.h"
 #include "game.h"
+#include "thing.h"
+
+#include "loc.h"
 #include "util.h"
 
 #include <ncurses.h>

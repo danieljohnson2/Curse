@@ -1,7 +1,29 @@
 #ifndef MAP_H_INCLUDED
 #define MAP_H_INCLUDED
 
-#include "defs.h"
+#include "loc.h"
+#include "perlin.h"
+
+typedef struct _Map Map;
+typedef double (*MapShape) (Map * map, Loc where);
+
+struct _Map
+{
+    double soft_size;
+    MapShape shape;
+    Perlin perlin;
+};
+
+typedef enum _Terrain
+{
+    DEEP_SEA,
+    WATER,
+    BEACH,
+    GRASS,
+    WOODS,
+    HILLS,
+    MOUNTAINS
+} Terrain;
 
 Map make_map (double soft_size, MapShape shape, Perlin perlin);
 Terrain read_map (Map * map, Loc where);

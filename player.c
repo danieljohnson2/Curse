@@ -1,5 +1,5 @@
 #include "player.h"
-#include "thing.h"
+#include "action.h"
 #include "monster.h"
 #include "game.h"
 #include "map.h"
