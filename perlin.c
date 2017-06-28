@@ -1,9 +1,6 @@
 #include "perlin.h"
 
-#include <stdio.h>
-#include <memory.h>
 #include <stdlib.h>
-#include <float.h>
 #include <limits.h>
 
 // Borowed (with some rework) from https://gist.github.com/nowl/828013

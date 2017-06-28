@@ -1,13 +1,8 @@
 #include "game.h"
-#include "map.h"
-#include "monster.h"
 #include "action.h"
-#include "player.h"
 #include "treasure.h"
 
-#include "util.h"
-#include "loc.h"
-
+#include <stdlib.h>
 #include <string.h>
 
 #define THING_COUNT 32

@@ -4,9 +4,6 @@
 #include "game.h"
 #include "thing.h"
 
-#include "loc.h"
-#include "util.h"
-
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>

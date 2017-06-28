@@ -3,7 +3,6 @@
 #include "action.h"
 #include "message.h"
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 

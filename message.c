@@ -1,5 +1,4 @@
 #include "message.h"
-#include "game.h"
 #include "util.h"
 
 #include <string.h>

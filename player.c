@@ -4,9 +4,6 @@
 #include "game.h"
 #include "map.h"
 #include "message.h"
-#include "loc.h"
-
-#include <stdlib.h>
 
 /* This creates a player at a random place on the map. */
 Thing

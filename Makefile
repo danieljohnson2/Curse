@@ -1,4 +1,4 @@
-CFLAGS := -g -Wall -fmax-errors=3
+CFLAGS := -g -Wall -Werror -fmax-errors=3
 LDFLAGS :=
 LDLIBS := -lncurses -lm
 SRCS := $(wildcard *.c)

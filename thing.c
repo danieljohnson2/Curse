@@ -1,11 +1,5 @@
 #include "thing.h"
-#include "map.h"
-#include "game.h"
 #include "util.h"
-#include "loc.h"
-
-#include <stdlib.h>
-#include <limits.h>
 
 /*
 Create a thing in a single call.
