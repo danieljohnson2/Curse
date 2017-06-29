@@ -72,19 +72,36 @@ end_windows (void)
     endwin ();
 }
 
-/* Displays the game over message and waits for a keystroke */
+/* Displays a multi-line message, then waits for a keystroke */
 void
-game_over (void)
+long_message (char **lines)
 {
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
 
-    WINDOW *w = newwin (6, 40, rows - 12, (columns - 40) / 2);
-    box (w, 0, 0);
-    mvwaddstr (w, 2, 20 - 4, "Game Over");
-    mvwaddstr (w, 3, 20 - 8, "(press q to exit)");
+	int linecount = 0;
+	int maxlen = 0;
+	for(char **l = lines;*l!=NULL;++l)
+	{
+		++linecount;
+		int len = strlen(*l);
+		if (len>maxlen)
+			maxlen=len;
+	}
 
-    while (wgetch (w) != 'q')
+    WINDOW *w = newwin (linecount + 4, maxlen + 4, (rows-linecount)/2, (columns - maxlen) / 2 - 2);
+    box (w, 0, 0);
+    
+    int y = 2;
+    
+    for(char **l = lines;*l!=NULL;++l)
+	{
+		int len = strlen(*l);
+		mvwaddstr (w, y, (maxlen - len) / 2 + 2, *l);
+		++y;
+	}
+
+    while (wgetch (w) != ' ')
         continue;
 }
 

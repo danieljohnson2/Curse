@@ -2,10 +2,12 @@
 #define GAME_H_INCLUDED
 
 #include "map.h"
+#include "thing.h"
 
 typedef struct _Thing Thing;
 
 void init_game (Map map, Thing player);
+void next_level (void);
 
 bool next_thing (Thing ** thing);
 bool next_thing_at (Loc where, Thing ** found);

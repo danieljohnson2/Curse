@@ -28,6 +28,17 @@ init_game (Map map, Thing player)
         place_thing (make_loc (0, 0), make_random_treasure ());
 }
 
+void next_level (void)
+{
+	MapShape shape = game_map.shape;
+	int seed = rand();
+	Thing player = *get_player();
+
+	Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
+	player.loc = find_passable_place (&map, make_loc (0, 0));
+	init_game (map, player);
+}
+
 /*
 Returns the next slot in the things array. Start by passing
 a NULL-initialized 'thing' buffer, and this will give you a pointer

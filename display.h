@@ -9,7 +9,7 @@
 void init_windows (void);
 void arrange_windows (void);
 void end_windows (void);
-void game_over (void);
+void long_message (char **lines);
 
 void paint (bool messages);
 

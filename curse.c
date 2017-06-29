@@ -10,10 +10,22 @@
 #include <stdio.h>
 #include <limits.h>
 
+static char *level_clear_msg[] = { "Level Cleared!", "(press space for next level)", NULL };
+static char *game_over_msg[] = { "Game Over!", "(prese space to exit)", NULL };
+
 static void
 player_turn_action (Thing * player)
 {
     paint (true);
+    
+    if (player->gold>=get_total_gold())
+    {
+    	long_message(level_clear_msg);
+    	player->gold = 0;
+    	next_level();
+    	paint(true);
+	}
+    
     PlayerAction action = read_player_action ();
 
     if (is_thing_alive (player))
@@ -87,7 +99,8 @@ main (int argc, char **argv)
     perform_turns ();
 
     paint (true);
-    game_over ();
+    
+    long_message (game_over_msg);
     end_windows ();
     return 0;
 }
