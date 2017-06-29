@@ -1,12 +1,10 @@
 #ifndef GAME_H_INCLUDED
 #define GAME_H_INCLUDED
 
-#include "map.h"
 #include "thing.h"
+#include "map.h"
 
-typedef struct _Thing Thing;
-
-void init_game (Map map, Thing player);
+void start_game (Map map);
 void next_level (void);
 
 bool next_thing (Thing ** thing);

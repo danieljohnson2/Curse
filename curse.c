@@ -10,27 +10,8 @@
 #include <stdio.h>
 #include <limits.h>
 
-static char *level_clear_msg[] = { "Level Cleared!", "(press space for next level)", NULL };
-static char *game_over_msg[] = { "Game Over!", "(prese space to exit)", NULL };
-
-static void
-player_turn_action (Thing * player)
-{
-    paint (true);
-    
-    if (player->gold>=get_total_gold())
-    {
-    	long_message(level_clear_msg);
-    	player->gold = 0;
-    	next_level();
-    	paint(true);
-	}
-    
-    PlayerAction action = read_player_action ();
-
-    if (is_thing_alive (player))
-        perform_player_action (action);
-}
+static char *game_over_msg[] =
+    { "Game Over!", "(prese space to exit)", NULL };
 
 /*
 Exits the program with an error status and a usage message.
@@ -91,15 +72,15 @@ main (int argc, char **argv)
     init_windows ();
 
     Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
-    init_game (map, make_player (&map, player_turn_action));
+    start_game (map);
 
     center_view (get_player ()->loc);
 
-	arrange_windows();
+    arrange_windows ();
     perform_turns ();
 
     paint (true);
-    
+
     long_message (game_over_msg);
     end_windows ();
     return 0;

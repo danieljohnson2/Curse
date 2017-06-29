@@ -1,6 +1,8 @@
 #include "game.h"
-#include "action.h"
+#include "player.h"
 #include "treasure.h"
+#include "monster.h"
+#include "action.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -8,18 +10,23 @@
 #define THING_COUNT 32
 #define PLAYER_INDEX 0
 
+#define MONSTER_MAX 32
+#define TURNS_PER_SPAWN 8
+
 static Map game_map;
 static Thing game_things[THING_COUNT];
+static SpawnSettings game_spawn;
 
 /*
 Initializes the game. This clears all the thing data,
 copies in the map data and the player, then adds some
 treasures to it.
 */
-void
-init_game (Map map, Thing player)
+static void
+init_game (Map map, Thing player, SpawnSettings spawn)
 {
     game_map = map;
+    game_spawn = spawn;
 
     memset (&game_things, 0, sizeof (game_things));
     game_things[PLAYER_INDEX] = player;
@@ -28,15 +35,37 @@ init_game (Map map, Thing player)
         place_thing (make_loc (0, 0), make_random_treasure ());
 }
 
-void next_level (void)
+/* Starts a new game with the map given. */
+void
+start_game (Map map)
 {
-	MapShape shape = game_map.shape;
-	int seed = rand();
-	Thing player = *get_player();
+    SpawnSettings spawn;
+    spawn.max_monsters = 2;
+    spawn.turns_per_spawn = 64;
 
-	Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
-	player.loc = find_passable_place (&map, make_loc (0, 0));
-	init_game (map, player);
+    Thing player = make_player (&map);
+    init_game (map, player, spawn);
+}
+
+/*
+Re-initalizes the game for the next level.
+*/
+void
+next_level (void)
+{
+    SpawnSettings spawn = game_spawn;
+    MapShape shape = game_map.shape;
+    int seed = rand ();
+    Thing player = *get_player ();
+
+    if (spawn.turns_per_spawn > 1)
+        --spawn.turns_per_spawn;
+
+    spawn.max_monsters *= 2;
+
+    Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
+    player.loc = find_passable_place (&map, make_loc (0, 0));
+    init_game (map, player, spawn);
 }
 
 /*
@@ -217,9 +246,9 @@ perform_turns (void)
             }
 
             actor->remaining_wait -= actor->speed;
-        }
 
-        // if next_life_thing fails, we'll just start again
-        // with NULL.
+            if (actor == player)
+                try_spawn_monster (game_spawn);
+        }
     }
 }

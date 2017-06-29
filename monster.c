@@ -7,9 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MONSTER_MAX 32
-#define TURNS_PER_SPAWN 8
-
 #define CANDIDATE_MONSTER_COUNT 2
 
 static Thing
@@ -65,11 +62,11 @@ maximum number of monsters. Even then it will spawn only occasionally,
 at random. The more monsters exist, the more rarely we spawn
 new ones.
 
-This returns a pointer tot he monster, or NULL if it failed to
+This returns a pointer to the monster, or NULL if it failed to
 spawn one.
 */
 Thing *
-try_spawn_monster (void)
+try_spawn_monster (SpawnSettings spawn)
 {
     Thing *player = get_player ();
 
@@ -77,10 +74,10 @@ try_spawn_monster (void)
     {
         int count = count_monsters ();
 
-        if (count < MONSTER_MAX)
+        if (count < spawn.max_monsters)
         {
-            if (count < (rand () % MONSTER_MAX) &&
-                (rand () % TURNS_PER_SPAWN) == 0)
+            if ((count <= (rand () % spawn.max_monsters)) &&
+                ((rand () % spawn.turns_per_spawn) == 0))
             {
                 return place_thing (player->loc, make_random_monster ());
             }

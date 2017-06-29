@@ -79,27 +79,28 @@ long_message (char **lines)
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
 
-	int linecount = 0;
-	int maxlen = 0;
-	for(char **l = lines;*l!=NULL;++l)
-	{
-		++linecount;
-		int len = strlen(*l);
-		if (len>maxlen)
-			maxlen=len;
-	}
+    int linecount = 0;
+    int maxlen = 0;
+    for (char **l = lines; *l != NULL; ++l)
+    {
+        ++linecount;
+        int len = strlen (*l);
+        if (len > maxlen)
+            maxlen = len;
+    }
 
-    WINDOW *w = newwin (linecount + 4, maxlen + 4, (rows-linecount)/2, (columns - maxlen) / 2 - 2);
+    WINDOW *w = newwin (linecount + 4, maxlen + 4, (rows - linecount) / 2,
+                        (columns - maxlen) / 2 - 2);
     box (w, 0, 0);
-    
+
     int y = 2;
-    
-    for(char **l = lines;*l!=NULL;++l)
-	{
-		int len = strlen(*l);
-		mvwaddstr (w, y, (maxlen - len) / 2 + 2, *l);
-		++y;
-	}
+
+    for (char **l = lines; *l != NULL; ++l)
+    {
+        int len = strlen (*l);
+        mvwaddstr (w, y, (maxlen - len) / 2 + 2, *l);
+        ++y;
+    }
 
     while (wgetch (w) != ' ')
         continue;
@@ -330,11 +331,11 @@ read_player_action (void)
             return action;
         case ' ':
             return action;
-        
+
         case KEY_RESIZE:
-        	arrange_windows();
-        	paint(false);
-        	break;
+            arrange_windows ();
+            paint (false);
+            break;
 
         default:
             {
