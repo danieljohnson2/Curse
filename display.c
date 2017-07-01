@@ -220,17 +220,12 @@ update_view (Thing * thing, int marginx, int marginy, int width, int height)
 
     Loc l = thing->loc;
 
-    if (l.x < left)
-        origin.x = l.x - marginx;
-    else if (l.x > right)
-        origin.x = l.x - width + marginx;
+    if (l.x < left || l.x > right || l.y < top || l.y > bottom)
+    {
+        center_view (l);
+        origin = subtract_locs (view_center, offset);
+    }
 
-    if (l.y < top)
-        origin.y = l.y - marginy;
-    else if (l.y > bottom)
-        origin.y = l.y - height + marginy;
-
-    view_center = add_locs (origin, offset);
     return origin;
 }
 
