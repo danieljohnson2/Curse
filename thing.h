@@ -17,7 +17,10 @@ typedef enum _Appearance
     DEAD,
     PLAYER,
     GOBLIN,
+    ORC,
+    WARG,
     HALFLING,
+    ELF,
     SMALL_TREASURE,
     MEDIUM_TREASURE,
     LARGE_TREASURE

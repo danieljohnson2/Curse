@@ -42,6 +42,7 @@ start_game (Map map)
     SpawnSettings spawn;
     spawn.max_monsters = 2;
     spawn.turns_per_spawn = 64;
+    spawn.max_monster_level = 2;
 
     Thing player = make_player (&map);
     init_game (map, player, spawn);
@@ -62,6 +63,7 @@ next_level (void)
         --spawn.turns_per_spawn;
 
     spawn.max_monsters *= 2;
+    spawn.max_monster_level += 1;
 
     Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
     player.loc = find_passable_place (&map, make_loc (0, 0));

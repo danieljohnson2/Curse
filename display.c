@@ -139,8 +139,14 @@ get_appearance_char (Appearance appearance)
         return '@' | A_BOLD;
     case GOBLIN:
         return 'g' | A_BOLD;
+    case ORC:
+        return 'o' | A_BOLD;
+    case WARG:
+        return 'w' | A_BOLD;
     case HALFLING:
         return 'h' | A_BOLD;
+    case ELF:
+        return 'e' | A_BOLD;
     case SMALL_TREASURE:
         return '*' | COLOR_PAIR (2);
     case MEDIUM_TREASURE:

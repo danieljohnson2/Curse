@@ -7,22 +7,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define CANDIDATE_MONSTER_COUNT 2
+#define CANDIDATE_MONSTER_COUNT 5
+
+typedef struct _MonsterData
+{
+    Appearance appearance;
+    char *name;
+    int hp;
+    int dmg;
+    int speed;
+} MonsterData;
+
+static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
+    {GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2},
+    {HALFLING, "Halfling", 3, 2, (SPEED_DEFAULT * 3) / 2},
+    {ORC, "Orc", 10, 6, SPEED_DEFAULT},
+    {WARG, "Warg", 8, 5, SPEED_DEFAULT * 2},
+    {ELF, "Elf", 8, 9, SPEED_DEFAULT * 2}
+};
 
 static Thing
-make_monster (Appearance appearance, char *name, int hp, int dmg, int speed)
+make_monster (MonsterData data)
 {
-    Thing monster = make_thing (appearance, name, speed,
+    Thing monster = make_thing (data.appearance, data.name, data.speed,
                                 attack_bump_action,
                                 chase_player_turn_action);
-    monster.hp = hp;
-    monster.dmg = dmg;
+    monster.hp = data.hp;
+    monster.dmg = data.dmg;
     return monster;
 }
 
 /* This creates a random monster, located at 0, 0. */
 Thing
-make_random_monster (void)
+make_random_monster (int max_monster_level)
 {
     static bool initialized;
     static Thing candidates[CANDIDATE_MONSTER_COUNT];
@@ -31,13 +48,14 @@ make_random_monster (void)
     {
         initialized = true;
 
-        candidates[0] =
-            make_monster (GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2);
-        candidates[1] =
-            make_monster (HALFLING, "Halfling", 3, 2, SPEED_DEFAULT * 2);
+        for (int i = 0; i < CANDIDATE_MONSTER_COUNT; ++i)
+            candidates[i] = make_monster (monster_data[i]);
     }
 
-    int index = rand () % CANDIDATE_MONSTER_COUNT;
+    if (max_monster_level > CANDIDATE_MONSTER_COUNT)
+        max_monster_level = CANDIDATE_MONSTER_COUNT;
+
+    int index = rand () % max_monster_level;
     return candidates[index];
 }
 
@@ -79,7 +97,9 @@ try_spawn_monster (SpawnSettings spawn)
             if ((count <= (rand () % spawn.max_monsters)) &&
                 ((rand () % spawn.turns_per_spawn) == 0))
             {
-                return place_thing (player->loc, make_random_monster ());
+                return place_thing (player->loc,
+                                    make_random_monster
+                                    (spawn.max_monster_level));
             }
         }
     }

@@ -7,9 +7,10 @@ typedef struct _SpawnSettings
 {
     int max_monsters;
     int turns_per_spawn;
+    int max_monster_level;
 } SpawnSettings;
 
-Thing make_random_monster (void);
+Thing make_random_monster (int max_monster_level);
 int count_monsters (void);
 Thing *try_spawn_monster (SpawnSettings spawn);
 
