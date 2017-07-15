@@ -3,6 +3,8 @@
 
 #include "thing.h"
 
+#include <stdio.h>
+
 typedef struct SpawnSettings
 {
     int max_monsters;
@@ -16,5 +18,8 @@ Thing *try_spawn_monster (SpawnSettings spawn);
 
 void chase_player_turn_action (Thing * actor);
 bool attack_bump_action (Thing * actor, Thing * target);
+
+void write_spawn_settings (SpawnSettings * settings, FILE * stream);
+SpawnSettings read_spawn_settings (FILE * stream);
 
 #endif

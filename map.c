@@ -194,9 +194,9 @@ the MapShape function to its name so it can be safely restored.
 void
 save_map (Map * map, FILE * stream)
 {
-    fwrite (&map->soft_size, sizeof (double), 1, stream);
-    fwrite (&map->perlin, sizeof (Perlin), 1, stream);
-    strtwrite (get_shape_name (map->shape), PATH_MAX, stream);
+    write_double ("soft_size", map->soft_size, stream);
+    write_str ("shape", get_shape_name (map->shape), stream);
+    write_perlin (&map->perlin, stream);
 }
 
 /*
@@ -205,13 +205,14 @@ map at the end of the file, this function depends upon
 the stream being in the correct position, where it
 was when save_map() was called.
 */
-void
-restore_map (Map * map, FILE * stream)
+Map
+restore_map (FILE * stream)
 {
-    fread (&map->soft_size, sizeof (double), 1, stream);
-    fread (&map->perlin, sizeof (Perlin), 1, stream);
-
+    Map map = { 0 };
+    map.soft_size = read_double ("soft_size", stream);
     char shape_name[PATH_MAX] = { 0 };
-    strtread (shape_name, PATH_MAX, stream);
-    map->shape = get_shape_from_name (shape_name);
+    read_str ("shape", shape_name, PATH_MAX, stream);
+    map.shape = get_shape_from_name (shape_name);
+    map.perlin = read_perlin (stream);
+    return map;
 }

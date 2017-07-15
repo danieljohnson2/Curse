@@ -3,6 +3,7 @@
 #include "game.h"
 #include "action.h"
 #include "message.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -169,4 +170,24 @@ attack_bump_action (Thing * actor, Thing * target)
 
     write_message (msg);
     return false;
+}
+
+void
+write_spawn_settings (SpawnSettings * settings, FILE * stream)
+{
+    write_int ("max_monsters", settings->max_monsters, stream);
+    write_int ("turns_per_spawn", settings->turns_per_spawn, stream);
+    write_int ("max_monster_level", settings->max_monster_level, stream);
+}
+
+SpawnSettings
+read_spawn_settings (FILE * stream)
+{
+    SpawnSettings spawn = { 0 };
+
+    spawn.max_monsters = read_int ("max_monsters", stream);
+    spawn.turns_per_spawn = read_int ("turns_per_spawn", stream);
+    spawn.max_monster_level = read_int ("max_monster_level", stream);
+
+    return spawn;
 }

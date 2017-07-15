@@ -1,6 +1,7 @@
 #include "util.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 /* Returns the sign of the value givne */
 int
@@ -48,26 +49,60 @@ strtcat (char *dest, char *src, size_t dest_size)
 }
 
 /*
-Write a string to a file, including a null terminator.
-Writes as most 'max_size', truncating if necessary
-(but never omitting then null termitor if max_size is
-more than 0!
+Write a string to a file with an initial name.
 */
 void
-strtwrite (char *src, size_t max_size, FILE * stream)
+write_str (char *name, char *src, FILE * stream)
 {
-    if (max_size <= 0)
-        return;
+    fprintf (stream, "%s:%s\n", name, src);
+}
 
-    int len = strlen (src);
+void
+write_double (char *name, double value, FILE * stream)
+{
+    fprintf (stream, "%s:%lf\n", name, value);
+}
 
-    if (len >= max_size)
+void
+write_int (char *name, int value, FILE * stream)
+{
+    fprintf (stream, "%s:%d\n", name, value);
+}
+
+void
+write_bytes (char *name, unsigned char *bytes, int bytes_size, FILE * stream)
+{
+    fprintf (stream, "%s:", name);
+
+    unsigned char *end = bytes + bytes_size;
+    for (unsigned char *cur = bytes; cur < end; ++cur)
     {
-        fwrite (src, sizeof (char), len - 1, stream);
-        fputc ('\0', stream);
+        int byte = *cur;
+        fprintf (stream, "%02X", byte);
     }
-    else
-        fwrite (src, sizeof (char), len + 1, stream);
+    fputc ('\n', stream);
+}
+
+static void
+read_expected_name (char *name, FILE * stream)
+{
+    char *cur = name;
+
+    for (;;)
+    {
+        int ch = fgetc (stream);
+
+        if (ch == ':')
+            ch = '\0';
+
+        if (*cur++ != ch)
+        {
+            fprintf (stderr, "Failure to read; name %s not found.", name);
+            abort ();
+        }
+        else if (ch == '\0')
+            break;
+    }
 }
 
 /*
@@ -78,8 +113,10 @@ If dest_size is 0 or negative, this instead reads and discards
 the string.
 */
 void
-strtread (char *dest, size_t dest_size, FILE * stream)
+read_str (char *name, char *dest, size_t dest_size, FILE * stream)
 {
+    read_expected_name (name, stream);
+
     char *end = dest + dest_size;
     char *cur = dest;
 
@@ -87,7 +124,7 @@ strtread (char *dest, size_t dest_size, FILE * stream)
     {
         int ch = fgetc (stream);
 
-        if (ch == EOF)
+        if (ch == EOF || ch == '\n')
             ch = '\0';
 
         if (cur < end)
@@ -100,4 +137,54 @@ strtread (char *dest, size_t dest_size, FILE * stream)
     // If we fell off the end of 'dest', we must ensure it is null terminated.
     if (cur == end)
         dest[dest_size - 1] = '\0';
+}
+
+double
+read_double (char *name, FILE * stream)
+{
+    char buffer[128];
+    double result = 0.0;
+    read_str (name, buffer, 128, stream);
+    sscanf (buffer, "%lf", &result);
+    return result;
+}
+
+int
+read_int (char *name, FILE * stream)
+{
+    char buffer[128];
+    int result = 0;
+    read_str (name, buffer, 128, stream);
+    sscanf (buffer, "%d", &result);
+    return result;
+}
+
+void
+read_bytes (char *name, unsigned char *bytes, int bytes_count, FILE * stream)
+{
+    read_expected_name (name, stream);
+
+    char buffer[3] = { 0 };
+    unsigned char *cur = bytes;
+    unsigned char *end = bytes + bytes_count;
+
+    while (cur < end)
+    {
+        int first = fgetc (stream);
+
+        if (first == '\n' || first == EOF)
+            break;
+
+        int second = fgetc (stream);
+
+        if (first == '\n' || first == EOF)
+            break;
+
+        buffer[0] = first;
+        buffer[1] = second;
+
+        int i;
+        sscanf (buffer, "%02X", &i);
+        *cur++ = i;
+    }
 }

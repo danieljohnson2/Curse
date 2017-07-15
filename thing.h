@@ -4,6 +4,7 @@
 #include "loc.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 
 #define NAME_SIZE 64
 
@@ -57,5 +58,8 @@ TurnAction get_turn_action (Thing * thing);
 
 Thing make_thing (Appearance appearance, char *name, int speed,
                   ThingBehavior behavior);
+
+void write_thing (Thing * thing, FILE * stream);
+Thing read_thing (FILE * stream);
 
 #endif

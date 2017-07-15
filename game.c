@@ -11,7 +11,7 @@
 #define THING_COUNT 32
 #define PLAYER_INDEX 0
 
-#define MONSTER_MAX 32
+#define MONSTER_MAX 16
 #define TURNS_PER_SPAWN 8
 
 static Map game_map;
@@ -264,8 +264,12 @@ void
 save_game (char *file_name)
 {
     FILE *f = fopen (file_name, "w");
-    fwrite (&game_spawn, sizeof (SpawnSettings), 1, f);
-    fwrite (game_things, sizeof (Thing), THING_COUNT, f);
+
+    write_spawn_settings (&game_spawn, f);
+
+    for (int i = 0; i < THING_COUNT; ++i)
+        write_thing (&game_things[i], f);
+
     save_map (&game_map, f);
     fclose (f);
 }
@@ -277,8 +281,13 @@ void
 restore_game (char *file_name)
 {
     FILE *f = fopen (file_name, "r");
+
+    game_spawn = read_spawn_settings (f);
+
+    for (int i = 0; i < THING_COUNT; ++i)
+        game_things[i] = read_thing (f);
+
+    game_map = restore_map (f);
     fread (&game_spawn, sizeof (SpawnSettings), 1, f);
-    fread (game_things, sizeof (Thing), THING_COUNT, f);
-    restore_map (&game_map, f);
     fclose (f);
 }

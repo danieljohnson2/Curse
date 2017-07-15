@@ -2,6 +2,7 @@
 #define LOC_H_INCLUDED
 
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef struct Loc
 {

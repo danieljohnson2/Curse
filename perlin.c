@@ -1,4 +1,5 @@
 #include "perlin.h"
+#include "util.h"
 
 #include <stdlib.h>
 #include <limits.h>
@@ -103,4 +104,27 @@ perlin2d (Perlin * perlin, double x, double y)
     }
 
     return fin / div;
+}
+
+/* Writes the perlin structure out to a text file. */
+void
+write_perlin (Perlin * perlin, FILE * stream)
+{
+    write_double ("freq", perlin->freq, stream);
+    write_int ("depth", perlin->depth, stream);
+    write_double ("origin_offset", perlin->origin_offset, stream);
+    write_bytes ("hash", perlin->hash, PERLIN_HASH_SIZE, stream);
+}
+
+/* Reads the perlin structure in from a text file. */
+Perlin
+read_perlin (FILE * stream)
+{
+    Perlin perlin = { 0 };
+    perlin.freq = read_double ("freq", stream);
+    perlin.depth = read_int ("depth", stream);
+    perlin.origin_offset = read_double ("origin_offset", stream);
+    read_bytes ("hash", perlin.hash, PERLIN_HASH_SIZE, stream);
+
+    return perlin;
 }

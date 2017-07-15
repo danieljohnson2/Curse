@@ -3,6 +3,8 @@
 
 #define PERLIN_HASH_SIZE 4096
 
+#include <stdio.h>
+
 typedef struct Perlin
 {
     double freq;
@@ -14,5 +16,8 @@ typedef struct Perlin
 
 Perlin make_perlin (double freq, int depth, int seed);
 float perlin2d (Perlin * perlin, double x, double y);
+
+void write_perlin (Perlin * perlin, FILE * stream);
+Perlin read_perlin (FILE * stream);
 
 #endif

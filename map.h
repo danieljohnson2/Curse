@@ -38,6 +38,6 @@ double round_shape (Map * map, Loc where);
 double band_shape (Map * map, Loc where);
 
 void save_map (Map * map, FILE * stream);
-void restore_map (Map * map, FILE * stream);
+Map restore_map (FILE * stream);
 
 #endif
