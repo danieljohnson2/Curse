@@ -11,9 +11,6 @@
 #define THING_COUNT 32
 #define PLAYER_INDEX 0
 
-#define MONSTER_MAX 16
-#define TURNS_PER_SPAWN 8
-
 static Map game_map;
 static Thing game_things[THING_COUNT];
 static SpawnSettings game_spawn;

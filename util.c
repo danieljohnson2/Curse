@@ -48,39 +48,53 @@ strtcat (char *dest, char *src, size_t dest_size)
     }
 }
 
+static void
+error_abort (char *message)
+{
+    perror (message);
+    abort ();
+}
+
 /*
 Write a string to a file with an initial name.
 */
 void
 write_str (char *name, char *src, FILE * stream)
 {
-    fprintf (stream, "%s:%s\n", name, src);
+    if (fprintf (stream, "%s:%s\n", name, src) < 0)
+        error_abort ("Failed to write string");
 }
 
 void
 write_double (char *name, double value, FILE * stream)
 {
-    fprintf (stream, "%s:%lf\n", name, value);
+    if (fprintf (stream, "%s:%lf\n", name, value) < 0)
+        error_abort ("Failed to write double");
 }
 
 void
 write_int (char *name, int value, FILE * stream)
 {
-    fprintf (stream, "%s:%d\n", name, value);
+    if (fprintf (stream, "%s:%d\n", name, value) < 0)
+        error_abort ("Failed to write int");
 }
 
 void
 write_bytes (char *name, unsigned char *bytes, int bytes_size, FILE * stream)
 {
-    fprintf (stream, "%s:", name);
+    if (fprintf (stream, "%s:", name) < 0)
+        error_abort ("Failed to write bytes");
 
     unsigned char *end = bytes + bytes_size;
     for (unsigned char *cur = bytes; cur < end; ++cur)
     {
         int byte = *cur;
-        fprintf (stream, "%02X", byte);
+        if (fprintf (stream, "%02X", byte) < 0)
+            error_abort ("Failed to write bytes");
     }
-    fputc ('\n', stream);
+
+    if (fputc ('\n', stream) == EOF)
+        error_abort ("Failed to write bytes");
 }
 
 static void
@@ -91,6 +105,9 @@ read_expected_name (char *name, FILE * stream)
     for (;;)
     {
         int ch = fgetc (stream);
+
+        if (ch == EOF && ferror (stream))
+            error_abort ("Failure to read expected name");
 
         if (ch == ':')
             ch = '\0';
@@ -124,6 +141,9 @@ read_str (char *name, char *dest, size_t dest_size, FILE * stream)
     {
         int ch = fgetc (stream);
 
+        if (ch == EOF && ferror (stream))
+            error_abort ("Failure to read string");
+
         if (ch == EOF || ch == '\n')
             ch = '\0';
 
@@ -145,7 +165,9 @@ read_double (char *name, FILE * stream)
     char buffer[128];
     double result = 0.0;
     read_str (name, buffer, 128, stream);
-    sscanf (buffer, "%lf", &result);
+    if (sscanf (buffer, "%lf", &result) == EOF)
+        error_abort ("Failure to read double");
+
     return result;
 }
 
@@ -155,7 +177,9 @@ read_int (char *name, FILE * stream)
     char buffer[128];
     int result = 0;
     read_str (name, buffer, 128, stream);
-    sscanf (buffer, "%d", &result);
+    if (sscanf (buffer, "%d", &result) == EOF)
+        error_abort ("Failure to read int");
+
     return result;
 }
 
@@ -184,7 +208,9 @@ read_bytes (char *name, unsigned char *bytes, int bytes_count, FILE * stream)
         buffer[1] = second;
 
         int i;
-        sscanf (buffer, "%02X", &i);
+        if (sscanf (buffer, "%02X", &i) == EOF)
+            error_abort ("Failure to read bytes");
+
         *cur++ = i;
     }
 }
