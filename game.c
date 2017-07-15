@@ -267,7 +267,7 @@ save_game (char *file_name)
     for (int i = 0; i < THING_COUNT; ++i)
         write_thing (&game_things[i], f);
 
-    save_map (&game_map, f);
+    write_map (&game_map, f);
     fclose (f);
 }
 
@@ -284,7 +284,7 @@ restore_game (char *file_name)
     for (int i = 0; i < THING_COUNT; ++i)
         game_things[i] = read_thing (f);
 
-    game_map = restore_map (f);
+    game_map = read_map (f);
     fread (&game_spawn, sizeof (SpawnSettings), 1, f);
     fclose (f);
 }

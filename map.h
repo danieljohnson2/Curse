@@ -27,13 +27,13 @@ typedef enum _Terrain
 } Terrain;
 
 Map make_map (double soft_size, MapShape shape, Perlin perlin);
-Terrain read_map (Map * map, Loc where);
+Terrain get_map_terrain (Map * map, Loc where);
 
 int get_terrain_speed_penalty (Terrain terrain);
 Loc find_passable_place (Map * map, Loc origin);
 
-void save_map (Map * map, FILE * stream);
-Map restore_map (FILE * stream);
+void write_map (Map * map, FILE * stream);
+Map read_map (FILE * stream);
 
 char *get_shape_name (MapShape shape);
 MapShape get_shape_from_name (char *shape_name);

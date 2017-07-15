@@ -82,7 +82,7 @@ pick_terrain (Map * map, double altitude, double dist)
 
 /* Reads the terrain in a cell of the map. */
 Terrain
-read_map (Map * map, Loc where)
+get_map_terrain (Map * map, Loc where)
 {
     double alt = perlin2d (&map->perlin, where.x, where.y);
     double dist = (map->shape) (map, where);
@@ -131,7 +131,7 @@ find_passable_place (Map * map, Loc origin)
         c.x += origin.x;
         c.y += origin.y;
 
-        Terrain t = read_map (map, c);
+        Terrain t = get_map_terrain (map, c);
 
         if (get_terrain_speed_penalty (t) < INT_MAX)
             return c;
@@ -143,7 +143,7 @@ This writes a map structure to a file; this converts
 the MapShape function to its name so it can be safely restored.
 */
 void
-save_map (Map * map, FILE * stream)
+write_map (Map * map, FILE * stream)
 {
     write_double ("soft_size", map->soft_size, stream);
     write_str ("shape", get_shape_name (map->shape), stream);
@@ -157,7 +157,7 @@ the stream being in the correct position, where it
 was when save_map() was called.
 */
 Map
-restore_map (FILE * stream)
+read_map (FILE * stream)
 {
     Map map = { 0 };
     map.soft_size = read_double ("soft_size", stream);

@@ -31,7 +31,7 @@ static void
 read_args (int argc, char **argv, int *seed, MapShape * shape)
 {
     *seed = INT_MIN;
-    *shape = get_shape_from_name("round");
+    *shape = get_shape_from_name ("round");
 
     int opt;
     while ((opt = getopt (argc, argv, "s:m:h")) != -1)

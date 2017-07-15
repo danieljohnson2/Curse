@@ -80,7 +80,7 @@ different location in such a case, lest two things happen.
 bool
 try_move_thing_to (Thing * mover, Loc dest)
 {
-    Terrain t = read_map (get_map (), dest);
+    Terrain t = get_map_terrain (get_map (), dest);
 
     int speed_penalty = get_terrain_speed_penalty (t);
     if (speed_penalty == INT_MAX)
