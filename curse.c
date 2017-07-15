@@ -2,6 +2,7 @@
 #include "map.h"
 #include "game.h"
 #include "player.h"
+#include "action.h"
 #include "display.h"
 
 #include <stdlib.h>
@@ -70,7 +71,7 @@ main (int argc, char **argv)
     read_args (argc, argv, &seed, &shape);
 
     init_windows ();
-
+    init_behaviors ();
     Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
     start_game (map);
 

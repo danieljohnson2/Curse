@@ -6,18 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static bool
-treasure_bump_action (Thing * actor, Thing * target)
-{
-    char msg[MESSAGE_SIZE];
-    sprintf (msg, "%s picks up %d gold!", actor->name, target->gold);
-    write_message (msg);
-
-    actor->gold += target->gold;
-    remove_thing (target);
-    return true;
-}
-
 /* Creates a treasure of a random size */
 Thing
 make_random_treasure (void)
@@ -37,9 +25,23 @@ make_treasure (int gold)
     else if (gold >= 30)
         ap = LARGE_TREASURE;
 
-    define_thing_behavior (TREASURE, treasure_bump_action, null_turn_action);
-
     Thing treasure = make_thing (ap, "Gold", 0, TREASURE);
     treasure.gold = gold;
     return treasure;
+}
+
+/*
+This function is the bump action to allow you to pick up
+treasure.
+*/
+bool
+treasure_bump_action (Thing * actor, Thing * target)
+{
+    char msg[MESSAGE_SIZE];
+    sprintf (msg, "%s picks up %d gold!", actor->name, target->gold);
+    write_message (msg);
+
+    actor->gold += target->gold;
+    remove_thing (target);
+    return true;
 }

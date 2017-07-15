@@ -8,4 +8,6 @@
 Thing make_random_treasure (void);
 Thing make_treasure (int gold);
 
+bool treasure_bump_action (Thing * actor, Thing * target);
+
 #endif

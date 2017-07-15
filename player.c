@@ -11,32 +11,10 @@
 static char *level_clear_msg[] =
     { "Level Cleared!", "(press space for next level)", NULL };
 
-static void
-player_turn_action (Thing * player)
-{
-    paint (true);
-
-    if (player->gold >= get_total_gold ())
-    {
-        long_message (level_clear_msg);
-        player->gold = 0;
-        next_level ();
-        paint (true);
-    }
-
-    PlayerAction action = read_player_action ();
-
-    if (is_thing_alive (player))
-        perform_player_action (action);
-}
-
 /* This creates a player at a random place on the map. */
 Thing
 make_player (Map * map)
 {
-    define_thing_behavior (PLAYER_CONTROLLED, attack_bump_action,
-                           player_turn_action);
-
     Thing player =
         make_thing (PLAYER, "Player", SPEED_DEFAULT, PLAYER_CONTROLLED);
 
@@ -69,4 +47,26 @@ move_player_by (int dx, int dy)
 
     if (!try_move_thing_by (player, dx, dy))
         write_message ("Impassible!");
+}
+
+/*
+The turn action that causes the player to take his turn.
+*/
+void
+player_turn_action (Thing * player)
+{
+    paint (true);
+
+    if (player->gold >= get_total_gold ())
+    {
+        long_message (level_clear_msg);
+        player->gold = 0;
+        next_level ();
+        paint (true);
+    }
+
+    PlayerAction action = read_player_action ();
+
+    if (is_thing_alive (player))
+        perform_player_action (action);
 }

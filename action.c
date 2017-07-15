@@ -2,10 +2,29 @@
 #include "map.h"
 #include "game.h"
 #include "thing.h"
+#include "player.h"
+#include "treasure.h"
+#include "monster.h"
 #include "util.h"
 
 #include <stdlib.h>
 #include <limits.h>
+
+/*
+This function sets up the behavior callbacks for each
+behavior.
+*/
+void
+init_behaviors (void)
+{
+    define_thing_behavior (PLAYER_CONTROLLED, attack_bump_action,
+                           player_turn_action);
+
+    define_thing_behavior (MONSTER, attack_bump_action,
+                           chase_player_turn_action);
+
+    define_thing_behavior (TREASURE, treasure_bump_action, null_turn_action);
+}
 
 /*
 Executes a move for a monster; it moves horizontal or vertically

@@ -29,9 +29,6 @@ static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
 static Thing
 make_monster (MonsterData data)
 {
-    define_thing_behavior (MONSTER, attack_bump_action,
-                           chase_player_turn_action);
-
     Thing monster = make_thing (data.appearance, data.name, data.speed,
                                 MONSTER);
     monster.hp = data.hp;
