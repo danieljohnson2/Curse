@@ -139,11 +139,26 @@ find_passable_place (Map * map, Loc origin)
 }
 
 /*
-Resolves a shape name (used inth ecommand line arguments) to
+Returns the name of the shape indicated;
+this is the inverse of get_shape_from_name.
+*/
+char *
+get_shape_name (MapShape shape)
+{
+    if (shape == round_shape)
+        return "round";
+    else if (shape == band_shape)
+        return "band";
+    else
+        return NULL;
+}
+
+/*
+Resolves a shape name (used in the command line arguments) to
 the shape function. Returns null if the name is not valid.
 */
 MapShape
-get_shape_name (char *shape_name)
+get_shape_from_name (char *shape_name)
 {
     if (strcmp (shape_name, "round") == 0)
         return round_shape;
@@ -170,4 +185,33 @@ double
 band_shape (Map * map, Loc where)
 {
     return (where.x + where.y) / 2.0;
+}
+
+/*
+This writes a map structure to a file; this converts
+the MapShape function to its name so it can be safely restored.
+*/
+void
+save_map (Map * map, FILE * stream)
+{
+    fwrite (&map->soft_size, sizeof (double), 1, stream);
+    fwrite (&map->perlin, sizeof (Perlin), 1, stream);
+    strtwrite (get_shape_name (map->shape), PATH_MAX, stream);
+}
+
+/*
+This restores a map from its file. Since we write the
+map at the end of the file, this function depends upon
+the stream being in the correct position, where it
+was when save_map() was called.
+*/
+void
+restore_map (Map * map, FILE * stream)
+{
+    fread (&map->soft_size, sizeof (double), 1, stream);
+    fread (&map->perlin, sizeof (Perlin), 1, stream);
+
+    char shape_name[PATH_MAX] = { 0 };
+    strtread (shape_name, PATH_MAX, stream);
+    map->shape = get_shape_from_name (shape_name);
 }

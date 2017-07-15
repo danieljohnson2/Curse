@@ -3,10 +3,12 @@
 #include "message.h"
 #include "game.h"
 #include "thing.h"
+#include "util.h"
 
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 static WINDOW *map_w;
 static WINDOW *message_w;
@@ -298,6 +300,20 @@ center_view (Loc target)
     view_center = target;
 }
 
+static char *
+get_save_file_name (void)
+{
+    static char file_name[PATH_MAX];
+
+    if (file_name[0] == '\0')
+    {
+        strtcpy (file_name, getenv ("HOME"), PATH_MAX);
+        strtcat (file_name, "/.curse_save_game", PATH_MAX);
+    }
+
+    return file_name;
+}
+
 /*
 Reads a keystroke and maps it to a PlayerAction. Unknown keys
 are mapped to None.
@@ -332,6 +348,18 @@ read_player_action (void)
             return action;
         case ' ':
             return action;
+
+        case 's':
+            save_game (get_save_file_name ());
+            write_message ("Game saved.");
+            paint (true);
+            break;
+
+        case 'l':
+            restore_game (get_save_file_name ());
+            write_message ("Game restored.");
+            paint (true);
+            break;
 
         case KEY_RESIZE:
             arrange_windows ();

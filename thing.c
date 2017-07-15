@@ -4,14 +4,16 @@
 
 #define BEHAVIOR_MAX 16
 
-typedef struct ThingBehaviorDef
+static struct
 {
     BumpAction bump_action;
     TurnAction turn_action;
-} ThingBehaviorDef;
+} behaviorDefs[BEHAVIOR_MAX];
 
-static ThingBehaviorDef behaviorDefs[BEHAVIOR_MAX];
-
+/*
+This function sets the function pointers that define the behavior of
+a particular type of thing, identifed by 'behavior'.
+*/
 void
 define_thing_behavior (ThingBehavior behavior, BumpAction bump_action,
                        TurnAction turn_action)
@@ -20,6 +22,11 @@ define_thing_behavior (ThingBehavior behavior, BumpAction bump_action,
     behaviorDefs[behavior].turn_action = turn_action;
 }
 
+/*
+This functio provides the bump action function for a thing;
+this does not return NULL, but will return a do-nothing function
+instead.
+*/
 BumpAction
 get_bump_action (Thing * thing)
 {
@@ -31,6 +38,11 @@ get_bump_action (Thing * thing)
         return null_bump_action;
 }
 
+/*
+This functio provides the turn action function for a thing;
+this does not return NULL, but will return a do-nothing function
+instead.
+*/
 TurnAction
 get_turn_action (Thing * thing)
 {

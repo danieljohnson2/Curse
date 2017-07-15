@@ -3,6 +3,7 @@
 
 #include "loc.h"
 #include "perlin.h"
+#include <stdio.h>
 
 typedef struct Map Map;
 typedef double (*MapShape) (Map * map, Loc where);
@@ -31,8 +32,12 @@ Terrain read_map (Map * map, Loc where);
 int get_terrain_speed_penalty (Terrain terrain);
 Loc find_passable_place (Map * map, Loc origin);
 
-MapShape get_shape_name (char *shape_name);
+char *get_shape_name (MapShape shape);
+MapShape get_shape_from_name (char *shape_name);
 double round_shape (Map * map, Loc where);
 double band_shape (Map * map, Loc where);
+
+void save_map (Map * map, FILE * stream);
+void restore_map (Map * map, FILE * stream);
 
 #endif

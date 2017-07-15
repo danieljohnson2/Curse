@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #define THING_COUNT 32
 #define PLAYER_INDEX 0
@@ -253,4 +254,31 @@ perform_turns (void)
                 try_spawn_monster (game_spawn);
         }
     }
+}
+
+/*
+This writes the game ot a file; this includes all the things
+and the game-map as well.
+*/
+void
+save_game (char *file_name)
+{
+    FILE *f = fopen (file_name, "w");
+    fwrite (&game_spawn, sizeof (SpawnSettings), 1, f);
+    fwrite (game_things, sizeof (Thing), THING_COUNT, f);
+    save_map (&game_map, f);
+    fclose (f);
+}
+
+/*
+This restores the game from a file written by save_game().
+*/
+void
+restore_game (char *file_name)
+{
+    FILE *f = fopen (file_name, "r");
+    fread (&game_spawn, sizeof (SpawnSettings), 1, f);
+    fread (game_things, sizeof (Thing), THING_COUNT, f);
+    restore_map (&game_map, f);
+    fclose (f);
 }

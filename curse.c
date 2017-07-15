@@ -42,7 +42,7 @@ read_args (int argc, char **argv, int *seed, MapShape * shape)
             break;
 
         case 'm':
-            *shape = get_shape_name (optarg);
+            *shape = get_shape_from_name (optarg);
             if (*shape == NULL)
                 exit_with_usage ();
             break;

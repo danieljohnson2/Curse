@@ -23,4 +23,7 @@ int get_total_gold (void);
 
 void perform_turns (void);
 
+void save_game (char *file_name);
+void restore_game (char *file_name);
+
 #endif
