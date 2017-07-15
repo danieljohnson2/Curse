@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-typedef struct _Loc
+typedef struct Loc
 {
     int x, y;
 } Loc;

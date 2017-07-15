@@ -37,8 +37,9 @@ make_treasure (int gold)
     else if (gold >= 30)
         ap = LARGE_TREASURE;
 
-    Thing treasure =
-        make_thing (ap, "Gold", 0, treasure_bump_action, null_turn_action);
+    define_thing_behavior (TREASURE, treasure_bump_action, null_turn_action);
+
+    Thing treasure = make_thing (ap, "Gold", 0, TREASURE);
     treasure.gold = gold;
     return treasure;
 }

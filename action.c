@@ -70,7 +70,7 @@ try_move_thing_to (Thing * mover, Loc dest)
     for (Thing * hit = NULL;
          is_thing_alive (mover) && next_thing_at (dest, &hit);)
     {
-        if (hit != mover && !hit->bump_action (mover, hit))
+        if (hit != mover && !get_bump_action (hit) (mover, hit))
             return true;
     }
 

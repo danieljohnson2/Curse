@@ -34,9 +34,11 @@ player_turn_action (Thing * player)
 Thing
 make_player (Map * map)
 {
+    define_thing_behavior (PLAYER_CONTROLLED, attack_bump_action,
+                           player_turn_action);
+
     Thing player =
-        make_thing (PLAYER, "Player", SPEED_DEFAULT, attack_bump_action,
-                    player_turn_action);
+        make_thing (PLAYER, "Player", SPEED_DEFAULT, PLAYER_CONTROLLED);
 
     player.loc = find_passable_place (map, make_loc (0, 0));
     player.hp = 20;

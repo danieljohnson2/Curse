@@ -7,12 +7,12 @@
 
 #define NAME_SIZE 64
 
-typedef struct _Thing Thing;
+typedef struct Thing Thing;
 
 typedef bool (*BumpAction) (Thing * actor, Thing * target);
 typedef void (*TurnAction) (Thing * actor);
 
-typedef enum _Appearance
+typedef enum
 {
     DEAD,
     PLAYER,
@@ -26,7 +26,15 @@ typedef enum _Appearance
     LARGE_TREASURE
 } Appearance;
 
-struct _Thing
+typedef enum
+{
+    INERT,
+    PLAYER_CONTROLLED,
+    MONSTER,
+    TREASURE
+} ThingBehavior;
+
+struct Thing
 {
     Appearance appearance;
     char name[NAME_SIZE];
@@ -39,11 +47,15 @@ struct _Thing
 
     int remaining_wait;
 
-    BumpAction bump_action;
-    TurnAction turn_action;
+    ThingBehavior behavior;
 };
 
+void define_thing_behavior (ThingBehavior behavior, BumpAction bump_action,
+                            TurnAction turn_action);
+BumpAction get_bump_action (Thing * thing);
+TurnAction get_turn_action (Thing * thing);
+
 Thing make_thing (Appearance appearance, char *name, int speed,
-                  BumpAction bump_action, TurnAction turn_action);
+                  ThingBehavior behavior);
 
 #endif

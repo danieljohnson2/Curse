@@ -4,10 +4,10 @@
 #include "loc.h"
 #include "perlin.h"
 
-typedef struct _Map Map;
+typedef struct Map Map;
 typedef double (*MapShape) (Map * map, Loc where);
 
-struct _Map
+struct Map
 {
     double soft_size;
     MapShape shape;

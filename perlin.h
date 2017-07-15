@@ -3,7 +3,7 @@
 
 #define PERLIN_HASH_SIZE 4096
 
-typedef struct _Perlin
+typedef struct Perlin
 {
     double freq;
     int depth;

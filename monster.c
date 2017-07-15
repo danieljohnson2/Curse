@@ -29,9 +29,11 @@ static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
 static Thing
 make_monster (MonsterData data)
 {
+    define_thing_behavior (MONSTER, attack_bump_action,
+                           chase_player_turn_action);
+
     Thing monster = make_thing (data.appearance, data.name, data.speed,
-                                attack_bump_action,
-                                chase_player_turn_action);
+                                MONSTER);
     monster.hp = data.hp;
     monster.dmg = data.dmg;
     return monster;
@@ -66,7 +68,7 @@ count_monsters (void)
     int count = 0;
     for (Thing * th = NULL; next_thing (&th);)
     {
-        if (th->turn_action == chase_player_turn_action)
+        if (th->behavior == MONSTER)
             ++count;
     }
 

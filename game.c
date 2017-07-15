@@ -243,7 +243,7 @@ perform_turns (void)
         {
             if (actor->remaining_wait <= 0)
             {
-                actor->turn_action (actor);
+                get_turn_action (actor) (actor);
                 actor->remaining_wait += SPEED_MAX;
             }
 

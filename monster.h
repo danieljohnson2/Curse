@@ -3,7 +3,7 @@
 
 #include "thing.h"
 
-typedef struct _SpawnSettings
+typedef struct SpawnSettings
 {
     int max_monsters;
     int turns_per_spawn;

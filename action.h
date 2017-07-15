@@ -10,7 +10,7 @@
 /* 16 means the MAX is 16x the default, which is 16x the minumum (1) */
 #define SPEED_DEFAULT 16
 
-typedef struct _Thing Thing;
+typedef struct Thing Thing;
 
 typedef bool (*BumpAction) (Thing * actor, Thing * target);
 typedef void (*TurnAction) (Thing * actor);

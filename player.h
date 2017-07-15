@@ -4,7 +4,7 @@
 #include "thing.h"
 #include "playeraction.h"
 
-typedef struct _Map Map;
+typedef struct Map Map;
 
 Thing make_player (Map * map);
 
