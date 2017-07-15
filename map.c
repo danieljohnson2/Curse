@@ -139,55 +139,6 @@ find_passable_place (Map * map, Loc origin)
 }
 
 /*
-Returns the name of the shape indicated;
-this is the inverse of get_shape_from_name.
-*/
-char *
-get_shape_name (MapShape shape)
-{
-    if (shape == round_shape)
-        return "round";
-    else if (shape == band_shape)
-        return "band";
-    else
-        return NULL;
-}
-
-/*
-Resolves a shape name (used in the command line arguments) to
-the shape function. Returns null if the name is not valid.
-*/
-MapShape
-get_shape_from_name (char *shape_name)
-{
-    if (strcmp (shape_name, "round") == 0)
-        return round_shape;
-
-    if (strcmp (shape_name, "band") == 0)
-        return band_shape;
-
-    return NULL;
-}
-
-/* Defines a map shape that is circular. */
-double
-round_shape (Map * map, Loc where)
-{
-    return map->soft_size * 1.5 - sqrt (where.x * where.x +
-                                        where.y * where.y);
-}
-
-/*
-Defines a map shape that is a diagonal band with sea on the left,
-and mountains on the right.
-*/
-double
-band_shape (Map * map, Loc where)
-{
-    return (where.x + where.y) / 2.0;
-}
-
-/*
 This writes a map structure to a file; this converts
 the MapShape function to its name so it can be safely restored.
 */
