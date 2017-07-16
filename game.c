@@ -285,6 +285,5 @@ restore_game (char *file_name)
         game_things[i] = read_thing (f);
 
     game_map = read_map (f);
-    fread (&game_spawn, sizeof (SpawnSettings), 1, f);
     fclose (f);
 }
