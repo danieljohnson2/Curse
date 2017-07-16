@@ -175,9 +175,10 @@ attack_bump_action (Thing * actor, Thing * target)
 void
 write_spawn_settings (SpawnSettings * settings, FILE * stream)
 {
-    write_int ("max_monsters", settings->max_monsters, stream);
-    write_int ("turns_per_spawn", settings->turns_per_spawn, stream);
-    write_int ("max_monster_level", settings->max_monster_level, stream);
+    named_writef (stream, "max_monsters", "%d", settings->max_monsters);
+    named_writef (stream, "turns_per_spawn", "%d", settings->turns_per_spawn);
+    named_writef (stream, "max_monster_level", "%d",
+                  settings->max_monster_level);
 }
 
 SpawnSettings
@@ -185,9 +186,9 @@ read_spawn_settings (FILE * stream)
 {
     SpawnSettings spawn = { 0 };
 
-    spawn.max_monsters = read_int ("max_monsters", stream);
-    spawn.turns_per_spawn = read_int ("turns_per_spawn", stream);
-    spawn.max_monster_level = read_int ("max_monster_level", stream);
+    readf (stream, "max_monsters", "%d", &spawn.max_monsters);
+    readf (stream, "turns_per_spawn", "%d", &spawn.turns_per_spawn);
+    readf (stream, "max_monster_level", "%d", &spawn.max_monster_level);
 
     return spawn;
 }

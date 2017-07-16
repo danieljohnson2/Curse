@@ -145,8 +145,8 @@ the MapShape function to its name so it can be safely restored.
 void
 write_map (Map * map, FILE * stream)
 {
-    write_double ("soft_size", map->soft_size, stream);
-    write_str ("shape", get_shape_name (map->shape), stream);
+    named_writef (stream, "soft_size", "%lf", map->soft_size);
+    named_writef (stream, "shape", "%s", get_shape_name (map->shape));
     write_perlin (&map->perlin, stream);
 }
 
@@ -160,10 +160,12 @@ Map
 read_map (FILE * stream)
 {
     Map map = { 0 };
-    map.soft_size = read_double ("soft_size", stream);
+    readf (stream, "soft_size", "%lf", &map.soft_size);
+
     char shape_name[PATH_MAX] = { 0 };
     read_str ("shape", shape_name, PATH_MAX, stream);
     map.shape = get_shape_from_name (shape_name);
+
     map.perlin = read_perlin (stream);
     return map;
 }

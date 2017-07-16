@@ -76,22 +76,22 @@ Writes the data for one thing to a stream.
 void
 write_thing (Thing * thing, FILE * stream)
 {
-    write_int ("appearance", thing->appearance, stream);
+    named_writef (stream, "appearance", "%d", (int) thing->appearance);
 
     if (thing->appearance != DEAD)
     {
-        write_str ("name", thing->name, stream);
-        write_int ("x", thing->loc.x, stream);
-        write_int ("y", thing->loc.y, stream);
+        named_writef (stream, "name", "%s", thing->name);
+        named_writef (stream, "x", "%d", thing->loc.x);
+        named_writef (stream, "y", "%d", thing->loc.y);
 
-        write_int ("gold", thing->gold, stream);
-        write_int ("hp", thing->hp, stream);
-        write_int ("dmg", thing->dmg, stream);
-        write_int ("speed", thing->speed, stream);
+        named_writef (stream, "gold", "%d", thing->gold);
+        named_writef (stream, "hp", "%d", thing->hp);
+        named_writef (stream, "dmg", "%d", thing->dmg);
+        named_writef (stream, "speed", "%d", thing->speed);
 
-        write_int ("remaining_wait", thing->remaining_wait, stream);
+        named_writef (stream, "remaining_wait", "%d", thing->remaining_wait);
 
-        write_int ("behavior", thing->behavior, stream);
+        named_writef (stream, "behavior", "%d", (int) thing->behavior);
     }
 }
 
@@ -103,22 +103,26 @@ read_thing (FILE * stream)
 {
     Thing thing = { 0 };
 
-    thing.appearance = read_int ("appearance", stream);
+    int appearance = 0;
+    readf (stream, "appearance", "%d", &appearance);
+    thing.appearance = appearance;
 
     if (thing.appearance != DEAD)
     {
         read_str ("name", thing.name, NAME_SIZE, stream);
-        thing.loc.x = read_int ("x", stream);
-        thing.loc.y = read_int ("y", stream);
+        readf (stream, "x", "%d", &thing.loc.x);
+        readf (stream, "y", "%d", &thing.loc.y);
 
-        thing.gold = read_int ("gold", stream);
-        thing.hp = read_int ("hp", stream);
-        thing.dmg = read_int ("dmg", stream);
-        thing.speed = read_int ("speed", stream);
+        readf (stream, "gold", "%d", &thing.gold);
+        readf (stream, "hp", "%d", &thing.hp);
+        readf (stream, "dmg", "%d", &thing.dmg);
+        readf (stream, "speed", "%d", &thing.speed);
 
-        thing.remaining_wait = read_int ("remaining_wait", stream);
+        readf (stream, "remaining_wait", "%d", &thing.remaining_wait);
 
-        thing.behavior = read_int ("behavior", stream);
+        int behavior = 0;
+        readf (stream, "behavior", "%d", &behavior);
+        thing.behavior = behavior;
     }
 
     return thing;

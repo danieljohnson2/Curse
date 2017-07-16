@@ -82,33 +82,26 @@ strtcat (char *dest, char *src, size_t dest_size)
 }
 
 /*
-Write a string to a file with an initial name.
+Writes a named element out using the format given. The functio
+wites the name, a colon, the payload data, and then a newline.
+On error, this method aborts with a message.
 */
 void
-write_str (char *name, char *src, FILE * stream)
+named_writef (FILE * stream, char *name, char *format, ...)
 {
-    if (fprintf (stream, "%s:%s\n", name, src) < 0)
-        error_abort ("Failed to write string");
-}
+    va_list ap;
+    va_start (ap, format);
 
-/*
-Write a double to a file with an initial name.
-*/
-void
-write_double (char *name, double value, FILE * stream)
-{
-    if (fprintf (stream, "%s:%lf\n", name, value) < 0)
-        error_abort ("Failed to write double");
-}
+    if (fprintf (stream, "%s:", name) < 0)
+        error_abort ("Failed to write named value");
 
-/*
-Write an int to a file with an initial name.
-*/
-void
-write_int (char *name, int value, FILE * stream)
-{
-    if (fprintf (stream, "%s:%d\n", name, value) < 0)
-        error_abort ("Failed to write int");
+    if (vfprintf (stream, format, ap) < 0)
+        error_abort ("Failed to write named value");
+
+    if (fputc ('\n', stream) == EOF)
+        error_abort ("Failed to write named value");
+
+    va_end (ap);
 }
 
 /*
@@ -199,33 +192,27 @@ read_str (char *name, char *dest, size_t dest_size, FILE * stream)
 }
 
 /*
-Reads a double from the stream.
-*/
-double
-read_double (char *name, FILE * stream)
-{
-    char buffer[128];
-    double result = 0.0;
-    read_str (name, buffer, 128, stream);
-    if (sscanf (buffer, "%lf", &result) == EOF)
-        error_abort ("Failure to read double");
-
-    return result;
-}
-
-/*
-Reads an int from the stream.
+Reads a named value off the stream using a format string. returns
+the number of matches, but never 0 or EOF: errors or failure to
+matching anything will lead to an abort instead.
 */
 int
-read_int (char *name, FILE * stream)
+readf (FILE * stream, char *name, char *format, ...)
 {
-    char buffer[128];
-    int result = 0;
-    read_str (name, buffer, 128, stream);
-    if (sscanf (buffer, "%d", &result) == EOF)
-        error_abort ("Failure to read int");
+    va_list ap;
+    va_start (ap, format);
 
-    return result;
+    char buffer[4096];
+    read_str (name, buffer, 4096, stream);
+    int count = vsscanf (buffer, format, ap);
+
+    if (count == EOF)
+        error_abort ("Failure to read value");
+    else if (count == 0)
+        message_abort ("Failure to parse value");
+
+    va_end (ap);
+    return count;
 }
 
 /*

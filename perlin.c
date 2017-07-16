@@ -110,9 +110,9 @@ perlin2d (Perlin * perlin, double x, double y)
 void
 write_perlin (Perlin * perlin, FILE * stream)
 {
-    write_double ("freq", perlin->freq, stream);
-    write_int ("depth", perlin->depth, stream);
-    write_double ("origin_offset", perlin->origin_offset, stream);
+    named_writef (stream, "freq", "%lf", perlin->freq);
+    named_writef (stream, "depth", "%d", perlin->depth);
+    named_writef (stream, "origin_offset", "%lf", perlin->origin_offset);
     write_bytes ("hash", perlin->hash, PERLIN_HASH_SIZE, stream);
 }
 
@@ -121,9 +121,9 @@ Perlin
 read_perlin (FILE * stream)
 {
     Perlin perlin = { 0 };
-    perlin.freq = read_double ("freq", stream);
-    perlin.depth = read_int ("depth", stream);
-    perlin.origin_offset = read_double ("origin_offset", stream);
+    readf (stream, "freq", "%lf", &perlin.freq);
+    readf (stream, "depth", "%d", &perlin.depth);
+    readf (stream, "origin_offset", "%lf", &perlin.origin_offset);
     read_bytes ("hash", perlin.hash, PERLIN_HASH_SIZE, stream);
 
     return perlin;
