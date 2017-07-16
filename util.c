@@ -11,13 +11,13 @@ the error for the current error in errno.
 void
 error_abort (char *format, ...)
 {
-	va_list ap;
-	va_start(ap, format);
-	
+    va_list ap;
+    va_start (ap, format);
+
     char buffer[4096];
-    vsnprintf(buffer, 4096, format, ap);
-    va_end(ap);
-    
+    vsnprintf (buffer, 4096, format, ap);
+    va_end (ap);
+
     perror (buffer);
     abort ();
 }
@@ -28,11 +28,11 @@ Aborts the process printing an error to standard error.
 void
 message_abort (char *format, ...)
 {
-	va_list ap;
-	va_start(ap, format);
-	
-    vfprintf(stderr, format, ap);
-    va_end(ap);
+    va_list ap;
+    va_start (ap, format);
+
+    vfprintf (stderr, format, ap);
+    va_end (ap);
     abort ();
 }
 
@@ -155,7 +155,7 @@ read_expected_name (char *name, FILE * stream)
             ch = '\0';
 
         if (*cur++ != ch)
-        	message_abort("Failure to read; name %s not found.", name);
+            message_abort ("Failure to read; name %s not found.", name);
         else if (ch == '\0')
             break;
     }
@@ -261,7 +261,7 @@ read_bytes (char *name, unsigned char *bytes, int bytes_count, FILE * stream)
 
         *cur++ = i;
     }
-    
-    if (ferror(stream))
-    	error_abort("Failure to read bytes");
+
+    if (ferror (stream))
+        error_abort ("Failure to read bytes");
 }

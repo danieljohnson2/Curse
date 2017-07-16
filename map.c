@@ -75,8 +75,8 @@ pick_terrain (Map * map, double altitude, double dist)
     int index = pin (unpinned, 0, TERRAIN_COUNT - 1);
 
     if (index < 0 || index >= TERRAIN_COUNT)
-    	message_abort("Invalid terrain index");
-        
+        message_abort ("Invalid terrain index");
+
     return a[index];
 }
 

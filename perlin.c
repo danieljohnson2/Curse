@@ -17,7 +17,7 @@ get_hash (Perlin * perlin, long long index)
     index %= PERLIN_HASH_SIZE;
 
     if (index < 0 || index >= PERLIN_HASH_SIZE)
-    	message_abort ("Invalid perlin hash index");
+        message_abort ("Invalid perlin hash index");
 
     return perlin->hash[index];
 }

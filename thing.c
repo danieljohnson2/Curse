@@ -77,18 +77,22 @@ void
 write_thing (Thing * thing, FILE * stream)
 {
     write_int ("appearance", thing->appearance, stream);
-    write_str ("name", thing->name, stream);
-    write_int ("x", thing->loc.x, stream);
-    write_int ("y", thing->loc.y, stream);
 
-    write_int ("gold", thing->gold, stream);
-    write_int ("hp", thing->hp, stream);
-    write_int ("dmg", thing->dmg, stream);
-    write_int ("speed", thing->speed, stream);
+    if (thing->appearance != DEAD)
+    {
+        write_str ("name", thing->name, stream);
+        write_int ("x", thing->loc.x, stream);
+        write_int ("y", thing->loc.y, stream);
 
-    write_int ("remaining_wait", thing->remaining_wait, stream);
+        write_int ("gold", thing->gold, stream);
+        write_int ("hp", thing->hp, stream);
+        write_int ("dmg", thing->dmg, stream);
+        write_int ("speed", thing->speed, stream);
 
-    write_int ("behavior", thing->behavior, stream);
+        write_int ("remaining_wait", thing->remaining_wait, stream);
+
+        write_int ("behavior", thing->behavior, stream);
+    }
 }
 
 /*
@@ -100,17 +104,22 @@ read_thing (FILE * stream)
     Thing thing = { 0 };
 
     thing.appearance = read_int ("appearance", stream);
-    read_str ("name", thing.name, NAME_SIZE, stream);
-    thing.loc.x = read_int ("x", stream);
-    thing.loc.y = read_int ("y", stream);
 
-    thing.gold = read_int ("gold", stream);
-    thing.hp = read_int ("hp", stream);
-    thing.dmg = read_int ("dmg", stream);
-    thing.speed = read_int ("speed", stream);
+    if (thing.appearance != DEAD)
+    {
+        read_str ("name", thing.name, NAME_SIZE, stream);
+        thing.loc.x = read_int ("x", stream);
+        thing.loc.y = read_int ("y", stream);
 
-    thing.remaining_wait = read_int ("remaining_wait", stream);
+        thing.gold = read_int ("gold", stream);
+        thing.hp = read_int ("hp", stream);
+        thing.dmg = read_int ("dmg", stream);
+        thing.speed = read_int ("speed", stream);
 
-    thing.behavior = read_int ("behavior", stream);
+        thing.remaining_wait = read_int ("remaining_wait", stream);
+
+        thing.behavior = read_int ("behavior", stream);
+    }
+
     return thing;
 }

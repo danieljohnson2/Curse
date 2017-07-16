@@ -210,7 +210,7 @@ Tests to see if the thing given is still alive.
 bool
 is_thing_alive (Thing * thing)
 {
-    return thing->appearance != '\0';
+    return thing->appearance != DEAD;
 }
 
 /* Returns the total gold in all live things */
