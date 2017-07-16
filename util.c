@@ -2,6 +2,39 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
+/*
+Aborts the process printing an error to standard error. This also gives
+the error for the current error in errno.
+*/
+void
+error_abort (char *format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	
+    char buffer[4096];
+    vsnprintf(buffer, 4096, format, ap);
+    va_end(ap);
+    
+    perror (buffer);
+    abort ();
+}
+
+/*
+Aborts the process printing an error to standard error.
+*/
+void
+message_abort (char *format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	
+    vfprintf(stderr, format, ap);
+    va_end(ap);
+    abort ();
+}
 
 /* Returns the sign of the value givne */
 int
@@ -48,13 +81,6 @@ strtcat (char *dest, char *src, size_t dest_size)
     }
 }
 
-static void
-error_abort (char *message)
-{
-    perror (message);
-    abort ();
-}
-
 /*
 Write a string to a file with an initial name.
 */
@@ -65,6 +91,9 @@ write_str (char *name, char *src, FILE * stream)
         error_abort ("Failed to write string");
 }
 
+/*
+Write a double to a file with an initial name.
+*/
 void
 write_double (char *name, double value, FILE * stream)
 {
@@ -72,6 +101,9 @@ write_double (char *name, double value, FILE * stream)
         error_abort ("Failed to write double");
 }
 
+/*
+Write an int to a file with an initial name.
+*/
 void
 write_int (char *name, int value, FILE * stream)
 {
@@ -79,6 +111,11 @@ write_int (char *name, int value, FILE * stream)
         error_abort ("Failed to write int");
 }
 
+/*
+Write a byte-array to a file with an initial name. The
+byte array is encoded as a sequence of hex bytes. Base64
+is for people with tiny hard drives.
+*/
 void
 write_bytes (char *name, unsigned char *bytes, int bytes_size, FILE * stream)
 {
@@ -97,6 +134,11 @@ write_bytes (char *name, unsigned char *bytes, int bytes_size, FILE * stream)
         error_abort ("Failed to write bytes");
 }
 
+/*
+Reads the name given and then a ':' from the stream;
+aborts with an error if that's not what it finds.
+We use this to validate the input as we read it.
+*/
 static void
 read_expected_name (char *name, FILE * stream)
 {
@@ -113,10 +155,7 @@ read_expected_name (char *name, FILE * stream)
             ch = '\0';
 
         if (*cur++ != ch)
-        {
-            fprintf (stderr, "Failure to read; name %s not found.", name);
-            abort ();
-        }
+        	message_abort("Failure to read; name %s not found.", name);
         else if (ch == '\0')
             break;
     }
@@ -159,6 +198,9 @@ read_str (char *name, char *dest, size_t dest_size, FILE * stream)
         dest[dest_size - 1] = '\0';
 }
 
+/*
+Reads a double from the stream.
+*/
 double
 read_double (char *name, FILE * stream)
 {
@@ -171,6 +213,9 @@ read_double (char *name, FILE * stream)
     return result;
 }
 
+/*
+Reads an int from the stream.
+*/
 int
 read_int (char *name, FILE * stream)
 {
@@ -183,6 +228,9 @@ read_int (char *name, FILE * stream)
     return result;
 }
 
+/*
+Reads a byte-array from the stream.
+*/
 void
 read_bytes (char *name, unsigned char *bytes, int bytes_count, FILE * stream)
 {
@@ -213,4 +261,7 @@ read_bytes (char *name, unsigned char *bytes, int bytes_count, FILE * stream)
 
         *cur++ = i;
     }
+    
+    if (ferror(stream))
+    	error_abort("Failure to read bytes");
 }

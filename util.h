@@ -4,6 +4,9 @@
 #include <stddef.h>
 #include <stdio.h>
 
+void error_abort (char *format, ...);
+void message_abort (char *format, ...);
+
 int isign (int value);
 
 void strtcpy (char *dest, char *src, size_t dest_size);
