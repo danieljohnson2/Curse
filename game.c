@@ -3,6 +3,7 @@
 #include "treasure.h"
 #include "monster.h"
 #include "action.h"
+#include "weapon.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +32,9 @@ init_game (Map map, Thing player, SpawnSettings spawn)
 
     for (int i = 0; i < TREASURE_COUNT; ++i)
         place_thing (make_loc (0, 0), make_random_treasure ());
+
+    for (int i = 0; i < WEAPON_COUNT; ++i)
+        place_thing (make_loc (0, 0), make_random_weapon ());
 }
 
 /* Starts a new game with the map given. */

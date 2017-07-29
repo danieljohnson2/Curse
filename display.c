@@ -149,6 +149,8 @@ get_appearance_char (Appearance appearance)
         return 'h' | A_BOLD;
     case ELF:
         return 'e' | A_BOLD;
+    case WEAPON:
+        return '/' | A_BOLD;
     case SMALL_TREASURE:
         return '*' | COLOR_PAIR (2);
     case MEDIUM_TREASURE:

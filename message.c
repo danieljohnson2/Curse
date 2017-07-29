@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 static char pending_message[MESSAGE_SIZE];
 
@@ -99,4 +100,18 @@ write_message (char *message)
         strtcat (pending_message, " ", MESSAGE_SIZE);
         strtcat (pending_message, message, MESSAGE_SIZE);
     }
+}
+
+/* Appends a message formatted using printf-style formatting. */
+void
+write_messagef (char *format, ...)
+{
+    va_list ap;
+    va_start (ap, format);
+
+    char msg[MESSAGE_SIZE];
+    vsnprintf (msg, MESSAGE_SIZE, format, ap);
+    write_message (msg);
+
+    va_end (ap);
 }

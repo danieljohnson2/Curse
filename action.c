@@ -5,6 +5,7 @@
 #include "player.h"
 #include "treasure.h"
 #include "monster.h"
+#include "weapon.h"
 #include "util.h"
 
 #include <stdlib.h>
@@ -24,6 +25,9 @@ init_behaviors (void)
                            chase_player_turn_action);
 
     define_thing_behavior (TREASURE, treasure_bump_action, null_turn_action);
+
+    define_thing_behavior (WEAPON_PICKUP, weapon_pickup_bump_action,
+                           null_turn_action);
 }
 
 /*
