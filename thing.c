@@ -23,7 +23,7 @@ define_thing_behavior (ThingBehavior behavior, BumpAction bump_action,
 }
 
 /*
-This functio provides the bump action function for a thing;
+This function provides the bump action function for a thing;
 this does not return NULL, but will return a do-nothing function
 instead.
 */
@@ -39,7 +39,7 @@ get_bump_action (Thing * thing)
 }
 
 /*
-This functio provides the turn action function for a thing;
+This function provides the turn action function for a thing;
 this does not return NULL, but will return a do-nothing function
 instead.
 */
