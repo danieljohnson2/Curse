@@ -73,12 +73,19 @@ make_thing (Appearance appearance, char *name, int speed,
 }
 
 /*
-Compares two things to see if they are the same
+Compares two things to see if they are the same. This
+ignores the 'remaining wait' and 'loc'.
 */
 bool
 equal_things (Thing left, Thing right)
 {
-    return memcmp (&left, &right, sizeof (Thing)) == 0;
+    return
+        left.appearance == right.appearance &&
+        strcmp (left.name, right.name) == 0 &&
+        left.gold == right.gold &&
+        left.hp == right.hp &&
+        left.dmg == right.dmg &&
+        left.speed == right.speed && left.behavior == right.behavior;
 }
 
 /*

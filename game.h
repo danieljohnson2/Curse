@@ -14,6 +14,7 @@ Map *get_map (void);
 Thing *get_player (void);
 Thing *new_thing (Thing thing);
 Thing *place_thing (Loc origin, Thing thing);
+bool inventory_contains (Thing * owner, Thing thing);
 Thing *copy_to_inventory (Thing * owner, Thing thing);
 Loc find_empty_place (Loc origin);
 

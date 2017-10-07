@@ -47,16 +47,25 @@ make_random_weapon (void)
 bool
 weapon_pickup_bump_action (Thing * actor, Thing * target)
 {
-    Thing *carried = copy_to_inventory (actor, *target);
-
-    if (carried != NULL)
+    if (inventory_contains (actor, *target))
     {
-        write_messagef ("%s picked up %s!", actor->name, target->name);
+        write_messagef ("%s picked up %s (again)!", actor->name,
+                        target->name);
         remove_thing (target);
     }
     else
     {
-        write_messagef ("%s can't pick up any more!", actor->name);
+        Thing *carried = copy_to_inventory (actor, *target);
+
+        if (carried != NULL)
+        {
+            write_messagef ("%s picked up %s!", actor->name, target->name);
+            remove_thing (target);
+        }
+        else
+        {
+            write_messagef ("%s can't pick up any more!", actor->name);
+        }
     }
 
     return true;

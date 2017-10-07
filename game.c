@@ -223,6 +223,20 @@ place_thing (Loc origin, Thing thing)
     return new_thing (thing);
 }
 
+/* Checks to see if the owner given conains a (copy of)
+The thing given. */
+bool
+inventory_contains (Thing * owner, Thing thing)
+{
+    for (Thing * th = NULL; next_thing (owner, &th);)
+    {
+        if (equal_things (*th, thing))
+            return true;
+    }
+
+    return false;
+}
+
 /* Adds a (copy of) thing to the inventory of an owner, if there's
 space. Returns a pointer to the inventory copy, or NULL if there's
 no room. */
