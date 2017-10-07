@@ -60,6 +60,7 @@ TurnAction get_turn_action (Thing * thing);
 
 Thing make_thing (Appearance appearance, char *name, int speed,
                   ThingBehavior behavior);
+bool equal_things (Thing left, Thing right);
 
 void write_thing (Thing * thing, FILE * stream);
 Thing read_thing (FILE * stream);

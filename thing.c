@@ -2,6 +2,8 @@
 #include "util.h"
 #include "action.h"
 
+#include <memory.h>
+
 #define BEHAVIOR_MAX 16
 
 static struct
@@ -68,6 +70,15 @@ make_thing (Appearance appearance, char *name, int speed,
     th.remaining_wait = 0;
     th.behavior = behavior;
     return th;
+}
+
+/*
+Compares two things to see if they are the same
+*/
+bool
+equal_things (Thing left, Thing right)
+{
+    return memcmp (&left, &right, sizeof (Thing)) == 0;
 }
 
 /*

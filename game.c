@@ -335,6 +335,9 @@ save_game (char *file_name)
     for (int i = 0; i < THING_COUNT; ++i)
         write_thing (&game_things[i], f);
 
+    for (int i = 0; i < THING_COUNT * INVENTORY_COUNT; ++i)
+        write_thing (&inventory_things[i], f);
+
     write_map (&game_map, f);
     fclose (f);
 }
@@ -351,6 +354,9 @@ restore_game (char *file_name)
 
     for (int i = 0; i < THING_COUNT; ++i)
         game_things[i] = read_thing (f);
+
+    for (int i = 0; i < THING_COUNT * INVENTORY_COUNT; ++i)
+        inventory_things[i] = read_thing (f);
 
     game_map = read_map (f);
     fclose (f);
