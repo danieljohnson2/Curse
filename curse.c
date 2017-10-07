@@ -82,7 +82,7 @@ main (int argc, char **argv)
 
     paint (true);
 
-    long_message (game_over_msg);
+    long_message (NULL, game_over_msg);
     end_windows ();
     return 0;
 }

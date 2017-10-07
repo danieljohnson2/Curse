@@ -76,13 +76,14 @@ end_windows (void)
 
 /* Displays a multi-line message, then waits for a keystroke */
 void
-long_message (char **lines)
+long_message (char *title, char **lines)
 {
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
 
     int linecount = 0;
-    int maxlen = 0;
+    int maxlen = title != NULL ? strlen (title) : 0;
+
     for (char **l = lines; *l != NULL; ++l)
     {
         ++linecount;
@@ -94,6 +95,9 @@ long_message (char **lines)
     WINDOW *w = newwin (linecount + 4, maxlen + 4, (rows - linecount) / 2,
                         (columns - maxlen) / 2 - 2);
     box (w, 0, 0);
+
+    if (title != NULL)
+        mvwaddstr (w, 0, (maxlen - strlen (title) + 4) / 2, title);
 
     int y = 2;
 
@@ -209,6 +213,28 @@ show_message ()
     }
 
     wrefresh (message_w);
+}
+
+static void
+show_inventory ()
+{
+    char *lines[64] = { 0 };
+    int line_count = 0;
+
+    Thing *player = get_player ();
+
+    for (Thing * item = NULL; next_thing (player, &item);)
+    {
+        lines[line_count] = item->name;
+        line_count++;
+        if (line_count >= 64)
+            break;
+    }
+
+    if (line_count == 0)
+        lines[0] = "(nothing)";
+
+    long_message ("Inventory", lines);
 }
 
 static Loc
@@ -350,6 +376,11 @@ read_player_action (void)
             return action;
         case ' ':
             return action;
+
+        case 'i':
+            show_inventory ();
+            paint (false);
+            break;
 
         case 's':
             save_game (get_save_file_name ());

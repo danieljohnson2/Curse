@@ -59,7 +59,7 @@ player_turn_action (Thing * player)
 
     if (player->gold >= get_total_gold ())
     {
-        long_message (level_clear_msg);
+        long_message (NULL, level_clear_msg);
         player->gold = 0;
         next_level ();
         paint (true);
