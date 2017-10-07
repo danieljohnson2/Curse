@@ -64,7 +64,7 @@ int
 count_monsters (void)
 {
     int count = 0;
-    for (Thing * th = NULL; next_thing (&th);)
+    for (Thing * th = NULL; next_thing (NULL, &th);)
     {
         if (th->behavior == MONSTER)
             ++count;
@@ -118,14 +118,26 @@ chase_player_turn_action (Thing * actor)
 }
 
 static int
-roll_attack_damage (Thing * actor)
+roll_attack_damage (Thing * actor, Thing ** weapon_used)
 {
     /* 
        Actual damage is the average of 3 rolls from 0 to target->dmg * 2.
        Should average to actor->dmg.
      */
 
-    int max = actor->dmg * 2;
+    int actor_dmg = actor->dmg;
+    *weapon_used = NULL;
+
+    for (Thing * th = NULL; next_thing (actor, &th);)
+    {
+        if (th->dmg > actor_dmg)
+        {
+            actor_dmg = th->dmg;
+            *weapon_used = th;
+        }
+    }
+
+    int max = actor_dmg * 2;
     int dmg = 0;
 
     for (int i = 0; i < 3; ++i)
@@ -138,19 +150,26 @@ roll_attack_damage (Thing * actor)
 bool
 attack_bump_action (Thing * actor, Thing * target)
 {
-    int dmg = roll_attack_damage (actor);
+    Thing *weapon_used;
+    int dmg = roll_attack_damage (actor, &weapon_used);
 
     target->hp -= dmg;
 
     char msg[MESSAGE_SIZE];
+    char equip_msg[MESSAGE_SIZE] = "";
+
+    if (weapon_used != NULL)
+        sprintf (equip_msg, " with %s", weapon_used->name);
 
     if (dmg == 0)
     {
-        sprintf (msg, "%s misses %s.", actor->name, target->name);
+        sprintf (msg, "%s misses %s%s.", actor->name, target->name,
+                 equip_msg);
     }
     else if (target->hp > 0)
     {
-        sprintf (msg, "%s hits %s for %d!", actor->name, target->name, dmg);
+        sprintf (msg, "%s hits %s for %d%s!", actor->name, target->name, dmg,
+                 equip_msg);
     }
     else
     {
@@ -163,9 +182,18 @@ attack_bump_action (Thing * actor, Thing * target)
             new_thing (drop);
         }
 
+        for (Thing * item = NULL; next_thing (target, &item);)
+        {
+            Thing *dropped = new_thing (*item);
+            if (dropped != NULL)
+                dropped->loc = target->loc;
+            remove_thing (item);
+        }
+
         remove_thing (target);
 
-        sprintf (msg, "%s killed %s!", actor->name, target->name);
+        sprintf (msg, "%s killed %s%s!", actor->name, target->name,
+                 equip_msg);
     }
 
     write_message (msg);

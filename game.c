@@ -10,10 +10,12 @@
 #include <stdio.h>
 
 #define THING_COUNT 32
+#define INVENTORY_COUNT 8
 #define PLAYER_INDEX 0
 
 static Map game_map;
 static Thing game_things[THING_COUNT];
+static Thing inventory_things[THING_COUNT * INVENTORY_COUNT];
 static SpawnSettings game_spawn;
 
 /*
@@ -28,6 +30,7 @@ init_game (Map map, Thing player, SpawnSettings spawn)
     game_spawn = spawn;
 
     memset (&game_things, 0, sizeof (game_things));
+    memset (&inventory_things, 0, sizeof (inventory_things));
     game_things[PLAYER_INDEX] = player;
 
     for (int i = 0; i < TREASURE_COUNT; ++i)
@@ -72,6 +75,43 @@ next_level (void)
     init_game (map, player, spawn);
 }
 
+// This returns a pointer to the first item slot in 'owners'
+// inventory; if 'owner' is null, this returns the first top level
+// thing instead.
+static Thing *
+first_possible_thing (Thing * owner)
+{
+    if (owner == NULL)
+        return game_things;
+    else
+    {
+        int index = owner - game_things;
+        if (index >= 0 && index < THING_COUNT)
+            return &inventory_things[index * INVENTORY_COUNT];
+        else
+            return NULL;
+    }
+}
+
+// This returns a pointer to the next item slot after the last one
+// in'owners' inventory; if 'owner' is null, this returns the slot after
+// the last one for the top level items. This is used to know when we've
+// passed the end of the array of things we are iterating.
+static Thing *
+after_possible_things (Thing * owner)
+{
+    if (owner == NULL)
+        return &game_things[THING_COUNT];
+    else
+    {
+        int index = owner - game_things;
+        if (index >= 0 && index < THING_COUNT)
+            return &inventory_things[(index + 1) * INVENTORY_COUNT];
+        else
+            return NULL;
+    }
+}
+
 /*
 Returns the next slot in the things array. Start by passing
 a NULL-initialized 'thing' buffer, and this will give you a pointer
@@ -79,17 +119,17 @@ to the first slot. Each call after that moves to the next slot.
 Then, this method returns false and clears the buffer.
 */
 static bool
-next_possible_thing (Thing ** thing)
+next_possible_thing (Thing * owner, Thing ** thing)
 {
     if (*thing == NULL)
     {
-        *thing = game_things;
+        *thing = first_possible_thing (owner);
         return true;
     }
 
     (*thing)++;
 
-    if (*thing == &game_things[THING_COUNT])
+    if (*thing == after_possible_things (owner))
     {
         *thing = NULL;
         return false;
@@ -105,9 +145,9 @@ you a pointer to the first live thing. Each call after that moves to the
 next slot. Then, this method returns false and clears the buffer.
 */
 bool
-next_thing (Thing ** thing)
+next_thing (Thing * owner, Thing ** thing)
 {
-    while (next_possible_thing (thing))
+    while (next_possible_thing (owner, thing))
     {
         if (is_thing_alive (*thing))
             return true;
@@ -133,7 +173,7 @@ This function can only find things that are alive.
 bool
 next_thing_at (Loc where, Thing ** found)
 {
-    while (next_thing (found))
+    while (next_thing (NULL, found))
     {
         if (equal_locs ((*found)->loc, where))
             return true;
@@ -162,7 +202,7 @@ Thing *
 new_thing (Thing thing)
 {
     Thing *player = get_player ();
-    for (Thing * candidate = NULL; next_possible_thing (&candidate);)
+    for (Thing * candidate = NULL; next_possible_thing (NULL, &candidate);)
     {
         if (!is_thing_alive (candidate) && candidate != player)
         {
@@ -181,6 +221,24 @@ place_thing (Loc origin, Thing thing)
 {
     thing.loc = find_empty_place (origin);
     return new_thing (thing);
+}
+
+/* Adds a (copy of) thing to the inventory of an owner, if there's
+space. Returns a pointer to the inventory copy, or NULL if there's
+no room. */
+Thing *
+copy_to_inventory (Thing * owner, Thing thing)
+{
+    for (Thing * th = NULL; next_possible_thing (owner, &th);)
+    {
+        if (!is_thing_alive (th))
+        {
+            *th = thing;
+            return th;
+        }
+    }
+
+    return NULL;
 }
 
 /* Returns a random location that is passable and contains no things. */
@@ -222,8 +280,14 @@ int
 get_total_gold (void)
 {
     int total = 0;
-    for (Thing * th = NULL; next_thing (&th);)
+    for (Thing * th = NULL; next_thing (NULL, &th);)
+    {
         total += th->gold;
+
+        for (Thing * item = NULL; next_thing (th, &item);)
+            total += th->gold;
+    }
+
     return total;
 }
 
@@ -241,7 +305,7 @@ perform_turns (void)
     Thing *actor = NULL;
     while (is_thing_alive (player))
     {
-        if (next_thing (&actor))
+        if (next_thing (NULL, &actor))
         {
             if (actor->remaining_wait <= 0)
             {
