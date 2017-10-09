@@ -75,7 +75,9 @@ end_windows (void)
 }
 
 static WINDOW *
-display_message_window (char *title, char **lines, int margin, bool centered)
+display_message_window (char *title, char **lines, int top_margin,
+                        int left_margin, int bottom_margin, int right_margin,
+                        bool centered)
 {
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
@@ -91,24 +93,24 @@ display_message_window (char *title, char **lines, int margin, bool centered)
             maxlen = len;
     }
 
-    int offset = margin + 1;
-    int extra_space = offset * 2;
+    int v_extra = top_margin + bottom_margin + 2;
+    int h_extra = left_margin + right_margin + 2;
 
-    WINDOW *w = newwin (linecount + extra_space, maxlen + extra_space,
-                        (rows - linecount - extra_space) / 2,
-                        (columns - maxlen - extra_space) / 2);
+    WINDOW *w = newwin (linecount + v_extra, maxlen + h_extra,
+                        (rows - linecount - v_extra) / 2,
+                        (columns - maxlen - h_extra) / 2);
     box (w, 0, 0);
 
     if (title != NULL)
-        mvwaddstr (w, 0, (maxlen - strlen (title) + extra_space) / 2, title);
+        mvwaddstr (w, 0, (maxlen - strlen (title) + h_extra) / 2, title);
 
-    int y = offset;
+    int y = top_margin + 1;
 
     for (char **l = lines; *l != NULL; ++l)
     {
         int len = strlen (*l);
         int placement = centered ? (maxlen - len) / 2 : 0;
-        mvwaddstr (w, y, placement + offset, *l);
+        mvwaddstr (w, y, placement + left_margin + 1, *l);
         ++y;
     }
 
@@ -119,7 +121,7 @@ display_message_window (char *title, char **lines, int margin, bool centered)
 void
 long_message (char *title, char **lines)
 {
-    WINDOW *w = display_message_window (NULL, lines, 1, true);
+    WINDOW *w = display_message_window (NULL, lines, 1, 1, 1, 1, true);
 
     while (wgetch (w) != ' ')
         continue;
@@ -233,23 +235,33 @@ show_message ()
 static void
 show_inventory ()
 {
-    char *lines[64] = { 0 };
-    int line_count = 0;
+    char *lines[26] = { 0 };
+
+    int item_count = 0;
 
     Thing *player = get_player ();
 
     for (Thing * item = NULL; next_thing (player, &item);)
     {
-        lines[line_count] = item->name;
-        line_count++;
-        if (line_count >= 64)
+        lines[item_count] = item->name;
+        item_count++;
+        if (item_count >= 26)
             break;
     }
 
-    if (line_count == 0)
+    if (item_count == 0)
         lines[0] = "(nothing)";
 
-    WINDOW *w = display_message_window ("Inventory", lines, 0, false);
+    WINDOW *w =
+        display_message_window ("Inventory", lines, 0, 3, 0, 1, false);
+
+    for (int i = 0; i < item_count; ++i)
+        if (item_count > 0)
+        {
+            char prefix[] = "a)";
+            prefix[0] += i;
+            mvwaddstr (w, i + 1, 1, prefix);
+        }
 
     while (wgetch (w) != ' ')
         continue;
