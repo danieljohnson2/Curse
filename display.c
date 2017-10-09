@@ -74,9 +74,8 @@ end_windows (void)
     endwin ();
 }
 
-/* Displays a multi-line message, then waits for a keystroke */
-void
-long_message (char *title, char **lines)
+static WINDOW *
+display_message_window (char *title, char **lines, bool centered)
 {
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
@@ -104,12 +103,24 @@ long_message (char *title, char **lines)
     for (char **l = lines; *l != NULL; ++l)
     {
         int len = strlen (*l);
-        mvwaddstr (w, y, (maxlen - len) / 2 + 2, *l);
+        int offset = centered ? (maxlen - len) / 2 : 0;
+        mvwaddstr (w, y, offset + 2, *l);
         ++y;
     }
 
+    return w;
+}
+
+/* Displays a multi-line message, then waits for a keystroke */
+void
+long_message (char *title, char **lines)
+{
+    WINDOW *w = display_message_window (NULL, lines, true);
+
     while (wgetch (w) != ' ')
         continue;
+
+    delwin (w);
 }
 
 static int
@@ -234,7 +245,12 @@ show_inventory ()
     if (line_count == 0)
         lines[0] = "(nothing)";
 
-    long_message ("Inventory", lines);
+    WINDOW *w = display_message_window ("Inventory", lines, false);
+
+    while (wgetch (w) != ' ')
+        continue;
+
+    delwin (w);
 }
 
 static Loc
