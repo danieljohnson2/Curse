@@ -5,7 +5,7 @@
 #include "player.h"
 #include "treasure.h"
 #include "monster.h"
-#include "weapon.h"
+#include "item.h"
 #include "util.h"
 
 #include <stdlib.h>

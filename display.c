@@ -3,7 +3,7 @@
 #include "message.h"
 #include "game.h"
 #include "thing.h"
-#include "weapon.h"
+#include "item.h"
 #include "util.h"
 
 #include <ncurses.h>

@@ -1,5 +1,5 @@
-#ifndef WEAPON_H_INCLUDED
-#define WEAPON_H_INCLUDED
+#ifndef ITEM_H_INCLUDED
+#define ITEM_H_INCLUDED
 
 #include "thing.h"
 #include <stdbool.h>

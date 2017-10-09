@@ -1,6 +1,6 @@
 #include "monster.h"
 #include "treasure.h"
-#include "weapon.h"
+#include "item.h"
 #include "game.h"
 #include "action.h"
 #include "message.h"

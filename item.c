@@ -1,4 +1,4 @@
-#include "weapon.h"
+#include "item.h"
 #include "message.h"
 #include "game.h"
 

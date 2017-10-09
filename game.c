@@ -3,7 +3,7 @@
 #include "treasure.h"
 #include "monster.h"
 #include "action.h"
-#include "weapon.h"
+#include "item.h"
 
 #include <stdlib.h>
 #include <string.h>
