@@ -32,7 +32,9 @@ typedef enum
 {
     INERT,
     PLAYER_CONTROLLED,
-    MONSTER,
+    SMART_MONSTER,
+    DUMB_MONSTER,
+    ANIMAL,
     WEAPON_PICKUP,
     TREASURE
 } ThingBehavior;

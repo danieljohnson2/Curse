@@ -17,21 +17,22 @@ typedef struct _MonsterData
     int hp;
     int dmg;
     int speed;
+    ThingBehavior behavior;
 } MonsterData;
 
 static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
-    {GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2},
-    {HALFLING, "Halfling", 3, 2, (SPEED_DEFAULT * 3) / 2},
-    {ORC, "Orc", 10, 6, SPEED_DEFAULT},
-    {WARG, "Warg", 8, 5, SPEED_DEFAULT * 2},
-    {ELF, "Elf", 8, 9, SPEED_DEFAULT * 2}
+    {GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2, DUMB_MONSTER},
+    {HALFLING, "Halfling", 3, 2, (SPEED_DEFAULT * 3) / 2, SMART_MONSTER},
+    {ORC, "Orc", 10, 6, SPEED_DEFAULT, DUMB_MONSTER},
+    {WARG, "Warg", 8, 5, SPEED_DEFAULT * 2, ANIMAL},
+    {ELF, "Elf", 8, 9, SPEED_DEFAULT * 2, SMART_MONSTER}
 };
 
 static Thing
 make_monster (MonsterData data)
 {
     Thing monster = make_thing (data.appearance, data.name, data.speed,
-                                MONSTER);
+                                data.behavior);
     monster.hp = data.hp;
     monster.dmg = data.dmg;
     return monster;
@@ -66,7 +67,8 @@ count_monsters (void)
     int count = 0;
     for (Thing * th = NULL; next_thing (NULL, &th);)
     {
-        if (th->behavior == MONSTER)
+        if (th->behavior == SMART_MONSTER || th->behavior == DUMB_MONSTER
+            || th->behavior == ANIMAL)
             ++count;
     }
 
@@ -117,26 +119,27 @@ chase_player_turn_action (Thing * actor)
         move_thing_towards (actor, player);
 }
 
+static Thing *
+find_equipped_weapon (Thing * owner)
+{
+    for (Thing * th = NULL; next_thing (owner, &th);)
+    {
+        if (th->equipped && th->dmg > 0)
+            return th;
+    }
+
+    return NULL;
+}
+
 static int
-roll_attack_damage (Thing * actor, Thing ** weapon_used)
+roll_attack_damage (Thing * actor, Thing * weapon)
 {
     /* 
        Actual damage is the average of 3 rolls from 0 to target->dmg * 2.
        Should average to actor->dmg.
      */
 
-    int actor_dmg = actor->dmg;
-    *weapon_used = NULL;
-
-    for (Thing * th = NULL; next_thing (actor, &th);)
-    {
-        if (th->dmg > actor_dmg)
-        {
-            actor_dmg = th->dmg;
-            *weapon_used = th;
-        }
-    }
-
+    int actor_dmg = weapon == NULL ? actor->dmg : weapon->dmg;
     int max = actor_dmg * 2;
     int dmg = 0;
 
@@ -150,16 +153,16 @@ roll_attack_damage (Thing * actor, Thing ** weapon_used)
 bool
 attack_bump_action (Thing * actor, Thing * target)
 {
-    Thing *weapon_used;
-    int dmg = roll_attack_damage (actor, &weapon_used);
+    Thing *weapon = find_equipped_weapon (actor);
+    int dmg = roll_attack_damage (actor, weapon);
 
     target->hp -= dmg;
 
     char msg[MESSAGE_SIZE];
     char equip_msg[MESSAGE_SIZE] = "";
 
-    if (weapon_used != NULL)
-        sprintf (equip_msg, " with %s", weapon_used->name);
+    if (weapon != NULL)
+        sprintf (equip_msg, " with %s", weapon->name);
 
     if (dmg == 0)
     {

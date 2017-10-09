@@ -44,14 +44,15 @@ make_random_weapon (void)
     return candidates[index];
 }
 
-bool
-weapon_pickup_bump_action (Thing * actor, Thing * target)
+static Thing *
+weapon_pickup_bump_action_core (Thing * actor, Thing * target)
 {
     if (inventory_contains (actor, *target))
     {
         write_messagef ("%s picked up %s (again)!", actor->name,
                         target->name);
         remove_thing (target);
+        return NULL;
     }
     else
     {
@@ -66,7 +67,43 @@ weapon_pickup_bump_action (Thing * actor, Thing * target)
         {
             write_messagef ("%s can't pick up any more!", actor->name);
         }
+
+        return carried;
     }
+}
+
+bool
+weapon_pickup_bump_action (Thing * actor, Thing * target)
+{
+    if (actor->behavior == ANIMAL)
+        return true;
+
+    Thing *to_equip = weapon_pickup_bump_action_core (actor, target);
+
+    if (actor->behavior != PLAYER_CONTROLLED && to_equip != NULL)
+    {
+        if (actor->behavior == SMART_MONSTER)
+        {
+            for (Thing * th = NULL; next_thing (actor, &th);)
+                if (to_equip->dmg < th->dmg)
+                    to_equip = th;
+        }
+
+        for (Thing * th = NULL; next_thing (actor, &th);)
+            th->equipped = th == to_equip;
+    }
+
+    return true;
+}
+
+bool
+weapon_dumb_pickup_bump_action (Thing * actor, Thing * target)
+{
+    Thing *gotten = weapon_pickup_bump_action_core (actor, target);
+
+    // equip what actor picked up, no matter what it is!
+    for (Thing * th = NULL; next_thing (actor, &th);)
+        th->equipped = th == gotten;
 
     return true;
 }
