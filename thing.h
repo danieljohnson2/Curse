@@ -47,6 +47,7 @@ struct Thing
     int hp;
     int dmg;
     int speed;
+    bool equipped;
 
     int remaining_wait;
 

@@ -106,6 +106,7 @@ write_thing (Thing * thing, FILE * stream)
         named_writef (stream, "hp", "%d", thing->hp);
         named_writef (stream, "dmg", "%d", thing->dmg);
         named_writef (stream, "speed", "%d", thing->speed);
+        named_writef (stream, "equipped", "%d", thing->equipped);
 
         named_writef (stream, "remaining_wait", "%d", thing->remaining_wait);
 
@@ -135,6 +136,10 @@ read_thing (FILE * stream)
         readf (stream, "hp", "%d", &thing.hp);
         readf (stream, "dmg", "%d", &thing.dmg);
         readf (stream, "speed", "%d", &thing.speed);
+
+        int tmp = 0;
+        readf (stream, "equipped", "%d", &tmp);
+        thing.equipped = tmp != 0;
 
         readf (stream, "remaining_wait", "%d", &thing.remaining_wait);
 

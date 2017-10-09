@@ -236,6 +236,7 @@ static void
 show_inventory ()
 {
     char *lines[26] = { 0 };
+    Thing *items[26] = { 0 };
 
     int item_count = 0;
 
@@ -243,6 +244,7 @@ show_inventory ()
 
     for (Thing * item = NULL; next_thing (player, &item);)
     {
+        items[item_count] = item;
         lines[item_count] = item->name;
         item_count++;
         if (item_count >= 26)
@@ -255,16 +257,33 @@ show_inventory ()
     WINDOW *w =
         display_message_window ("Inventory", lines, 0, 3, 0, 1, false);
 
-    for (int i = 0; i < item_count; ++i)
-        if (item_count > 0)
+    for (;;)
+    {
+        int y = 1;
+        for (Thing * item = NULL; next_thing (player, &item);)
         {
-            char prefix[] = "a)";
-            prefix[0] += i;
-            mvwaddstr (w, i + 1, 1, prefix);
+            char prefix[] = "a) ";
+            prefix[0] += y - 1;
+            if (item->equipped)
+                prefix[2] = '*';
+
+            mvwaddstr (w, y++, 1, prefix);
         }
 
-    while (wgetch (w) != ' ')
-        continue;
+        int ch = wgetch (w);
+
+        if (ch == ' ')
+            break;
+
+        if (ch >= 'a' && ch <= 'z')
+        {
+            int index = ch - 'a';
+
+            if (index < item_count)
+                for (int i = 0; i < item_count; ++i)
+                    items[i]->equipped = i == index;
+        }
+    }
 
     delwin (w);
 }

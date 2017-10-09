@@ -220,6 +220,7 @@ Thing *
 place_thing (Loc origin, Thing thing)
 {
     thing.loc = find_empty_place (origin);
+    thing.equipped = false;
     return new_thing (thing);
 }
 
