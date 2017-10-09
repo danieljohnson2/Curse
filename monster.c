@@ -1,5 +1,6 @@
 #include "monster.h"
 #include "treasure.h"
+#include "weapon.h"
 #include "game.h"
 #include "action.h"
 #include "message.h"
@@ -119,18 +120,6 @@ chase_player_turn_action (Thing * actor)
         move_thing_towards (actor, player);
 }
 
-static Thing *
-find_equipped_weapon (Thing * owner)
-{
-    for (Thing * th = NULL; next_thing (owner, &th);)
-    {
-        if (th->equipped && th->dmg > 0)
-            return th;
-    }
-
-    return NULL;
-}
-
 static int
 roll_attack_damage (Thing * actor, Thing * weapon)
 {
@@ -153,7 +142,7 @@ roll_attack_damage (Thing * actor, Thing * weapon)
 bool
 attack_bump_action (Thing * actor, Thing * target)
 {
-    Thing *weapon = find_equipped_weapon (actor);
+    Thing *weapon = get_equipped_item (actor, WEAPON_PICKUP);
     int dmg = roll_attack_damage (actor, weapon);
 
     target->hp -= dmg;

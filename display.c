@@ -3,6 +3,7 @@
 #include "message.h"
 #include "game.h"
 #include "thing.h"
+#include "weapon.h"
 #include "util.h"
 
 #include <ncurses.h>
@@ -280,8 +281,7 @@ show_inventory ()
             int index = ch - 'a';
 
             if (index < item_count)
-                for (int i = 0; i < item_count; ++i)
-                    items[i]->equipped = i == index;
+                equip_item (player, items[index]);
         }
     }
 

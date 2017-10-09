@@ -26,6 +26,7 @@ make_weapon (WeaponData data)
     return monster;
 }
 
+/* Constructs a random weapon thing */
 Thing
 make_random_weapon (void)
 {
@@ -42,6 +43,32 @@ make_random_weapon (void)
 
     int index = rand () % CANDIDATE_WEAPON_COUNT;
     return candidates[index];
+}
+
+/* Finds the equipped item belonging to 'owner' whose behavior matches
+thing_type, and returns it. If no such itme is equipped, this returns NULL. */
+Thing *
+get_equipped_item (Thing * owner, ThingBehavior thing_type)
+{
+    for (Thing * th = NULL; next_thing (owner, &th);)
+    {
+        if (th->equipped && th->behavior == thing_type)
+            return th;
+    }
+
+    return NULL;
+}
+
+/* Equips an item. Any other item owned by 'owner' of the same type is
+unequipped. */
+void
+equip_item (Thing * owner, Thing * item)
+{
+    for (Thing * th = NULL; next_thing (owner, &th);)
+    {
+        if (th->behavior == item->behavior)
+            th->equipped = th == item;
+    }
 }
 
 static Thing *
@@ -89,8 +116,7 @@ weapon_pickup_bump_action (Thing * actor, Thing * target)
                     to_equip = th;
         }
 
-        for (Thing * th = NULL; next_thing (actor, &th);)
-            th->equipped = th == to_equip;
+        equip_item (actor, to_equip);
     }
 
     return true;
