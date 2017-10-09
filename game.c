@@ -36,8 +36,8 @@ init_game (Map map, Thing player, SpawnSettings spawn)
     for (int i = 0; i < TREASURE_COUNT; ++i)
         place_thing (make_loc (0, 0), make_random_treasure ());
 
-    for (int i = 0; i < WEAPON_COUNT; ++i)
-        place_thing (make_loc (0, 0), make_random_weapon ());
+    for (int i = 0; i < ITEM_COUNT; ++i)
+        place_thing (make_loc (0, 0), make_random_item ());
 }
 
 /* Starts a new game with the map given. */

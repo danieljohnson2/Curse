@@ -23,6 +23,7 @@ typedef enum
     HALFLING,
     ELF,
     WEAPON,
+    ARMOR,
     SMALL_TREASURE,
     MEDIUM_TREASURE,
     LARGE_TREASURE
@@ -36,6 +37,7 @@ typedef enum
     DUMB_MONSTER,
     ANIMAL,
     WEAPON_PICKUP,
+    ARMOR_PICKUP,
     TREASURE
 } ThingBehavior;
 

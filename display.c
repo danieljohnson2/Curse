@@ -173,6 +173,8 @@ get_appearance_char (Appearance appearance)
         return 'e' | A_BOLD;
     case WEAPON:
         return '/' | A_BOLD;
+    case ARMOR:
+        return '[' | A_BOLD;
     case SMALL_TREASURE:
         return '*' | COLOR_PAIR (2);
     case MEDIUM_TREASURE:

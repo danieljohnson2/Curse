@@ -4,22 +4,24 @@
 
 #include <stdlib.h>
 
-#define CANDIDATE_WEAPON_COUNT 3
+#define CANDIDATE_ITEM_COUNT 3
 
-typedef struct WeaponData
+typedef struct ItemData
 {
+    Appearance appareance;
     char *name;
     int dmg;
-} WeaponData;
+    ThingBehavior behavior;
+} ItemData;
 
-static WeaponData weapon_data[CANDIDATE_WEAPON_COUNT] = {
-    {"Dagger", 10},
-    {"Mace", 15},
-    {"Sword", 20}
+static ItemData item_data[CANDIDATE_ITEM_COUNT] = {
+    {WEAPON, "Dagger", 10, WEAPON_PICKUP},
+    {WEAPON, "Mace", 15, WEAPON_PICKUP},
+    {WEAPON, "Sword", 20, WEAPON_PICKUP}
 };
 
 static Thing
-make_weapon (WeaponData data)
+make_item (ItemData data)
 {
     Thing monster = make_thing (WEAPON, data.name, 0, WEAPON_PICKUP);
     monster.dmg = data.dmg;
@@ -28,20 +30,20 @@ make_weapon (WeaponData data)
 
 /* Constructs a random weapon thing */
 Thing
-make_random_weapon (void)
+make_random_item (void)
 {
     static bool initialized;
-    static Thing candidates[CANDIDATE_WEAPON_COUNT];
+    static Thing candidates[CANDIDATE_ITEM_COUNT];
 
     if (!initialized)
     {
         initialized = true;
 
-        for (int i = 0; i < CANDIDATE_WEAPON_COUNT; ++i)
-            candidates[i] = make_weapon (weapon_data[i]);
+        for (int i = 0; i < CANDIDATE_ITEM_COUNT; ++i)
+            candidates[i] = make_item (item_data[i]);
     }
 
-    int index = rand () % CANDIDATE_WEAPON_COUNT;
+    int index = rand () % CANDIDATE_ITEM_COUNT;
     return candidates[index];
 }
 
@@ -72,7 +74,7 @@ equip_item (Thing * owner, Thing * item)
 }
 
 static Thing *
-weapon_pickup_bump_action_core (Thing * actor, Thing * target)
+item_pickup_bump_action_core (Thing * actor, Thing * target)
 {
     if (inventory_contains (actor, *target))
     {
@@ -100,12 +102,12 @@ weapon_pickup_bump_action_core (Thing * actor, Thing * target)
 }
 
 bool
-weapon_pickup_bump_action (Thing * actor, Thing * target)
+item_pickup_bump_action (Thing * actor, Thing * target)
 {
     if (actor->behavior == ANIMAL)
         return true;
 
-    Thing *to_equip = weapon_pickup_bump_action_core (actor, target);
+    Thing *to_equip = item_pickup_bump_action_core (actor, target);
 
     if (actor->behavior != PLAYER_CONTROLLED && to_equip != NULL)
     {
@@ -118,18 +120,6 @@ weapon_pickup_bump_action (Thing * actor, Thing * target)
 
         equip_item (actor, to_equip);
     }
-
-    return true;
-}
-
-bool
-weapon_dumb_pickup_bump_action (Thing * actor, Thing * target)
-{
-    Thing *gotten = weapon_pickup_bump_action_core (actor, target);
-
-    // equip what actor picked up, no matter what it is!
-    for (Thing * th = NULL; next_thing (actor, &th);)
-        th->equipped = th == gotten;
 
     return true;
 }

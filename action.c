@@ -29,7 +29,10 @@ init_behaviors (void)
 
     define_thing_behavior (TREASURE, treasure_bump_action, null_turn_action);
 
-    define_thing_behavior (WEAPON_PICKUP, weapon_pickup_bump_action,
+    define_thing_behavior (WEAPON_PICKUP, item_pickup_bump_action,
+                           null_turn_action);
+
+    define_thing_behavior (ARMOR_PICKUP, item_pickup_bump_action,
                            null_turn_action);
 }
 
