@@ -75,7 +75,7 @@ end_windows (void)
 }
 
 static WINDOW *
-display_message_window (char *title, char **lines, bool centered)
+display_message_window (char *title, char **lines, int margin, bool centered)
 {
     int rows, columns;
     getmaxyx (stdscr, rows, columns);
@@ -91,20 +91,24 @@ display_message_window (char *title, char **lines, bool centered)
             maxlen = len;
     }
 
-    WINDOW *w = newwin (linecount + 4, maxlen + 4, (rows - linecount) / 2,
-                        (columns - maxlen) / 2 - 2);
+    int offset = margin + 1;
+    int extra_space = offset * 2;
+
+    WINDOW *w = newwin (linecount + extra_space, maxlen + extra_space,
+                        (rows - linecount - extra_space) / 2,
+                        (columns - maxlen - extra_space) / 2);
     box (w, 0, 0);
 
     if (title != NULL)
-        mvwaddstr (w, 0, (maxlen - strlen (title) + 4) / 2, title);
+        mvwaddstr (w, 0, (maxlen - strlen (title) + extra_space) / 2, title);
 
-    int y = 2;
+    int y = offset;
 
     for (char **l = lines; *l != NULL; ++l)
     {
         int len = strlen (*l);
-        int offset = centered ? (maxlen - len) / 2 : 0;
-        mvwaddstr (w, y, offset + 2, *l);
+        int placement = centered ? (maxlen - len) / 2 : 0;
+        mvwaddstr (w, y, placement + offset, *l);
         ++y;
     }
 
@@ -115,7 +119,7 @@ display_message_window (char *title, char **lines, bool centered)
 void
 long_message (char *title, char **lines)
 {
-    WINDOW *w = display_message_window (NULL, lines, true);
+    WINDOW *w = display_message_window (NULL, lines, 1, true);
 
     while (wgetch (w) != ' ')
         continue;
@@ -245,7 +249,7 @@ show_inventory ()
     if (line_count == 0)
         lines[0] = "(nothing)";
 
-    WINDOW *w = display_message_window ("Inventory", lines, false);
+    WINDOW *w = display_message_window ("Inventory", lines, 0, false);
 
     while (wgetch (w) != ' ')
         continue;
