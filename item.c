@@ -4,11 +4,11 @@
 
 #include <stdlib.h>
 
-#define CANDIDATE_ITEM_COUNT 3
+#define CANDIDATE_ITEM_COUNT 6
 
 typedef struct ItemData
 {
-    Appearance appareance;
+    Appearance appearance;
     char *name;
     int dmg;
     ThingBehavior behavior;
@@ -17,18 +17,22 @@ typedef struct ItemData
 static ItemData item_data[CANDIDATE_ITEM_COUNT] = {
     {WEAPON, "Dagger", 10, WEAPON_PICKUP},
     {WEAPON, "Mace", 15, WEAPON_PICKUP},
-    {WEAPON, "Sword", 20, WEAPON_PICKUP}
+    {WEAPON, "Sword", 20, WEAPON_PICKUP},
+    {ARMOR, "Leather Armor", 3, ARMOR_PICKUP},
+    {ARMOR, "Chain Armor", 10, ARMOR_PICKUP},
+    {ARMOR, "Plate Armor", 15, ARMOR_PICKUP},
 };
 
 static Thing
 make_item (ItemData data)
 {
-    Thing monster = make_thing (WEAPON, data.name, 0, WEAPON_PICKUP);
+    Thing monster = make_thing (data.appearance, data.name, 0, data.behavior);
     monster.dmg = data.dmg;
     return monster;
 }
 
-/* Constructs a random weapon thing */
+/* Constructs a random item, which could be weapon or armor, taken
+from the item_data. */
 Thing
 make_random_item (void)
 {
@@ -73,6 +77,9 @@ equip_item (Thing * owner, Thing * item)
     }
 }
 
+/* Picks up the target item and places it in the actors inventory,
+if possible. Returns the thing now in inventory, or NULL if the
+actor could not pick it up because its inventory was full. */
 static Thing *
 item_pickup_bump_action_core (Thing * actor, Thing * target)
 {
@@ -101,6 +108,9 @@ item_pickup_bump_action_core (Thing * actor, Thing * target)
     }
 }
 
+/* Handles the case where something picks up an item; this decides
+whether the actor will equip the item, which depends on the behavior
+of the actor. */
 bool
 item_pickup_bump_action (Thing * actor, Thing * target)
 {
@@ -114,7 +124,8 @@ item_pickup_bump_action (Thing * actor, Thing * target)
         if (actor->behavior == SMART_MONSTER)
         {
             for (Thing * th = NULL; next_thing (actor, &th);)
-                if (to_equip->dmg < th->dmg)
+                if (th->behavior == to_equip->behavior
+                    && to_equip->dmg < th->dmg)
                     to_equip = th;
         }
 

@@ -121,7 +121,7 @@ chase_player_turn_action (Thing * actor)
 }
 
 static int
-roll_attack_damage (Thing * actor, Thing * weapon)
+roll_attack_damage (Thing * actor, Thing * weapon, Thing * armor)
 {
     /* 
        Actual damage is the average of 3 rolls from 0 to target->dmg * 2.
@@ -135,7 +135,16 @@ roll_attack_damage (Thing * actor, Thing * weapon)
     for (int i = 0; i < 3; ++i)
         dmg += rand () % (max + 1);
 
-    return dmg / 3;
+    dmg /= 3;
+
+    if (armor != NULL)
+    {
+        int limit = rand () & (armor->dmg + 1);
+        if (dmg < limit)
+            dmg = 0;
+    }
+
+    return dmg;
 }
 
 /* A bump-action that triggers combat */
@@ -143,7 +152,8 @@ bool
 attack_bump_action (Thing * actor, Thing * target)
 {
     Thing *weapon = get_equipped_item (actor, WEAPON_PICKUP);
-    int dmg = roll_attack_damage (actor, weapon);
+    Thing *armor = get_equipped_item (target, ARMOR_PICKUP);
+    int dmg = roll_attack_damage (actor, weapon, armor);
 
     target->hp -= dmg;
 
