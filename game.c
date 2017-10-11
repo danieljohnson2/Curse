@@ -10,12 +10,18 @@
 #include <stdio.h>
 
 #define THING_COUNT 32
-#define INVENTORY_COUNT 8
+#define INVENTORY_COUNT 26
 #define PLAYER_INDEX 0
 
+typedef struct ThingEntry
+{
+    Thing thing;
+    struct ThingEntry *inventory;
+} ThingEntry;
+
 static Map game_map;
-static Thing game_things[THING_COUNT];
-static Thing inventory_things[THING_COUNT * INVENTORY_COUNT];
+static ThingEntry game_things[THING_COUNT];
+static ThingEntry inventory_things[THING_COUNT * INVENTORY_COUNT];
 static SpawnSettings game_spawn;
 
 /*
@@ -31,7 +37,11 @@ init_game (Map map, Thing player, SpawnSettings spawn)
 
     memset (&game_things, 0, sizeof (game_things));
     memset (&inventory_things, 0, sizeof (inventory_things));
-    game_things[PLAYER_INDEX] = player;
+
+    for (int i = 0; i < THING_COUNT; ++i)
+        game_things[i].inventory = &inventory_things[i * INVENTORY_COUNT];
+
+    game_things[PLAYER_INDEX].thing = player;
 
     for (int i = 0; i < TREASURE_COUNT; ++i)
         place_thing (make_loc (0, 0), make_random_treasure ());
@@ -75,40 +85,27 @@ next_level (void)
     init_game (map, player, spawn);
 }
 
-// This returns a pointer to the first item slot in 'owners'
-// inventory; if 'owner' is null, this returns the first top level
-// thing instead.
-static Thing *
-first_possible_thing (Thing * owner)
+// This provides a pointer to the inventory array for an owner, and also
+// a pointer after it so you can see how bit it is. If 'owner' is null,
+// this returns the top level thing array instead. This sets both pointers
+// to zero if called on an item already in inventory.
+static void
+possible_thing_range (Thing * owner, ThingEntry ** first, ThingEntry ** after)
 {
     if (owner == NULL)
-        return game_things;
-    else
     {
-        int index = owner - game_things;
-        if (index >= 0 && index < THING_COUNT)
-            return &inventory_things[index * INVENTORY_COUNT];
-        else
-            return NULL;
+        *first = game_things;
+        *after = game_things + THING_COUNT;
     }
-}
-
-// This returns a pointer to the next item slot after the last one
-// in'owners' inventory; if 'owner' is null, this returns the slot after
-// the last one for the top level items. This is used to know when we've
-// passed the end of the array of things we are iterating.
-static Thing *
-after_possible_things (Thing * owner)
-{
-    if (owner == NULL)
-        return &game_things[THING_COUNT];
     else
     {
-        int index = owner - game_things;
-        if (index >= 0 && index < THING_COUNT)
-            return &inventory_things[(index + 1) * INVENTORY_COUNT];
+        ThingEntry *e = (ThingEntry *) owner;
+        *first = e->inventory;
+
+        if (e->inventory != NULL)
+            *after = e->inventory + INVENTORY_COUNT;
         else
-            return NULL;
+            *after = NULL;
     }
 }
 
@@ -121,21 +118,20 @@ Then, this method returns false and clears the buffer.
 static bool
 next_possible_thing (Thing * owner, Thing ** thing)
 {
+    ThingEntry *first, *after, *entry;
+    possible_thing_range (owner, &first, &after);
+
     if (*thing == NULL)
-    {
-        *thing = first_possible_thing (owner);
-        return true;
-    }
-
-    (*thing)++;
-
-    if (*thing == after_possible_things (owner))
-    {
-        *thing = NULL;
-        return false;
-    }
+        entry = first;
     else
-        return true;
+        entry = ((ThingEntry *) * thing) + 1;
+
+    if (entry == NULL || entry == after)
+        *thing = NULL;
+    else
+        *thing = &entry->thing;
+
+    return *thing != NULL;
 }
 
 /*
@@ -193,7 +189,7 @@ get_map (void)
 Thing *
 get_player (void)
 {
-    return &game_things[PLAYER_INDEX];
+    return &game_things[PLAYER_INDEX].thing;
 }
 
 /* Adds a new thing to the game, and returns a pointer to the thing in
@@ -348,10 +344,10 @@ save_game (char *file_name)
     write_spawn_settings (&game_spawn, f);
 
     for (int i = 0; i < THING_COUNT; ++i)
-        write_thing (&game_things[i], f);
+        write_thing (&game_things[i].thing, f);
 
     for (int i = 0; i < THING_COUNT * INVENTORY_COUNT; ++i)
-        write_thing (&inventory_things[i], f);
+        write_thing (&inventory_things[i].thing, f);
 
     write_map (&game_map, f);
     fclose (f);
@@ -368,10 +364,10 @@ restore_game (char *file_name)
     game_spawn = read_spawn_settings (f);
 
     for (int i = 0; i < THING_COUNT; ++i)
-        game_things[i] = read_thing (f);
+        game_things[i].thing = read_thing (f);
 
     for (int i = 0; i < THING_COUNT * INVENTORY_COUNT; ++i)
-        inventory_things[i] = read_thing (f);
+        inventory_things[i].thing = read_thing (f);
 
     game_map = read_map (f);
     fclose (f);
