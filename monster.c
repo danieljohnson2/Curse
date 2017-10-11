@@ -192,10 +192,10 @@ attack_bump_action (Thing * actor, Thing * target)
             remove_thing (item);
         }
 
-        remove_thing (target);
-
         sprintf (msg, "%s killed %s%s!", actor->name, target->name,
                  equip_msg);
+
+        remove_thing (target);
     }
 
     write_message (msg);
