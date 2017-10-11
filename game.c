@@ -115,7 +115,7 @@ a NULL-initialized 'thing' buffer, and this will give you a pointer
 to the first slot. Each call after that moves to the next slot.
 Then, this method returns false and clears the buffer.
 */
-static bool
+bool
 next_possible_thing (Thing * owner, Thing ** thing)
 {
     ThingEntry *first, *after, *entry;
@@ -192,19 +192,6 @@ get_player (void)
     return &game_things[PLAYER_INDEX].thing;
 }
 
-static void
-clear_inventory (Thing * owner)
-{
-    ThingEntry *first, *after;
-    possible_thing_range (owner, &first, &after);
-
-    if (owner != NULL && first != NULL && after != NULL)
-    {
-        size_t size = ((char *) after) - ((char *) first);
-        memset (first, 0, size);
-    }
-}
-
 /* Adds a new thing to the game, and returns a pointer to the thing in
 the game itself, or NULL if there is no room for it. */
 Thing *
@@ -216,7 +203,6 @@ new_thing (Thing thing)
         if (!is_thing_alive (candidate) && candidate != player)
         {
             *candidate = thing;
-            clear_inventory (candidate);
             return candidate;
         }
     }
@@ -232,38 +218,6 @@ place_thing (Loc origin, Thing thing)
     thing.loc = find_empty_place (origin);
     thing.equipped = false;
     return new_thing (thing);
-}
-
-/* Checks to see if the owner given conains a (copy of)
-The thing given. */
-bool
-inventory_contains (Thing * owner, Thing thing)
-{
-    for (Thing * th = NULL; next_thing (owner, &th);)
-    {
-        if (equal_things (*th, thing))
-            return true;
-    }
-
-    return false;
-}
-
-/* Adds a (copy of) thing to the inventory of an owner, if there's
-space. Returns a pointer to the inventory copy, or NULL if there's
-no room. */
-Thing *
-copy_to_inventory (Thing * owner, Thing thing)
-{
-    for (Thing * th = NULL; next_possible_thing (owner, &th);)
-    {
-        if (!is_thing_alive (th))
-        {
-            *th = thing;
-            return th;
-        }
-    }
-
-    return NULL;
 }
 
 /* Returns a random location that is passable and contains no things. */
@@ -283,13 +237,21 @@ find_empty_place (Loc origin)
 /*
 Removes a thing by its fields, and also its inventory; we do not draw
 a thing so treated, nor does it get a turn, nor can it be bumped
-into.
+into. This also clears any inventory from the thing.
 */
 void
 remove_thing (Thing * thing)
 {
     memset (thing, 0, sizeof (Thing));
-    clear_inventory (thing);
+
+    ThingEntry *first, *after;
+    possible_thing_range (thing, &first, &after);
+
+    if (first != NULL && after != NULL)
+    {
+        size_t size = ((char *) after) - ((char *) first);
+        memset (first, 0, size);
+    }
 }
 
 /*

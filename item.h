@@ -8,6 +8,9 @@
 
 Thing make_random_item (void);
 
+bool inventory_contains (Thing * owner, Thing thing);
+Thing *copy_to_inventory (Thing * owner, Thing thing);
+
 Thing *get_equipped_item (Thing * owner, ThingBehavior thing_type);
 void equip_item (Thing * owner, Thing * item);
 

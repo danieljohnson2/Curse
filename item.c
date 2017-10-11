@@ -1,4 +1,5 @@
 #include "item.h"
+#include "game.h"
 #include "message.h"
 #include "game.h"
 
@@ -49,6 +50,38 @@ make_random_item (void)
 
     int index = rand () % CANDIDATE_ITEM_COUNT;
     return candidates[index];
+}
+
+/* Checks to see if the owner given conains a (copy of)
+The thing given. */
+bool
+inventory_contains (Thing * owner, Thing thing)
+{
+    for (Thing * th = NULL; next_thing (owner, &th);)
+    {
+        if (equal_things (*th, thing))
+            return true;
+    }
+
+    return false;
+}
+
+/* Adds a (copy of) thing to the inventory of an owner, if there's
+space. Returns a pointer to the inventory copy, or NULL if there's
+no room. */
+Thing *
+copy_to_inventory (Thing * owner, Thing thing)
+{
+    for (Thing * th = NULL; next_possible_thing (owner, &th);)
+    {
+        if (!is_thing_alive (th))
+        {
+            *th = thing;
+            return th;
+        }
+    }
+
+    return NULL;
 }
 
 /* Finds the equipped item belonging to 'owner' whose behavior matches
