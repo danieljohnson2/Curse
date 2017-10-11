@@ -50,6 +50,30 @@ init_game (Map map, Thing player, SpawnSettings spawn)
         place_thing (make_loc (0, 0), make_random_item ());
 }
 
+// This provides a pointer to the inventory array for an owner, and also
+// a pointer after it so you can see how bit it is. If 'owner' is null,
+// this returns the top level thing array instead. This sets both pointers
+// to zero if called on an item already in inventory.
+static void
+possible_thing_range (Thing * owner, ThingEntry ** first, ThingEntry ** after)
+{
+    if (owner == NULL)
+    {
+        *first = game_things;
+        *after = game_things + THING_COUNT;
+    }
+    else
+    {
+        ThingEntry *e = (ThingEntry *) owner;
+        *first = e->inventory;
+
+        if (e->inventory != NULL)
+            *after = e->inventory + INVENTORY_COUNT;
+        else
+            *after = NULL;
+    }
+}
+
 /* Starts a new game with the map given. */
 void
 start_game (Map map)
@@ -83,30 +107,6 @@ next_level (void)
     Map map = make_map (16, shape, make_perlin (1.0 / 8.0, 2, seed));
     player.loc = find_passable_place (&map, make_loc (0, 0));
     init_game (map, player, spawn);
-}
-
-// This provides a pointer to the inventory array for an owner, and also
-// a pointer after it so you can see how bit it is. If 'owner' is null,
-// this returns the top level thing array instead. This sets both pointers
-// to zero if called on an item already in inventory.
-static void
-possible_thing_range (Thing * owner, ThingEntry ** first, ThingEntry ** after)
-{
-    if (owner == NULL)
-    {
-        *first = game_things;
-        *after = game_things + THING_COUNT;
-    }
-    else
-    {
-        ThingEntry *e = (ThingEntry *) owner;
-        *first = e->inventory;
-
-        if (e->inventory != NULL)
-            *after = e->inventory + INVENTORY_COUNT;
-        else
-            *after = NULL;
-    }
 }
 
 /*
@@ -192,6 +192,19 @@ get_player (void)
     return &game_things[PLAYER_INDEX].thing;
 }
 
+static void
+clear_inventory (Thing * owner)
+{
+    ThingEntry *first, *after;
+    possible_thing_range (owner, &first, &after);
+
+    if (owner != NULL && first != NULL && after != NULL)
+    {
+        size_t size = ((char *) after) - ((char *) first);
+        memset (first, 0, size);
+    }
+}
+
 /* Adds a new thing to the game, and returns a pointer to the thing in
 the game itself, or NULL if there is no room for it. */
 Thing *
@@ -203,6 +216,7 @@ new_thing (Thing thing)
         if (!is_thing_alive (candidate) && candidate != player)
         {
             *candidate = thing;
+            clear_inventory (candidate);
             return candidate;
         }
     }
@@ -267,14 +281,15 @@ find_empty_place (Loc origin)
 }
 
 /*
-Removes a thing by clearing its appearance; we do not draw
+Removes a thing by its fields, and also its inventory; we do not draw
 a thing so treated, nor does it get a turn, nor can it be bumped
 into.
 */
 void
 remove_thing (Thing * thing)
 {
-    thing->appearance = '\0';
+    memset (thing, 0, sizeof (Thing));
+    clear_inventory (thing);
 }
 
 /*
@@ -292,12 +307,7 @@ get_total_gold (void)
 {
     int total = 0;
     for (Thing * th = NULL; next_thing (NULL, &th);)
-    {
         total += th->gold;
-
-        for (Thing * item = NULL; next_thing (th, &item);)
-            total += th->gold;
-    }
 
     return total;
 }
