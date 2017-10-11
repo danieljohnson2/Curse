@@ -20,8 +20,6 @@ Loc find_empty_place (Loc origin);
 void remove_thing (Thing * thing);
 bool is_thing_alive (Thing * thing);
 
-int get_total_gold (void);
-
 void perform_turns (void);
 
 void save_game (char *file_name);

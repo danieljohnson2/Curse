@@ -1,6 +1,7 @@
 #include "player.h"
 #include "action.h"
 #include "monster.h"
+#include "treasure.h"
 #include "game.h"
 #include "map.h"
 #include "message.h"

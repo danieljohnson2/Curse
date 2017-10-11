@@ -3,6 +3,7 @@
 #include "message.h"
 #include "game.h"
 #include "thing.h"
+#include "treasure.h"
 #include "item.h"
 #include "util.h"
 

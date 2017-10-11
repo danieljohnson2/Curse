@@ -263,17 +263,6 @@ is_thing_alive (Thing * thing)
     return thing->appearance != DEAD;
 }
 
-/* Returns the total gold in all live things */
-int
-get_total_gold (void)
-{
-    int total = 0;
-    for (Thing * th = NULL; next_thing (NULL, &th);)
-        total += th->gold;
-
-    return total;
-}
-
 /*
 This is the main loop; this iterates over the things and
 invokes their turn action. User input is handled in the

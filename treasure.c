@@ -30,6 +30,17 @@ make_treasure (int gold)
     return treasure;
 }
 
+/* Returns the total gold in all live things */
+int
+get_total_gold (void)
+{
+    int total = 0;
+    for (Thing * th = NULL; next_thing (NULL, &th);)
+        total += th->gold;
+
+    return total;
+}
+
 /*
 This function is the bump action to allow you to pick up
 treasure.
