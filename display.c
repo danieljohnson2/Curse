@@ -185,24 +185,17 @@ show_message ()
 static void
 show_inventory ()
 {
-    char *lines[26] = { 0 };
+    char *lines[26] = { "(nothing)" };
     Thing *items[26] = { 0 };
-
     int item_count = 0;
 
     Thing *player = get_player ();
 
-    for (Thing * item = NULL; next_thing (player, &item);)
+    for (Thing * item = NULL; item_count < 26 && next_thing (player, &item);)
     {
         items[item_count] = item;
-        lines[item_count] = item->name;
-        item_count++;
-        if (item_count >= 26)
-            break;
+        lines[item_count++] = item->name;
     }
-
-    if (item_count == 0)
-        lines[0] = "(nothing)";
 
     WINDOW *w =
         display_multiline_window ("Inventory", lines, "(esc to close)", 0, 3,
@@ -210,15 +203,12 @@ show_inventory ()
 
     for (;;)
     {
-        int y = 1;
-        for (Thing * item = NULL; next_thing (player, &item);)
+        char prefix[] = "?) ";
+        for (int i = 0; i < item_count; ++i)
         {
-            char prefix[] = "a) ";
-            prefix[0] += y - 1;
-            if (item->equipped)
-                prefix[2] = '*';
-
-            mvwaddstr (w, y++, 1, prefix);
+            prefix[0] = 'a' + i;
+            prefix[2] = items[i]->equipped ? '*' : ' ';
+            mvwaddstr (w, i + 1, 1, prefix);
         }
 
         int ch = wgetch (w);
@@ -231,7 +221,12 @@ show_inventory ()
             int index = ch - 'a';
 
             if (index < item_count)
-                equip_item (player, items[index]);
+            {
+                if (items[index]->equipped)
+                    items[index]->equipped = false;
+                else
+                    equip_item (player, items[index]);
+            }
         }
     }
 
