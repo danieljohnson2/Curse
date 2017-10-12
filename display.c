@@ -6,8 +6,8 @@
 #include "treasure.h"
 #include "item.h"
 #include "util.h"
+#include "ui.h"
 
-#include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -75,61 +75,6 @@ void
 end_windows (void)
 {
     endwin ();
-}
-
-static WINDOW *
-display_message_window (char *title, char **lines, int top_margin,
-                        int left_margin, int bottom_margin, int right_margin,
-                        bool centered)
-{
-    int rows, columns;
-    getmaxyx (stdscr, rows, columns);
-
-    int linecount = 0;
-    int maxlen = title != NULL ? strlen (title) : 0;
-
-    for (char **l = lines; *l != NULL; ++l)
-    {
-        ++linecount;
-        int len = strlen (*l);
-        if (len > maxlen)
-            maxlen = len;
-    }
-
-    int v_extra = top_margin + bottom_margin + 2;
-    int h_extra = left_margin + right_margin + 2;
-
-    WINDOW *w = newwin (linecount + v_extra, maxlen + h_extra,
-                        (rows - linecount - v_extra) / 2,
-                        (columns - maxlen - h_extra) / 2);
-    box (w, 0, 0);
-
-    if (title != NULL)
-        mvwaddstr (w, 0, (maxlen - strlen (title) + h_extra) / 2, title);
-
-    int y = top_margin + 1;
-
-    for (char **l = lines; *l != NULL; ++l)
-    {
-        int len = strlen (*l);
-        int placement = centered ? (maxlen - len) / 2 : 0;
-        mvwaddstr (w, y, placement + left_margin + 1, *l);
-        ++y;
-    }
-
-    return w;
-}
-
-/* Displays a multi-line message, then waits for a keystroke */
-void
-long_message (char *title, char **lines)
-{
-    WINDOW *w = display_message_window (NULL, lines, 1, 1, 1, 1, true);
-
-    while (wgetch (w) != '\e')
-        continue;
-
-    delwin (w);
 }
 
 static int
@@ -260,7 +205,8 @@ show_inventory ()
         lines[0] = "(nothing)";
 
     WINDOW *w =
-        display_message_window ("Inventory", lines, 0, 3, 0, 1, false);
+        display_multiline_window ("Inventory", lines, "(esc to close)", 0, 3,
+                                  0, 1, false);
 
     for (;;)
     {

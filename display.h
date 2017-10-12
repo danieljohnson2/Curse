@@ -9,7 +9,6 @@
 void init_windows (void);
 void arrange_windows (void);
 void end_windows (void);
-void long_message (char *title, char **lines);
 
 void paint (bool messages);
 

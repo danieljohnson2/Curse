@@ -8,4 +8,6 @@ void clear_message ();
 void write_message (char *message);
 void write_messagef (char *format, ...);
 
+void long_message (char *title, char **lines);
+
 #endif

@@ -4,6 +4,7 @@
 #include "player.h"
 #include "action.h"
 #include "display.h"
+#include "message.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -11,8 +12,7 @@
 #include <stdio.h>
 #include <limits.h>
 
-static char *game_over_msg[] =
-    { "Game Over!", "(prese escape to exit)", NULL };
+static char *game_over_msg[] = { "Game Over!", NULL };
 
 /*
 Exits the program with an error status and a usage message.

@@ -1,5 +1,6 @@
 #include "message.h"
 #include "util.h"
+#include "ui.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -114,4 +115,18 @@ write_messagef (char *format, ...)
     write_message (msg);
 
     va_end (ap);
+}
+
+/* Displays a multi-line message, then waits for the user to hit escape */
+void
+long_message (char *title, char **lines)
+{
+    WINDOW *w =
+        display_multiline_window (NULL, lines, "(esc to close)", 1, 1, 1, 1,
+                                  true);
+
+    while (wgetch (w) != '\e')
+        continue;
+
+    delwin (w);
 }
