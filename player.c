@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 static char *level_clear_msg[] =
-    { "Level Cleared!", "(press space for next level)", NULL };
+    { "Level Cleared!", "(press escape for next level)", NULL };
 
 /* This creates a player at a random place on the map. */
 Thing

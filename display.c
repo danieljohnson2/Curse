@@ -33,6 +33,7 @@ init_windows (void)
     initscr ();
     cbreak ();
     noecho ();
+    keypad (stdscr, false);
 
     start_color ();
     init_pair (1, COLOR_CYAN, COLOR_BLUE);
@@ -125,7 +126,7 @@ long_message (char *title, char **lines)
 {
     WINDOW *w = display_message_window (NULL, lines, 1, 1, 1, 1, true);
 
-    while (wgetch (w) != ' ')
+    while (wgetch (w) != '\e')
         continue;
 
     delwin (w);
@@ -276,7 +277,7 @@ show_inventory ()
 
         int ch = wgetch (w);
 
-        if (ch == ' ')
+        if (ch == '\e')
             break;
 
         if (ch >= 'a' && ch <= 'z')

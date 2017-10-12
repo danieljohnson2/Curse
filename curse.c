@@ -12,7 +12,7 @@
 #include <limits.h>
 
 static char *game_over_msg[] =
-    { "Game Over!", "(prese space to exit)", NULL };
+    { "Game Over!", "(prese escape to exit)", NULL };
 
 /*
 Exits the program with an error status and a usage message.
