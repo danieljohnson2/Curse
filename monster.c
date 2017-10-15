@@ -230,7 +230,10 @@ attack_bump_action (Thing * actor, Thing * target)
         {
             Thing *dropped = new_thing (*item);
             if (dropped != NULL)
+            {
                 dropped->loc = target->loc;
+                dropped->equipped = NULL;
+            }
             remove_thing (item);
         }
 
