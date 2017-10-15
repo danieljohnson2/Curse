@@ -146,6 +146,7 @@ read_thing (FILE * stream)
         int behavior = 0;
         readf (stream, "behavior", "%d", &behavior);
         thing.behavior = behavior;
+        thing.target = NULL;    // target is not saved
     }
 
     return thing;

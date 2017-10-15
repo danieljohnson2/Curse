@@ -110,14 +110,56 @@ try_spawn_monster (SpawnSettings spawn)
     return NULL;
 }
 
+static bool
+is_thing_targetable (Thing * actor, Thing * candidate)
+{
+    if (candidate == NULL)
+        return false;
+
+    ThingBehavior b = candidate->behavior;
+
+    if (b == PLAYER_CONTROLLED)
+        return true;
+
+    if (actor->behavior != ANIMAL)
+    {
+        if (b == WEAPON_PICKUP || b == ARMOR_PICKUP || b == TREASURE)
+            return true;
+    }
+
+    return false;
+}
+
 /* A turn action function for monsters; they chse the player. */
 void
 chase_player_turn_action (Thing * actor)
 {
-    Thing *player = get_player ();
+    Thing *target = actor->target;
 
-    if (is_thing_alive (player))
-        move_thing_towards (actor, player);
+    if (target == NULL || !is_thing_targetable (actor, target))
+    {
+        target = NULL;
+        int target_dist = 0;
+
+        for (Thing * th = NULL; next_thing (NULL, &th);)
+        {
+            if (is_thing_targetable (actor, th))
+            {
+                int dx = th->loc.x - actor->loc.x;
+                int dy = th->loc.y - actor->loc.y;
+                int dist = (dx * dx) + (dy * dy);
+
+                if (target == NULL || target_dist > dist)
+                {
+                    target_dist = dist;
+                    target = th;
+                }
+            }
+        }
+    }
+
+    if (is_thing_targetable (actor, target))
+        move_thing_towards (actor, target);
 }
 
 static int
