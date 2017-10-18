@@ -20,7 +20,7 @@ typedef enum
     PLAYER,
     GOBLIN,
     ORC,
-    WARG,
+    WOLF,
     HALFLING,
     ELF,
     WEAPON,

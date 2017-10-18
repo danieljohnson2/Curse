@@ -112,7 +112,7 @@ get_appearance_char (Appearance appearance)
         return 'g' | A_BOLD;
     case ORC:
         return 'o' | A_BOLD;
-    case WARG:
+    case WOLF:
         return 'w' | A_BOLD;
     case HALFLING:
         return 'h' | A_BOLD;

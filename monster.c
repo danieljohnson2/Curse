@@ -26,10 +26,10 @@ typedef struct _MonsterData
 } MonsterData;
 
 static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
+    {WOLF, "Wolf", 4, 4, (SPEED_DEFAULT * 3) / 2, ANIMAL},
+    {HALFLING, "Halfling", 3, 2, (SPEED_DEFAULT * 4) / 3, HALFLING_MONSTER},
     {GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2, ORC_MONSTER},
-    {HALFLING, "Halfling", 3, 2, (SPEED_DEFAULT * 3) / 2, HALFLING_MONSTER},
     {ORC, "Orc", 10, 6, SPEED_DEFAULT, ORC_MONSTER},
-    {WARG, "Warg", 8, 5, SPEED_DEFAULT * 2, ANIMAL},
     {ELF, "Elf", 8, 9, SPEED_DEFAULT * 2, ELF_MONSTER}
 };
 
