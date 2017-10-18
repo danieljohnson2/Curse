@@ -21,18 +21,6 @@ init_behaviors (void)
     define_thing_behavior (PLAYER_CONTROLLED, attack_bump_action,
                            player_turn_action);
 
-    define_thing_behavior (ORC_MONSTER, attack_bump_action,
-                           chase_player_turn_action);
-
-    define_thing_behavior (HALFLING_MONSTER, attack_bump_action,
-                           chase_player_turn_action);
-
-    define_thing_behavior (ELF_MONSTER, attack_bump_action,
-                           chase_player_turn_action);
-
-    define_thing_behavior (ANIMAL, attack_bump_action,
-                           chase_player_turn_action);
-
     define_thing_behavior (TREASURE, treasure_bump_action, null_turn_action);
 
     define_thing_behavior (WEAPON_PICKUP, item_pickup_bump_action,
@@ -40,6 +28,32 @@ init_behaviors (void)
 
     define_thing_behavior (ARMOR_PICKUP, item_pickup_bump_action,
                            null_turn_action);
+
+    MonsterPriorities orc_pri = get_default_monster_priorities ();
+    orc_pri.weapon = 1.0;
+    orc_pri.armor = 0.5;
+    orc_pri.treasure = 0.5;
+    define_monster_behavior (ORC_MONSTER, orc_pri);
+
+    MonsterPriorities halfling_pri = get_default_monster_priorities ();
+    halfling_pri.player = 1.0;
+    halfling_pri.weapon = 0.5;
+    halfling_pri.armor = 1.5;
+    halfling_pri.treasure = 2.0;
+    define_monster_behavior (HALFLING_MONSTER, halfling_pri);
+
+    MonsterPriorities elf_pri = get_default_monster_priorities ();
+    elf_pri.weapon = 2.0;
+    elf_pri.armor = 2.0;
+    elf_pri.treasure = 0.5;
+    define_monster_behavior (ELF_MONSTER, elf_pri);
+
+    MonsterPriorities animal_pri = get_default_monster_priorities ();
+    animal_pri.weapon = 0.0;
+    animal_pri.armor = 0.0;
+    animal_pri.treasure = 0.0;
+    animal_pri.other_monster = 1.0;
+    define_monster_behavior (ANIMAL, animal_pri);
 }
 
 /*

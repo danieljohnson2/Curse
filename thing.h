@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #define NAME_SIZE 64
+#define BEHAVIOR_MAX 16
 
 typedef struct Thing Thing;
 

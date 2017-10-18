@@ -12,6 +12,19 @@ typedef struct SpawnSettings
     int max_monster_level;
 } SpawnSettings;
 
+typedef struct MonsterPriorities
+{
+    double player;
+    double armor;
+    double weapon;
+    double treasure;
+    double other_monster;
+} MonsterPriorities;
+
+MonsterPriorities get_default_monster_priorities ();
+void define_monster_behavior (ThingBehavior behavior,
+                              MonsterPriorities priorities);
+
 Thing make_random_monster (int max_monster_level);
 bool is_thing_monster (Thing * thing);
 int count_monsters (void);

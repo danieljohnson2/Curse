@@ -155,10 +155,9 @@ item_pickup_bump_action (Thing * actor, Thing * target)
     if (actor->behavior != PLAYER_CONTROLLED && to_equip != NULL)
     {
         for (Thing * th = NULL; next_thing (actor, &th);)
-            if (th->behavior == to_equip->behavior
-                && to_equip->dmg < th->dmg)
+            if (th->behavior == to_equip->behavior && to_equip->dmg < th->dmg)
                 to_equip = th;
-    
+
         equip_item (actor, to_equip);
     }
 

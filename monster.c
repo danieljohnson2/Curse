@@ -9,8 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 #define CANDIDATE_MONSTER_COUNT 5
+
+static MonsterPriorities monster_priorities[BEHAVIOR_MAX];
 
 typedef struct _MonsterData
 {
@@ -29,6 +32,25 @@ static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
     {WARG, "Warg", 8, 5, SPEED_DEFAULT * 2, ANIMAL},
     {ELF, "Elf", 8, 9, SPEED_DEFAULT * 2, ELF_MONSTER}
 };
+
+MonsterPriorities
+get_default_monster_priorities ()
+{
+    MonsterPriorities d = { 0 };
+    d.player = 2.0;
+    d.weapon = 1.0;
+    d.armor = 1.0;
+    d.treasure = 0.5;
+    return d;
+}
+
+void
+define_monster_behavior (ThingBehavior behavior, MonsterPriorities priorities)
+{
+    define_thing_behavior (behavior, attack_bump_action,
+                           chase_player_turn_action);
+    monster_priorities[behavior] = priorities;
+}
 
 static Thing
 make_monster (MonsterData data)
@@ -118,24 +140,36 @@ try_spawn_monster (SpawnSettings spawn)
     return NULL;
 }
 
+static double
+get_target_priority (Thing * actor, Thing * candidate)
+{
+    if (candidate == NULL || actor == NULL || candidate == actor)
+        return 0.0;
+
+    MonsterPriorities p = monster_priorities[actor->behavior];
+
+    if (is_thing_monster (candidate))
+        return p.other_monster;
+
+    switch (candidate->behavior)
+    {
+    case TREASURE:
+        return p.treasure;
+    case PLAYER_CONTROLLED:
+        return p.player;
+    case ARMOR_PICKUP:
+        return p.armor;
+    case WEAPON_PICKUP:
+        return p.weapon;
+    default:
+        return 0.0;
+    }
+}
+
 static bool
 is_thing_targetable (Thing * actor, Thing * candidate)
 {
-    if (candidate == NULL)
-        return false;
-
-    ThingBehavior b = candidate->behavior;
-
-    if (b == PLAYER_CONTROLLED)
-        return true;
-
-    if (actor->behavior != ANIMAL)
-    {
-        if (b == WEAPON_PICKUP || b == ARMOR_PICKUP || b == TREASURE)
-            return true;
-    }
-
-    return false;
+    return get_target_priority (actor, candidate) > 0.0;
 }
 
 /* This works out a score to indicate how interesting
@@ -144,14 +178,15 @@ with the _lowest_ score. */
 static double
 thing_interest_score (Thing * actor, Thing * candidate)
 {
+    double pri = get_target_priority (actor, candidate);
+
+    if (pri == 0.0)
+        return DBL_MAX;
+
     int dx = candidate->loc.x - actor->loc.x;
     int dy = candidate->loc.y - actor->loc.y;
     double score = sqrt ((dx * dx) + (dy * dy));
-
-    if (candidate->behavior == PLAYER_CONTROLLED)
-        return score / 2.0;
-    else
-        return score;
+    return score / pri;
 }
 
 /* A turn action function for monsters; they chse the player. */
