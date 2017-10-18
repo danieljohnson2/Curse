@@ -13,6 +13,7 @@ typedef struct SpawnSettings
 } SpawnSettings;
 
 Thing make_random_monster (int max_monster_level);
+bool is_thing_monster (Thing * thing);
 int count_monsters (void);
 Thing *try_spawn_monster (SpawnSettings spawn);
 

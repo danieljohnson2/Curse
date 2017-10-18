@@ -21,10 +21,16 @@ init_behaviors (void)
     define_thing_behavior (PLAYER_CONTROLLED, attack_bump_action,
                            player_turn_action);
 
-    define_thing_behavior (SMART_MONSTER, attack_bump_action,
+    define_thing_behavior (ORC_MONSTER, attack_bump_action,
                            chase_player_turn_action);
 
-    define_thing_behavior (DUMB_MONSTER, attack_bump_action,
+    define_thing_behavior (HALFLING_MONSTER, attack_bump_action,
+                           chase_player_turn_action);
+
+    define_thing_behavior (ELF_MONSTER, attack_bump_action,
+                           chase_player_turn_action);
+
+    define_thing_behavior (ANIMAL, attack_bump_action,
                            chase_player_turn_action);
 
     define_thing_behavior (TREASURE, treasure_bump_action, null_turn_action);

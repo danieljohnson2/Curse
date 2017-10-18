@@ -23,11 +23,11 @@ typedef struct _MonsterData
 } MonsterData;
 
 static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
-    {GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2, DUMB_MONSTER},
-    {HALFLING, "Halfling", 3, 2, (SPEED_DEFAULT * 3) / 2, SMART_MONSTER},
-    {ORC, "Orc", 10, 6, SPEED_DEFAULT, DUMB_MONSTER},
+    {GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2, ORC_MONSTER},
+    {HALFLING, "Halfling", 3, 2, (SPEED_DEFAULT * 3) / 2, HALFLING_MONSTER},
+    {ORC, "Orc", 10, 6, SPEED_DEFAULT, ORC_MONSTER},
     {WARG, "Warg", 8, 5, SPEED_DEFAULT * 2, ANIMAL},
-    {ELF, "Elf", 8, 9, SPEED_DEFAULT * 2, SMART_MONSTER}
+    {ELF, "Elf", 8, 9, SPEED_DEFAULT * 2, ELF_MONSTER}
 };
 
 static Thing
@@ -62,6 +62,14 @@ make_random_monster (int max_monster_level)
     return candidates[index];
 }
 
+/* Checks to see if a thing is a monster, which is determined by its
+behavior */
+bool
+is_thing_monster (Thing * thing)
+{
+    return thing->behavior >= ORC_MONSTER && thing->behavior <= ANIMAL;
+}
+
 /* Returns the number of live monsters in the game */
 int
 count_monsters (void)
@@ -69,8 +77,7 @@ count_monsters (void)
     int count = 0;
     for (Thing * th = NULL; next_thing (NULL, &th);)
     {
-        if (th->behavior == SMART_MONSTER || th->behavior == DUMB_MONSTER
-            || th->behavior == ANIMAL)
+        if (is_thing_monster (th))
             ++count;
     }
 
