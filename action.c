@@ -39,23 +39,27 @@ init_behaviors (void)
 /*
 Executes a move for a monster; it moves horizontal or vertically
 towards 'target', and will execute a bump-action if it reaches
-it.
+it. Returns true if the move succeeds, and false if it fails.
 */
-void
-move_thing_towards (Thing * mover, Thing * target)
+bool
+try_move_thing_towards (Thing * mover, Thing * target)
 {
     int dx = target->loc.x - mover->loc.x;
     int dy = target->loc.y - mover->loc.y;
 
     if (abs (dx) > abs (dy))
     {
-        if (!try_move_thing_by (mover, isign (dx), 0))
-            try_move_thing_by (mover, 0, isign (dy));
+        if (try_move_thing_by (mover, isign (dx), 0))
+            return true;
+        else
+            return try_move_thing_by (mover, 0, isign (dy));
     }
     else
     {
-        if (!try_move_thing_by (mover, 0, isign (dy)))
-            try_move_thing_by (mover, isign (dx), 0);
+        if (try_move_thing_by (mover, 0, isign (dy)))
+            return true;
+        else
+            return try_move_thing_by (mover, isign (dx), 0);
     }
 }
 

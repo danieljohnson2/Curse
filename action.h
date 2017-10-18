@@ -17,7 +17,7 @@ typedef void (*TurnAction) (Thing * actor);
 
 void init_behaviors (void);
 
-void move_thing_towards (Thing * mover, Thing * target);
+bool try_move_thing_towards (Thing * mover, Thing * target);
 bool try_move_thing_by (Thing * mover, int dx, int dy);
 bool try_move_thing_to (Thing * mover, Loc dest);
 

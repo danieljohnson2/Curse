@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define CANDIDATE_MONSTER_COUNT 5
 
@@ -130,6 +131,22 @@ is_thing_targetable (Thing * actor, Thing * candidate)
     return false;
 }
 
+/* This works out a score to indicate how interesting
+a candidate is to an actor; the actor picks the candidate
+with the _lowest_ score. */
+static double
+thing_interest_score (Thing * actor, Thing * candidate)
+{
+    int dx = candidate->loc.x - actor->loc.x;
+    int dy = candidate->loc.y - actor->loc.y;
+    double score = sqrt ((dx * dx) + (dy * dy));
+
+    if (candidate->behavior == PLAYER_CONTROLLED)
+        return score / 2.0;
+    else
+        return score;
+}
+
 /* A turn action function for monsters; they chse the player. */
 void
 chase_player_turn_action (Thing * actor)
@@ -139,19 +156,17 @@ chase_player_turn_action (Thing * actor)
     if (target == NULL || !is_thing_targetable (actor, target))
     {
         target = NULL;
-        int target_dist = 0;
+        double target_score = 0;
 
         for (Thing * th = NULL; next_thing (NULL, &th);)
         {
             if (is_thing_targetable (actor, th))
             {
-                int dx = th->loc.x - actor->loc.x;
-                int dy = th->loc.y - actor->loc.y;
-                int dist = (dx * dx) + (dy * dy);
+                double score = thing_interest_score (actor, th);
 
-                if (target == NULL || target_dist > dist)
+                if (target == NULL || target_score > score)
                 {
-                    target_dist = dist;
+                    target_score = score;
                     target = th;
                 }
             }
@@ -159,7 +174,8 @@ chase_player_turn_action (Thing * actor)
     }
 
     if (is_thing_targetable (actor, target))
-        move_thing_towards (actor, target);
+        if (!try_move_thing_towards (actor, target))
+            actor->target = NULL;       // try a different target next time!
 }
 
 static int
