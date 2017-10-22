@@ -2,6 +2,7 @@
 #define ACTION_H_INCLUDED
 
 #include "loc.h"
+#include "thing.h"
 #include <stdbool.h>
 
 #define SPEED_MAX 255
@@ -9,8 +10,6 @@
 
 /* 16 means the MAX is 16x the default, which is 16x the minumum (1) */
 #define SPEED_DEFAULT 16
-
-typedef struct Thing Thing;
 
 typedef bool (*BumpAction) (Thing * actor, Thing * target);
 typedef void (*TurnAction) (Thing * actor);

@@ -15,7 +15,7 @@ struct Map
     Perlin perlin;
 };
 
-typedef enum _Terrain
+typedef enum Terrain
 {
     DEEP_SEA,
     WATER,

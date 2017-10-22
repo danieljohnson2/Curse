@@ -2,9 +2,8 @@
 #define PLAYER_H_INCLUDED
 
 #include "thing.h"
+#include "map.h"
 #include "playeraction.h"
-
-typedef struct Map Map;
 
 Thing make_player (Map * map);
 

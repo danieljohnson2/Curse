@@ -15,7 +15,7 @@
 
 static MonsterPriorities monster_priorities[BEHAVIOR_MAX];
 
-typedef struct _MonsterData
+typedef struct MonsterData
 {
     Appearance appearance;
     char *name;
