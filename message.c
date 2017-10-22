@@ -125,7 +125,7 @@ long_message (char *title, char **lines)
         display_multiline_window (NULL, lines, "(esc to close)", 1, 1, 1, 1,
                                   true);
 
-    while (wgetch (w) != '\e')
+    while (wgetch (w) != ESCAPE_KEY)
         continue;
 
     delwin (w);

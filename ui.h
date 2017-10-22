@@ -3,6 +3,8 @@
 
 #include <ncurses.h>
 
+#define ESCAPE_KEY 27
+
 WINDOW *display_multiline_window (char *title, char **lines, char *prompt,
                                   int top_margin, int left_margin,
                                   int bottom_margin, int right_margin,

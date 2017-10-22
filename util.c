@@ -242,7 +242,7 @@ read_bytes (char *name, unsigned char *bytes, int bytes_count, FILE * stream)
         buffer[0] = first;
         buffer[1] = second;
 
-        int i;
+        unsigned int i;
         if (sscanf (buffer, "%02X", &i) == EOF)
             error_abort ("Failure to read bytes");
 

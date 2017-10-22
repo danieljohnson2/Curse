@@ -213,7 +213,7 @@ show_inventory ()
 
         int ch = wgetch (w);
 
-        if (ch == '\e')
+        if (ch == ESCAPE_KEY)
             break;
 
         if (ch >= 'a' && ch <= 'z')
