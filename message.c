@@ -85,7 +85,7 @@ read_message (char *result)
 
 /* Removes the pending message */
 void
-clear_message (char *message)
+clear_message (void)
 {
     pending_message[0] = '\0';
 }

@@ -34,7 +34,7 @@ static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
 };
 
 MonsterPriorities
-get_default_monster_priorities ()
+get_default_monster_priorities (void)
 {
     MonsterPriorities d = { 0 };
     d.player = 2.0;

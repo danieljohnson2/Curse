@@ -21,7 +21,7 @@ typedef struct MonsterPriorities
     double other_monster;
 } MonsterPriorities;
 
-MonsterPriorities get_default_monster_priorities ();
+MonsterPriorities get_default_monster_priorities (void);
 void define_monster_behavior (ThingBehavior behavior,
                               MonsterPriorities priorities);
 

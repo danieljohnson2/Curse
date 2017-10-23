@@ -4,7 +4,7 @@
 #define MESSAGE_SIZE 512
 
 void read_message (char *message);
-void clear_message ();
+void clear_message (void);
 void write_message (char *message);
 void write_messagef (char *format, ...);
 
