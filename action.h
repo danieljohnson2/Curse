@@ -11,9 +11,6 @@
 /* 16 means the MAX is 16x the default, which is 16x the minumum (1) */
 #define SPEED_DEFAULT 16
 
-typedef bool (*BumpAction) (Thing * actor, Thing * target);
-typedef void (*TurnAction) (Thing * actor);
-
 void init_behaviors (void);
 
 bool try_move_thing_towards (Thing * mover, Thing * target);
