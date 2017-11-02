@@ -283,20 +283,25 @@ paint (bool messages)
         }
     }
 
-    for (Thing * thing = NULL; next_thing (NULL, &thing);)
+    /* Use appareance ordering so monsters appear on top of items */
+    for (Appearance a = LARGE_TREASURE; a > DEAD; --a)
     {
-        int col = thing->loc.x - origin.x;
-        int row = thing->loc.y - origin.y;
-
-        if (col >= 0 && row >= 0 && col < maxcol && row < maxrow)
+        for (Thing * thing = NULL; next_thing (NULL, &thing);)
         {
-            int ch = get_appearance_char (thing->appearance);
-            mvwaddch (map_w, row, col, ch);
+            int col = thing->loc.x - origin.x;
+            int row = thing->loc.y - origin.y;
 
-            if (thing == player)
+            if (col >= 0 && row >= 0 && col < maxcol && row < maxrow &&
+                thing->appearance == a)
             {
-                finalcursorrow = row;
-                finalcursorcolumn = col;
+                int ch = get_appearance_char (thing->appearance);
+                mvwaddch (map_w, row, col, ch);
+
+                if (thing == player)
+                {
+                    finalcursorrow = row;
+                    finalcursorcolumn = col;
+                }
             }
         }
     }
