@@ -58,7 +58,7 @@ struct Thing
     int remaining_wait;
 
     ThingBehavior behavior;
-    Thing *target;
+    Thing *target, *ignored_target;
 };
 
 void define_thing_behavior (ThingBehavior behavior, BumpAction bump_action,

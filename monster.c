@@ -143,7 +143,8 @@ try_spawn_monster (SpawnSettings spawn)
 static double
 get_target_priority (Thing * actor, Thing * candidate)
 {
-    if (candidate == NULL || actor == NULL || candidate == actor)
+    if (candidate == NULL || actor == NULL || candidate == actor
+        || actor->ignored_target == candidate)
         return 0.0;
 
     MonsterPriorities p = monster_priorities[actor->behavior];
@@ -216,8 +217,19 @@ chase_player_turn_action (Thing * actor)
     }
 
     if (is_thing_targetable (actor, target))
-        if (!try_move_thing_towards (actor, target))
-            actor->target = NULL;       // try a different target next time!
+    {
+        if (try_move_thing_towards (actor, target))
+        {
+            actor->target = target;
+            actor->ignored_target = NULL;
+        }
+        else
+        {
+            /* try a different target next time! */
+            actor->ignored_target = actor->target;
+            actor->target = NULL;
+        }
+    }
 }
 
 static int
