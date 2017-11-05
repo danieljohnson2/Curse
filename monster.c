@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
+#include <limits.h>
 
 #define CANDIDATE_MONSTER_COUNT 5
 
@@ -37,9 +38,9 @@ MonsterPriorities
 get_default_monster_priorities (void)
 {
     MonsterPriorities d = { 0 };
-    d.player = 2.0;
-    d.weapon = 1.0;
-    d.armor = 1.0;
+    d.player = 1.0;
+    d.weapon = 0.75;
+    d.armor = 0.75;
     d.treasure = 0.5;
     return d;
 }
@@ -48,7 +49,7 @@ void
 define_monster_behavior (ThingBehavior behavior, MonsterPriorities priorities)
 {
     define_thing_behavior (behavior, attack_bump_action,
-                           chase_player_turn_action);
+                           priority_ai_turn_action);
     monster_priorities[behavior] = priorities;
 }
 
@@ -184,15 +185,18 @@ thing_interest_score (Thing * actor, Thing * candidate)
     if (pri == 0.0)
         return DBL_MAX;
 
-    int dx = candidate->loc.x - actor->loc.x;
-    int dy = candidate->loc.y - actor->loc.y;
-    double score = sqrt ((dx * dx) + (dy * dy));
-    return score / pri;
+    double path_score = measure_path (actor->loc, candidate->loc);
+
+    if (path_score == DBL_MAX)
+        return DBL_MAX;
+
+    return path_score / pri;
 }
 
-/* A turn action function for monsters; they chse the player. */
+/* A turn action function for monsters; they move towards things
+according to distance and priority. */
 void
-chase_player_turn_action (Thing * actor)
+priority_ai_turn_action (Thing * actor)
 {
     Thing *target = actor->target;
 
@@ -218,7 +222,9 @@ chase_player_turn_action (Thing * actor)
 
     if (is_thing_targetable (actor, target))
     {
-        if (try_move_thing_towards (actor, target))
+        Loc next = actor->loc;
+        if (try_path_step_towards (&next, target->loc) != DBL_MAX &&
+            try_move_thing_to (actor, next))
         {
             actor->target = target;
             actor->ignored_target = NULL;
@@ -226,7 +232,7 @@ chase_player_turn_action (Thing * actor)
         else
         {
             /* try a different target next time! */
-            actor->ignored_target = actor->target;
+            actor->ignored_target = target;
             actor->target = NULL;
         }
     }

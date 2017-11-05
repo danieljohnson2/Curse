@@ -44,8 +44,9 @@ void
 move_player_by (int dx, int dy)
 {
     Thing *player = get_player ();
+    Loc dest = offset_loc (player->loc, dx, dy);
 
-    if (!try_move_thing_by (player, dx, dy))
+    if (!try_move_thing_to (player, dest))
         write_message ("Impassible!");
 }
 

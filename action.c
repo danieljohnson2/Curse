@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <limits.h>
+#include <float.h>
 
 /*
 This function sets up the behavior callbacks for each
@@ -30,74 +31,99 @@ init_behaviors (void)
                            null_turn_action);
 
     MonsterPriorities orc_pri = get_default_monster_priorities ();
-    orc_pri.weapon = 1.0;
     orc_pri.armor = 0.5;
-    orc_pri.treasure = 0.5;
+    orc_pri.treasure = 0.25;
     define_monster_behavior (ORC_MONSTER, orc_pri);
 
     MonsterPriorities halfling_pri = get_default_monster_priorities ();
-    halfling_pri.player = 1.0;
     halfling_pri.weapon = 0.5;
-    halfling_pri.armor = 1.5;
-    halfling_pri.treasure = 2.0;
+    halfling_pri.armor = 1.25;
+    halfling_pri.treasure = 1.5;
     define_monster_behavior (HALFLING_MONSTER, halfling_pri);
 
     MonsterPriorities elf_pri = get_default_monster_priorities ();
-    elf_pri.weapon = 2.0;
-    elf_pri.armor = 2.0;
-    elf_pri.treasure = 0.5;
+    elf_pri.weapon = 1.0;
+    elf_pri.armor = 1.0;
+    elf_pri.treasure = 0.75;
     define_monster_behavior (ELF_MONSTER, elf_pri);
 
     MonsterPriorities animal_pri = get_default_monster_priorities ();
     animal_pri.weapon = 0.0;
     animal_pri.armor = 0.0;
     animal_pri.treasure = 0.0;
-    animal_pri.other_monster = 1.0;
+    animal_pri.other_monster = 0.8;
     define_monster_behavior (ANIMAL, animal_pri);
 }
 
 /*
-Executes a move for a monster; it moves horizontal or vertically
-towards 'target', and will execute a bump-action if it reaches
-it. Returns true if the move succeeds, and false if it fails.
+Calculates score for the path a creature will take from
+'loc' to 'destination'; this is approximately the number of
+turns it will take. Returns 0 if 'loc' and 'destination' are
+the same DBL_MAX if the path is blocked by impassible terrain.
 */
-bool
-try_move_thing_towards (Thing * mover, Thing * target)
+double
+measure_path (Loc loc, Loc destination)
 {
-    int dx = target->loc.x - mover->loc.x;
-    int dy = target->loc.y - mover->loc.y;
+    double total = 0;
 
-    if (abs (dx) > abs (dy))
+    for (;;)
     {
-        if (try_move_thing_by (mover, isign (dx), 0))
-            return true;
-        else
-            return try_move_thing_by (mover, 0, isign (dy));
-    }
-    else
-    {
-        if (try_move_thing_by (mover, 0, isign (dy)))
-            return true;
-        else
-            return try_move_thing_by (mover, isign (dx), 0);
+        double step_score = try_path_step_towards (&loc, destination);
+
+        if (step_score == 0)
+            return total;
+
+        if (step_score == DBL_MAX)
+            return DBL_MAX;
+
+        total += step_score;
     }
 }
 
 /*
-Moves the mover indicates in the direct indicated; this can
-execute a bump action.
-
-This returns false if the terrain is impassible where the thing
-is moving, and true in any other case. It returns true if it
-bumps something, in particular.
-
-If this returns false, we can try to move in another direction.
+Calculates a score for moving 'loc' towards 'destination';
+this actually updates 'loc', and returns a score indicates how
+expensive the move is. Returns if 'loc' and 'destination' already
+match, and DBL_MAX if the step would be into impassible terrain. In
+either of those cases, this does not update 'loc'.
 */
-bool
-try_move_thing_by (Thing * mover, int dx, int dy)
+double
+try_path_step_towards (Loc * loc, Loc destination)
 {
-    Loc dest = offset_loc (mover->loc, dx, dy);
-    return try_move_thing_to (mover, dest);
+    if (equal_locs (*loc, destination))
+        return 0.0;
+
+    int dx = destination.x - loc->x;
+    int dy = destination.y - loc->y;
+    Loc dests[2];
+
+    if (abs (dx) > abs (dy))
+    {
+        dests[0] = offset_loc (*loc, isign (dx), 0);
+        dests[1] = offset_loc (*loc, 0, isign (dy));
+    }
+    else
+    {
+        dests[0] = offset_loc (*loc, 0, isign (dy));
+        dests[1] = offset_loc (*loc, isign (dx), 0);
+    }
+
+    for (int i = 0; i < 2; ++i)
+    {
+        if (!equal_locs (dests[i], *loc))
+        {
+            Terrain t = get_map_terrain (get_map (), dests[i]);
+            int speed_penalty = get_terrain_speed_penalty (t);
+
+            if (speed_penalty < INT_MAX)
+            {
+                *loc = dests[i];
+                return (SPEED_MAX + speed_penalty) / (double) SPEED_MAX;
+            }
+        }
+    }
+
+    return DBL_MAX;
 }
 
 /*

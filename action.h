@@ -13,8 +13,9 @@
 
 void init_behaviors (void);
 
-bool try_move_thing_towards (Thing * mover, Thing * target);
-bool try_move_thing_by (Thing * mover, int dx, int dy);
+double measure_path (Loc loc, Loc destination);
+double try_path_step_towards (Loc * loc, Loc destination);
+
 bool try_move_thing_to (Thing * mover, Loc dest);
 
 void null_turn_action (Thing * actor);

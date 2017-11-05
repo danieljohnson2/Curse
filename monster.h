@@ -30,7 +30,7 @@ bool is_thing_monster (Thing * thing);
 int count_monsters (void);
 Thing *try_spawn_monster (SpawnSettings spawn);
 
-void chase_player_turn_action (Thing * actor);
+void priority_ai_turn_action (Thing * actor);
 bool attack_bump_action (Thing * actor, Thing * target);
 
 void write_spawn_settings (SpawnSettings * settings, FILE * stream);
