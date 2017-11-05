@@ -33,6 +33,7 @@ init_behaviors (void)
     MonsterPriorities orc_pri = get_default_monster_priorities ();
     orc_pri.armor = 0.5;
     orc_pri.treasure = 0.25;
+    orc_pri.focus = 0.75;
     define_monster_behavior (ORC_MONSTER, orc_pri);
 
     MonsterPriorities halfling_pri = get_default_monster_priorities ();
@@ -44,7 +45,7 @@ init_behaviors (void)
     MonsterPriorities elf_pri = get_default_monster_priorities ();
     elf_pri.weapon = 1.0;
     elf_pri.armor = 1.0;
-    elf_pri.treasure = 0.75;
+    elf_pri.treasure = 0.8;
     define_monster_behavior (ELF_MONSTER, elf_pri);
 
     MonsterPriorities animal_pri = get_default_monster_priorities ();
@@ -52,6 +53,7 @@ init_behaviors (void)
     animal_pri.armor = 0.0;
     animal_pri.treasure = 0.0;
     animal_pri.other_monster = 0.8;
+    animal_pri.focus = 0.5;
     define_monster_behavior (ANIMAL, animal_pri);
 }
 

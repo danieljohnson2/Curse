@@ -19,6 +19,8 @@ typedef struct MonsterPriorities
     double weapon;
     double treasure;
     double other_monster;
+
+    double focus;
 } MonsterPriorities;
 
 MonsterPriorities get_default_monster_priorities (void);

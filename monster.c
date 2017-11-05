@@ -42,6 +42,7 @@ get_default_monster_priorities (void)
     d.weapon = 0.75;
     d.armor = 0.75;
     d.treasure = 0.5;
+    d.focus = 0.95;
     return d;
 }
 
@@ -142,6 +143,12 @@ try_spawn_monster (SpawnSettings spawn)
 }
 
 static double
+get_monster_focus (Thing * actor)
+{
+    return monster_priorities[actor->behavior].focus;
+}
+
+static double
 get_target_priority (Thing * actor, Thing * candidate)
 {
     if (candidate == NULL || actor == NULL || candidate == actor
@@ -199,6 +206,13 @@ void
 priority_ai_turn_action (Thing * actor)
 {
     Thing *target = actor->target;
+
+    if (target != NULL)
+    {
+        int focus_lim = get_monster_focus (actor) * RAND_MAX;
+        if (focus_lim < RAND_MAX && rand () > focus_lim)
+            target = NULL;
+    }
 
     if (target == NULL || !is_thing_targetable (actor, target))
     {
