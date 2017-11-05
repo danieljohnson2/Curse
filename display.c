@@ -319,8 +319,8 @@ paint (bool messages)
     }
 
     werase (status_w);
-    mvwprintw (status_w, 0, 0, "HP: %d Gold: %d/%d", player->hp, player->gold,
-               get_total_gold ());
+    mvwprintw (status_w, 0, 0, "HP: %d XP: %d Gold: %d/%d", player->hp,
+               player->xp, player->gold, get_total_gold ());
 
     wrefresh (map_w);
     wrefresh (status_w);

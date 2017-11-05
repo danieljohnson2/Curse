@@ -118,6 +118,7 @@ write_thing (Thing * thing, FILE * stream)
         named_writef (stream, "gold", "%d", thing->gold);
         named_writef (stream, "hp", "%d", thing->hp);
         named_writef (stream, "max_hp", "%d", thing->max_hp);
+        named_writef (stream, "xp", "%d", thing->xp);
         named_writef (stream, "dmg", "%d", thing->dmg);
         named_writef (stream, "speed", "%d", thing->speed);
         named_writef (stream, "equipped", "%d", thing->equipped);
@@ -149,6 +150,7 @@ read_thing (FILE * stream)
         readf (stream, "gold", "%d", &thing.gold);
         readf (stream, "hp", "%d", &thing.hp);
         readf (stream, "max_hp", "%d", &thing.max_hp);
+        readf (stream, "xp", "%d", &thing.xp);
         readf (stream, "dmg", "%d", &thing.dmg);
         readf (stream, "speed", "%d", &thing.speed);
 

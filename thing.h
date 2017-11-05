@@ -55,6 +55,7 @@ struct Thing
     int gold;
     int hp;
     int max_hp;
+    int xp;
     int dmg;
     int speed;
     bool equipped;

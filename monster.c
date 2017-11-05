@@ -22,16 +22,18 @@ typedef struct MonsterData
     char *name;
     int hp;
     int dmg;
+    int xp;
     int speed;
     ThingBehavior behavior;
 } MonsterData;
 
 static MonsterData monster_data[CANDIDATE_MONSTER_COUNT] = {
-    {WOLF, "Wolf", 4, 4, (SPEED_DEFAULT * 3) / 2, ANIMAL},
-    {HALFLING, "Halfling", 3, 2, (SPEED_DEFAULT * 4) / 3, HALFLING_MONSTER},
-    {GOBLIN, "Goblin", 7, 4, SPEED_DEFAULT / 2, ORC_MONSTER},
-    {ORC, "Orc", 10, 6, SPEED_DEFAULT, ORC_MONSTER},
-    {ELF, "Elf", 8, 9, SPEED_DEFAULT * 2, ELF_MONSTER}
+    {WOLF, "Wolf", 4, 4, 1, (SPEED_DEFAULT * 3) / 2, ANIMAL},
+    {HALFLING, "Halfling", 3, 2, 1, (SPEED_DEFAULT * 4) / 3,
+     HALFLING_MONSTER},
+    {GOBLIN, "Goblin", 7, 4, 2, SPEED_DEFAULT / 2, ORC_MONSTER},
+    {ORC, "Orc", 10, 6, 3, SPEED_DEFAULT, ORC_MONSTER},
+    {ELF, "Elf", 8, 9, 4, SPEED_DEFAULT * 2, ELF_MONSTER}
 };
 
 MonsterPriorities
@@ -61,6 +63,7 @@ make_monster (MonsterData data)
                                 data.behavior);
     monster.hp = data.hp;
     monster.max_hp = data.hp;
+    monster.xp = data.xp;
     monster.dmg = data.dmg;
     return monster;
 }
@@ -309,6 +312,7 @@ attack_bump_action (Thing * actor, Thing * target)
     else
     {
         target->hp = 0;
+        actor->xp += target->xp;
 
         if (target->gold > 0)
         {
@@ -335,6 +339,15 @@ attack_bump_action (Thing * actor, Thing * target)
     }
 
     write_message (msg);
+
+    if (actor->appearance == PLAYER && actor->xp >= 10)
+    {
+        actor->max_hp = (actor->max_hp * 11) / 10;
+        actor->hp = actor->max_hp;
+        actor->xp -= 10;
+        write_message ("Player levels up!");
+    }
+
     return false;
 }
 
