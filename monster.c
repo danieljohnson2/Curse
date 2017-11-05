@@ -49,7 +49,7 @@ get_default_monster_priorities (void)
 void
 define_monster_behavior (ThingBehavior behavior, MonsterPriorities priorities)
 {
-    define_thing_behavior (behavior, attack_bump_action,
+    define_thing_behavior (behavior, attack_bump_action, NULL,
                            priority_ai_turn_action);
     monster_priorities[behavior] = priorities;
 }
@@ -60,6 +60,7 @@ make_monster (MonsterData data)
     Thing monster = make_thing (data.appearance, data.name, data.speed,
                                 data.behavior);
     monster.hp = data.hp;
+    monster.max_hp = data.hp;
     monster.dmg = data.dmg;
     return monster;
 }

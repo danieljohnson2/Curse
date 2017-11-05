@@ -19,7 +19,8 @@ make_player (Map * map)
         make_thing (PLAYER, "Player", SPEED_DEFAULT, PLAYER_CONTROLLED);
 
     player.loc = find_passable_place (map, make_loc (0, 0));
-    player.hp = 20;
+    player.max_hp = 20;
+    player.hp = player.max_hp;
     player.dmg = 5;
     return player;
 }

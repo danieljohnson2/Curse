@@ -5,31 +5,35 @@
 
 #include <stdlib.h>
 
-#define CANDIDATE_ITEM_COUNT 6
+#define CANDIDATE_ITEM_COUNT 7
 
 typedef struct ItemData
 {
     Appearance appearance;
     char *name;
     int dmg;
+    int hp;
     ThingBehavior behavior;
 } ItemData;
 
 static ItemData item_data[CANDIDATE_ITEM_COUNT] = {
-    {WEAPON, "Dagger", 10, WEAPON_PICKUP},
-    {WEAPON, "Mace", 15, WEAPON_PICKUP},
-    {WEAPON, "Sword", 20, WEAPON_PICKUP},
-    {ARMOR, "Leather Armor", 3, ARMOR_PICKUP},
-    {ARMOR, "Chain Armor", 10, ARMOR_PICKUP},
-    {ARMOR, "Plate Armor", 15, ARMOR_PICKUP},
+    {POTION, "Healing Potion", 0, 10, HEALING_POTION},
+    {WEAPON, "Dagger", 10, 0, WEAPON_PICKUP},
+    {ARMOR, "Leather Armor", 3, 0, ARMOR_PICKUP},
+    {WEAPON, "Mace", 15, 0, WEAPON_PICKUP},
+    {ARMOR, "Chain Armor", 10, 0, ARMOR_PICKUP},
+    {WEAPON, "Sword", 20, 0, WEAPON_PICKUP},
+    {ARMOR, "Plate Armor", 15, 0, ARMOR_PICKUP}
 };
 
 static Thing
 make_item (ItemData data)
 {
-    Thing monster = make_thing (data.appearance, data.name, 0, data.behavior);
-    monster.dmg = data.dmg;
-    return monster;
+    Thing item = make_thing (data.appearance, data.name, 0, data.behavior);
+    item.dmg = data.dmg;
+    item.max_hp = data.hp;
+    item.hp = data.hp;
+    return item;
 }
 
 /* Constructs a random item, which could be weapon or armor, taken
@@ -162,4 +166,22 @@ item_pickup_bump_action (Thing * actor, Thing * target)
     }
 
     return true;
+}
+
+void
+healing_potion_use_action (Thing * potion, Thing * user)
+{
+    int new_hp = user->hp + potion->hp;
+    if (new_hp > user->max_hp)
+        new_hp = user->max_hp;
+
+    remove_thing (potion);
+
+    if (new_hp > user->hp)
+    {
+        write_messagef ("%s recovers %d hp!", user->name, new_hp - user->hp);
+        user->hp = new_hp;
+    }
+    else
+        write_message ("No effect!");
 }

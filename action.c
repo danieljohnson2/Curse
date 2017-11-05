@@ -19,16 +19,20 @@ behavior.
 void
 init_behaviors (void)
 {
-    define_thing_behavior (PLAYER_CONTROLLED, attack_bump_action,
+    define_thing_behavior (PLAYER_CONTROLLED, attack_bump_action, NULL,
                            player_turn_action);
 
-    define_thing_behavior (TREASURE, treasure_bump_action, null_turn_action);
-
-    define_thing_behavior (WEAPON_PICKUP, item_pickup_bump_action,
+    define_thing_behavior (TREASURE, treasure_bump_action, NULL,
                            null_turn_action);
 
-    define_thing_behavior (ARMOR_PICKUP, item_pickup_bump_action,
+    define_thing_behavior (WEAPON_PICKUP, item_pickup_bump_action, NULL,
                            null_turn_action);
+
+    define_thing_behavior (ARMOR_PICKUP, item_pickup_bump_action, NULL,
+                           null_turn_action);
+
+    define_thing_behavior (HEALING_POTION, item_pickup_bump_action,
+                           healing_potion_use_action, null_turn_action);
 
     MonsterPriorities orc_pri = get_default_monster_priorities ();
     orc_pri.armor = 0.5;

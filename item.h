@@ -16,4 +16,6 @@ void equip_item (Thing * owner, Thing * item);
 
 bool item_pickup_bump_action (Thing * actor, Thing * target);
 
+void healing_potion_use_action (Thing * potion, Thing * user);
+
 #endif

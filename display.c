@@ -122,6 +122,8 @@ get_appearance_char (Appearance appearance)
         return '/' | A_BOLD;
     case ARMOR:
         return '[' | A_BOLD;
+    case POTION:
+        return '?' | A_BOLD;
     case SMALL_TREASURE:
         return '*' | COLOR_PAIR (2);
     case MEDIUM_TREASURE:
@@ -225,7 +227,17 @@ show_inventory ()
                 if (items[index]->equipped)
                     items[index]->equipped = false;
                 else
-                    equip_item (player, items[index]);
+                {
+                    UseAction use_action = get_use_action (items[index]);
+
+                    if (use_action != NULL)
+                    {
+                        use_action (items[index], player);
+                        break;
+                    }
+                    else
+                        equip_item (player, items[index]);
+                }
             }
         }
     }
