@@ -120,7 +120,8 @@ actor could not pick it up because its inventory was full. */
 static Thing *
 item_pickup_bump_action_core (Thing * actor, Thing * target)
 {
-    if (inventory_contains (actor, *target))
+    if (target->behavior != HEALING_POTION
+        && inventory_contains (actor, *target))
     {
         write_messagef ("%s picked up %s (again)!", actor->name,
                         target->name);
@@ -154,20 +155,34 @@ item_pickup_bump_action (Thing * actor, Thing * target)
     if (actor->behavior == ANIMAL)
         return true;
 
-    Thing *to_equip = item_pickup_bump_action_core (actor, target);
-
-    if (actor->behavior != PLAYER_CONTROLLED && to_equip != NULL)
+    Thing *picked_up = item_pickup_bump_action_core (actor, target);
+    if (picked_up != NULL)
     {
-        for (Thing * th = NULL; next_thing (actor, &th);)
-            if (th->behavior == to_equip->behavior && to_equip->dmg < th->dmg)
-                to_equip = th;
+        UseAction use_action = get_use_action (picked_up);
 
-        equip_item (actor, to_equip);
+        if (use_action != NULL)
+        {
+            if (actor->appearance != PLAYER)
+                use_action (picked_up, actor);
+        }
+        else
+        {
+            if (actor->behavior != PLAYER_CONTROLLED && picked_up != NULL)
+            {
+                for (Thing * th = NULL; next_thing (actor, &th);)
+                    if (th->behavior == picked_up->behavior
+                        && picked_up->dmg < th->dmg)
+                        picked_up = th;
+
+                equip_item (actor, picked_up);
+            }
+        }
     }
 
     return true;
 }
 
+/* Handles drinking a healing potion. */
 void
 healing_potion_use_action (Thing * potion, Thing * user)
 {
@@ -179,9 +194,11 @@ healing_potion_use_action (Thing * potion, Thing * user)
 
     if (new_hp > user->hp)
     {
-        write_messagef ("%s recovers %d hp!", user->name, new_hp - user->hp);
+        write_messagef ("%s drinks a potion and recovers %d hp!", user->name,
+                        new_hp - user->hp);
         user->hp = new_hp;
     }
     else
-        write_message ("No effect!");
+        write_messagef ("%s drinks a potion but nothing happens!",
+                        user->name);
 }

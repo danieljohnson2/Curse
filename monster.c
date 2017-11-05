@@ -44,6 +44,7 @@ get_default_monster_priorities (void)
     d.weapon = 0.75;
     d.armor = 0.75;
     d.treasure = 0.5;
+    d.potion = 0.5;
     d.focus = 0.95;
     return d;
 }
@@ -174,6 +175,8 @@ get_target_priority (Thing * actor, Thing * candidate)
         return p.armor;
     case WEAPON_PICKUP:
         return p.weapon;
+    case HEALING_POTION:
+        return p.potion;
     default:
         return 0.0;
     }

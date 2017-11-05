@@ -18,6 +18,7 @@ typedef struct MonsterPriorities
     double armor;
     double weapon;
     double treasure;
+    double potion;
     double other_monster;
 
     double focus;
