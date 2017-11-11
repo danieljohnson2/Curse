@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <limits.h>
+#include <math.h>
 
 // Borowed (with some rework) from https://gist.github.com/nowl/828013
 // Thanks nowl!
@@ -87,8 +88,8 @@ that effectively moves this origin out of the way.
 float
 perlin2d (Perlin * perlin, double x, double y)
 {
-    double xa = abs (x + perlin->origin_offset) * perlin->freq;
-    double ya = abs (y + perlin->origin_offset) * perlin->freq;
+    double xa = fabs (x + perlin->origin_offset) * perlin->freq;
+    double ya = fabs (y + perlin->origin_offset) * perlin->freq;
     double amp = 1.0;
     double fin = 0;
     double div = 0.0;
