@@ -1,4 +1,4 @@
-CFLAGS := -g -Wall -Werror -fmax-errors=3 --pedantic --std=gnu99
+CFLAGS := -g -Wall -Werror --pedantic --std=gnu99
 CC := gcc
 LDFLAGS :=
 LDLIBS := -lncurses -lm
