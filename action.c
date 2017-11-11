@@ -172,11 +172,14 @@ try_move_thing_to (Thing * mover, Loc dest)
 void
 null_turn_action (Thing * actor)
 {
+    (void) actor;               // not used
 }
 
 /* A bump-action that does nothing and allows movement */
 bool
 null_bump_action (Thing * actor, Thing * target)
 {
+    (void) actor;               // not used
+    (void) target;              // not used
     return true;
 }

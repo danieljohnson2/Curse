@@ -18,6 +18,7 @@ and mountains on the right.
 static double
 band_shape (Map * map, Loc where)
 {
+    (void) map;                 // not used
     return (where.x + where.y) / 2.0;
 }
 

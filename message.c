@@ -122,7 +122,7 @@ void
 long_message (char *title, char **lines)
 {
     WINDOW *w =
-        display_multiline_window (NULL, lines, "(esc to close)", 1, 1, 1, 1,
+        display_multiline_window (title, lines, "(esc to close)", 1, 1, 1, 1,
                                   true);
 
     while (wgetch (w) != ESCAPE_KEY)
