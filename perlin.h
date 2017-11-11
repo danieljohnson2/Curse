@@ -15,7 +15,7 @@ typedef struct Perlin
 } Perlin;
 
 Perlin make_perlin (double freq, int depth, int seed);
-float perlin2d (Perlin * perlin, double x, double y);
+double perlin2d (Perlin * perlin, double x, double y);
 
 void write_perlin (Perlin * perlin, FILE * stream);
 Perlin read_perlin (FILE * stream);

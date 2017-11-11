@@ -30,19 +30,19 @@ noise2 (Perlin * perlin, long long x, long long y)
     return get_hash (perlin, tmp + x);
 }
 
-static float
+static double
 lin_inter (double x, double y, double s)
 {
     return x + s * (y - x);
 }
 
-static float
+static double
 smooth_inter (double x, double y, double s)
 {
     return lin_inter (x, y, s * s * (3 - 2 * s));
 }
 
-static float
+static double
 noise2d (Perlin * perlin, double x, double y)
 {
     long long x_int = x;
@@ -85,7 +85,7 @@ This tolerates negative co-ordinates, but just mirrors the nosie
 at the origin. To make this less obvious, you can have an origin-offset
 that effectively moves this origin out of the way. 
 */
-float
+double
 perlin2d (Perlin * perlin, double x, double y)
 {
     double xa = fabs (x + perlin->origin_offset) * perlin->freq;
