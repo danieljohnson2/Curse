@@ -7,7 +7,7 @@ OBJS := $(SRCS:.c=.o)
 prefix := /usr
 
 all: curse
-.PHONY: all clean directories install
+.PHONY: all clean directories install get-dependencies
 -include $(addprefix bin/,$(SRCS:.c=.d))
 
 curse: $(addprefix bin/,$(OBJS))
@@ -25,6 +25,9 @@ bin/:
 clean:
 	rm curse
 	rm -rf bin
+
+get-dependencies:
+	sudo apt-get install -y build-essential libncurses-dev indent
 
 install: curse
 	install -d $(prefix)/games
