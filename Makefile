@@ -4,7 +4,6 @@ LDFLAGS :=
 LDLIBS := -lncurses -lm
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
-DESTDIR :=
 prefix := /usr/local
 
 all: curse
@@ -36,28 +35,32 @@ clean:
 get-dependencies:
 	sudo apt-get install -y build-essential libncurses-dev indent
 
+# Installs curse's components; this is also used to construct a .deb
+# package.
+
 _share := $(DESTDIR)$(prefix)/share
 _games := $(DESTDIR)$(prefix)/games
 _doc := $(_share)/doc/curse
-_man := $(prefix)/share/man/man6
+_man := $(_share)/man/man6
 _icon := $(_share)/icons/hicolor/256x256/apps
 
-# Installs curse's components; this is also used to construct a .deb
-# package.
 install: curse
-	install -d $(_games)
-	install -d $(_share)/applications
-	install -d $(_icon)
-	install -d $(_doc)
-	install -d $(_man)
-	install curse $(_games)/curse
-	install desktop/*.desktop $(_share)/applications
-	install desktop/*.png $(_icon)
-	install License.txt $(_doc)/copyright
-	install README.txt $(_doc)/changelog
-	install desktop/curse.6 $(_man)
+	install -D curse $(_games)/curse
+	install -D desktop/net.verizon.danieljohnson2.curse.desktop -t $(_share)/applications
+	install -D desktop/net.verizon.danieljohnson2.curse.png -t $(_icon)
+	install -D License.txt $(_doc)/copyright
+	install -D README.txt $(_doc)/changelog
+	install -D desktop/curse.6 -t $(_man)
 	gzip -9 -n -f $(_doc)/changelog
 	gzip -9 -n -f $(_man)/curse.6
+
+uninstall:
+	rm -f $(_games)/curse
+	rm -f $(_share)/applications/net.verizon.danieljohnson2.curse.desktop
+	rm -f $(_icon)/net.verizon.danieljohnson2.curse.png
+	rm -f $(_doc)/copyright
+	rm -f $(_doc)/changelog.gz
+	rm -f $(_man)/curse.6.gz
 
 # Pretty-print all the source code
 indent:
