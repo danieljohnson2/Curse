@@ -4,7 +4,8 @@ LDFLAGS :=
 LDLIBS := -lncurses -lm
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
-prefix := /usr
+DESTDIR :=
+prefix := /usr/local
 
 all: curse
 .PHONY: all clean directories install get-dependencies
@@ -35,22 +36,28 @@ clean:
 get-dependencies:
 	sudo apt-get install -y build-essential libncurses-dev indent
 
+_share := $(DESTDIR)$(prefix)/share
+_games := $(DESTDIR)$(prefix)/games
+_doc := $(_share)/doc/curse
+_man := $(prefix)/share/man/man6
+_icon := $(_share)/icons/hicolor/256x256/apps
+
 # Installs curse's components; this is also used to construct a .deb
 # package.
 install: curse
-	install -d $(prefix)/games
-	install -d $(prefix)/share/applications
-	install -d $(prefix)/share/icons/hicolor/256x256/apps
-	install -d $(prefix)/share/doc/curse
-	install -d $(prefix)/share/man/man6
-	install curse $(prefix)/games/curse
-	install desktop/*.desktop $(prefix)/share/applications
-	install desktop/*.png $(prefix)/share/icons/hicolor/256x256/apps
-	install License.txt $(prefix)/share/doc/curse/copyright
-	install README.txt $(prefix)/share/doc/curse/changelog
-	install desktop/curse.6 $(prefix)/share/man/man6
-	gzip -9 -n -f $(prefix)/share/doc/curse/changelog
-	gzip -9 -n -f $(prefix)/share/man/man6/curse.6
+	install -d $(_games)
+	install -d $(_share)/applications
+	install -d $(_icon)
+	install -d $(_doc)
+	install -d $(_man)
+	install curse $(_games)/curse
+	install desktop/*.desktop $(_share)/applications
+	install desktop/*.png $(_icon)
+	install License.txt $(_doc)/copyright
+	install README.txt $(_doc)/changelog
+	install desktop/curse.6 $(_man)
+	gzip -9 -n -f $(_doc)/changelog
+	gzip -9 -n -f $(_man)/curse.6
 
 # Pretty-print all the source code
 indent:

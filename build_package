@@ -3,7 +3,7 @@ mkdir build
 
 make clean
 make LDFLAGS="-s"
-sudo make install prefix=build/curse_0.1/usr
+sudo make install DESTDIR=build/curse_0.1
 
 sudo cp -r DEBIAN build/curse_0.1/
 sudo chown root:root -R build/curse_0.1/
